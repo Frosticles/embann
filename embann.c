@@ -1,19 +1,19 @@
 /*
-  Ardbann.cpp - ARDuino Backpropogating Artificial Neural Network.
-  Created by Peter Frost, February 9, 2017.
-  Released into the public domain.
+  Embann.cpp - EMbedded Backpropogating Artificial Neural Network.
+  Created by Peter Frost, 27th August 2019
 */
 
-#include "ardbann.h"
+#include "embann.h"
 
 
 static network_t network;
-static void ardbann_calculateInputNeurons(void);
+static void embann_calculateInputNeurons(void);
 #ifndef ARDUINO
 static uint32_t millis(void);
 #endif
 
-void ardbann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
+
+void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
                             char *outputArray, uint16_t numInputs,
                             uint16_t numInputNeurons,
                             uint16_t numHiddenNeurons, uint8_t numHiddenLayers,
@@ -60,7 +60,7 @@ void ardbann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
     network.inputLayer.groupThresholds = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
     network.inputLayer.groupTotal = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
 
-    ardbann_calculateInputNeurons();
+    embann_calculateInputNeurons();
 
     network.outputLayer.numNeurons = numOutputNeurons;
     network.outputLayer.neurons = (float*) malloc(numOutputNeurons * sizeof(float));
@@ -75,7 +75,7 @@ void ardbann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
     network.hiddenLayer.neuronBiasTable = hiddenLayerNeuronBiasTable;
 }
 
-void ardbann_initWithoutData(   uint16_t maxInput, char* outputArray,
+void embann_initWithoutData(   uint16_t maxInput, char* outputArray,
                                 uint16_t numInputNeurons,
                                 uint16_t numHiddenNeurons, uint8_t numHiddenLayers,
                                 uint16_t numOutputNeurons)
@@ -139,21 +139,21 @@ void ardbann_initWithoutData(   uint16_t maxInput, char* outputArray,
     network.hiddenLayer.neuronBiasTable = hiddenLayerNeuronBiasTable;
 }
 
-void ardbann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs)
+void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs)
 {
     network.inputLayer.rawInputs = rawInputArray;
     network.inputLayer.numRawInputs = numInputs;
-    ardbann_calculateInputNeurons();
+    embann_calculateInputNeurons();
 }
 
-void ardbann_newInputStruct(networkSampleBuffer_t sampleBuffer, uint16_t numInputs)
+void embann_newInputStruct(networkSampleBuffer_t sampleBuffer, uint16_t numInputs)
 {
     network.inputLayer.rawInputs = sampleBuffer.samples;
     network.inputLayer.numRawInputs = numInputs;
-    ardbann_calculateInputNeurons();
+    embann_calculateInputNeurons();
 }
 
-void ardbann_calculateInputNeurons()
+void embann_calculateInputNeurons()
 {
     uint8_t largestGroup = 0;
 
@@ -203,16 +203,16 @@ void ardbann_calculateInputNeurons()
     }
 }
 
-uint8_t ardbann_inputLayer()
+uint8_t embann_inputLayer()
 {
-    ardbann_sumAndSquash(network.inputLayer.neurons, network.hiddenLayer.neuronTable[0],
+    embann_sumAndSquash(network.inputLayer.neurons, network.hiddenLayer.neuronTable[0],
                  network.hiddenLayer.neuronBiasTable[0],
                  network.hiddenLayer.weightLayerTable[0],
                  network.inputLayer.numNeurons, network.hiddenLayer.numNeurons);
     // printf("Done Input -> 1st Hidden Layer");
     for (uint8_t i = 1; i < network.hiddenLayer.numLayers; i++)
     {
-        ardbann_sumAndSquash(network.hiddenLayer.neuronTable[i - 1],
+        embann_sumAndSquash(network.hiddenLayer.neuronTable[i - 1],
                      network.hiddenLayer.neuronTable[i],
                      network.hiddenLayer.neuronBiasTable[i],
                      network.hiddenLayer.weightLayerTable[i],
@@ -221,7 +221,7 @@ uint8_t ardbann_inputLayer()
         // printf("Done Hidden Layer %d -> Hidden Layer %d\n", i - 1, i);
     }
 
-    ardbann_sumAndSquash(
+    embann_sumAndSquash(
         network.hiddenLayer.neuronTable[network.hiddenLayer.numLayers - 1],
         network.outputLayer.neurons, network.outputLayer.neuronBiasTable,
         network.outputLayer.weightTable, network.hiddenLayer.numNeurons,
@@ -230,11 +230,11 @@ uint8_t ardbann_inputLayer()
     /*printf("Done Hidden Layer %d -> Output Layer\n",
                 network.hiddenLayer.numLayers);*/
 
-    network.networkResponse = ardbann_outputLayer();
+    network.networkResponse = embann_outputLayer();
     return network.networkResponse;
 }
 
-void ardbann_sumAndSquash(float *Input, float *Output, float *Bias,
+void embann_sumAndSquash(float *Input, float *Output, float *Bias,
                            float **Weights, uint16_t numInputs,
                            uint16_t numOutputs)
 {
@@ -248,12 +248,12 @@ void ardbann_sumAndSquash(float *Input, float *Output, float *Bias,
         Output[i] = tanh(Output[i] * PI);
 
         // tanh is a quicker alternative to sigmoid
-        // printf("i:%d This is the ardbann_SumAndSquash Output %.2f\n", i,
+        // printf("i:%d This is the embann_SumAndSquash Output %.2f\n", i,
         // Output[i]);
     }
 }
 
-uint8_t ardbann_outputLayer()
+uint8_t embann_outputLayer()
 {
     uint8_t mostLikelyOutput = 0;
 
@@ -270,7 +270,7 @@ uint8_t ardbann_outputLayer()
     return mostLikelyOutput;
 }
 
-void ardbann_printNetwork()
+void embann_printNetwork()
 {
     printf("\nInput: [");
     for (uint16_t i = 0; i < (network.inputLayer.numRawInputs - 1); i++)
@@ -347,7 +347,7 @@ void ardbann_printNetwork()
     printf("%s \n", network.outputLayer.stringArray[network.networkResponse]);
 }
 
-void ardbann_trainDriverInTime(float learningRate, bool verbose,
+void embann_trainDriverInTime(float learningRate, bool verbose,
                           uint8_t numTrainingSets, uint8_t inputPin,
                           uint16_t bufferSize, long numSeconds)
 {
@@ -391,20 +391,20 @@ void ardbann_trainDriverInTime(float learningRate, bool verbose,
     {
         randomOutput = rand() % network.outputLayer.numNeurons;
         randomTrainingSet = rand() % numTrainingSets;
-        ardbann_newInputRaw(trainingData[randomOutput][randomTrainingSet], bufferSize);
-        ardbann_inputLayer();
+        embann_newInputRaw(trainingData[randomOutput][randomTrainingSet], bufferSize);
+        embann_inputLayer();
 
         if (verbose == true)
         {
-            ardbann_errorReporting(randomOutput);
+            embann_errorReporting(randomOutput);
             printf("%u | %u ", randomOutput, randomTrainingSet);
         }
 
-        ardbann_train(randomOutput, learningRate);
+        embann_train(randomOutput, learningRate);
     }
 }
 
-void ardbann_trainDriverInError(float learningRate, bool verbose,
+void embann_trainDriverInError(float learningRate, bool verbose,
                           uint8_t numTrainingSets, uint8_t inputPin,
                           uint16_t bufferSize, float desiredCost)
 {
@@ -448,16 +448,16 @@ void ardbann_trainDriverInError(float learningRate, bool verbose,
         randomOutput = rand() % network.outputLayer.numNeurons;
         randomTrainingSet = rand() % numTrainingSets;
         currentCost[randomOutput] = 0.0;
-        ardbann_newInputRaw(trainingData[randomOutput][randomTrainingSet], bufferSize);
-        ardbann_inputLayer();
+        embann_newInputRaw(trainingData[randomOutput][randomTrainingSet], bufferSize);
+        embann_inputLayer();
 
         if (verbose == true)
         {
-            ardbann_errorReporting(randomOutput);
+            embann_errorReporting(randomOutput);
             printf("%u | %u ", randomOutput, randomTrainingSet);
         }
 
-        ardbann_train(randomOutput, learningRate);
+        embann_train(randomOutput, learningRate);
         for (uint8_t i = 0; i < network.outputLayer.numNeurons; i++)
         {
             if (i == randomOutput)
@@ -488,7 +488,7 @@ void ardbann_trainDriverInError(float learningRate, bool verbose,
     }
 }
 
-void ardbann_train(uint8_t correctOutput, float learningRate)
+void embann_train(uint8_t correctOutput, float learningRate)
 {
     float dOutputErrorToOutputSum[network.outputLayer.numNeurons];
     float dTotalErrorToHiddenNeuron = 0.0;
@@ -501,13 +501,13 @@ void ardbann_train(uint8_t correctOutput, float learningRate)
         {
             dOutputErrorToOutputSum[i] =
                 (1 - network.outputLayer.neurons[i]) *
-                ardbann_tanhDerivative(network.outputLayer.neurons[i]);
+                embann_tanhDerivative(network.outputLayer.neurons[i]);
         }
         else
         {
             dOutputErrorToOutputSum[i] =
                 -network.outputLayer.neurons[i] *
-                ardbann_tanhDerivative(network.outputLayer.neurons[i]);
+                embann_tanhDerivative(network.outputLayer.neurons[i]);
         }
         // printf("\ndOutputErrorToOutputSum[%d]: %.3f", i,
         // dOutputErrorToOutputSum[i]);
@@ -542,7 +542,7 @@ void ardbann_train(uint8_t correctOutput, float learningRate)
             // network.hiddenLayer.weightLayerTable[0][i][k]);
             network.hiddenLayer.weightLayerTable[0][i][k] +=
                 dTotalErrorToHiddenNeuron *
-                ardbann_tanhDerivative(network.hiddenLayer.neuronTable[0][i]) *
+                embann_tanhDerivative(network.hiddenLayer.neuronTable[0][i]) *
                 network.inputLayer.neurons[k] * learningRate;
             // printf("\nNew Hidden Weight[%d][%d]: %.3f", i, k,
             // network.hiddenLayer.weightLayerTable[0][i][k]);
@@ -550,7 +550,7 @@ void ardbann_train(uint8_t correctOutput, float learningRate)
     }
 }
 
-float ardbann_tanhDerivative(float inputValue)
+float embann_tanhDerivative(float inputValue)
 {
     // if (inputValue < 0)
     //{
@@ -562,7 +562,7 @@ float ardbann_tanhDerivative(float inputValue)
     //}
 }
 
-void ardbann_printInputNeuronDetails(uint8_t neuronNum)
+void embann_printInputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network.inputLayer.numNeurons)
     {
@@ -576,7 +576,7 @@ void ardbann_printInputNeuronDetails(uint8_t neuronNum)
     }
 }
 
-void ardbann_printOutputNeuronDetails(uint8_t neuronNum)
+void embann_printOutputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network.outputLayer.numNeurons)
     {
@@ -605,7 +605,7 @@ void ardbann_printOutputNeuronDetails(uint8_t neuronNum)
     }
 }
 
-void ardbann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
+void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
 {
     if (neuronNum < network.hiddenLayer.numNeurons)
     {
@@ -654,7 +654,7 @@ void ardbann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
     }
 }
 
-void ardbann_errorReporting(uint8_t correctResponse)
+void embann_errorReporting(uint8_t correctResponse)
 {
     printf("\n");
     for (uint8_t i = 0; i < network.outputLayer.numNeurons; i++)
@@ -671,7 +671,7 @@ void ardbann_errorReporting(uint8_t correctResponse)
     }
 }
 
-void ardbann_benchmark(void)
+void embann_benchmark(void)
 {
     uint32_t testint = UINT32_MAX;
     float testfloat = FLT_MAX;

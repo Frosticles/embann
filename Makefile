@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I. 
-DEPS = ardbann.h
-OBJ = ardbann.o
+DEPS = embann.h
+OBJ = embann.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
