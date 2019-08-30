@@ -60,8 +60,6 @@ typedef struct hiddenLayer
 {
     uint16_t numNeurons;
     uint8_t numLayers;
-    struct hiddenLayer* next;
-    struct hiddenLayer* prev;
     wNeuron_t* neuron[];
 } hiddenLayer_t;
 
@@ -76,8 +74,8 @@ typedef struct
     uint16_t numLayers;
     uint16_t networkResponse;
     inputLayer_t inputLayer;
-    hiddenLayer_t* hiddenLayer;
     outputLayer_t outputLayer;
+    hiddenLayer_t hiddenLayer[];
 } network_t;
 
 typedef struct

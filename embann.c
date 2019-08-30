@@ -6,7 +6,7 @@
 #include "embann.h"
 
 
-static network_t network;
+static network_t* network;
 static void embann_calculateInputNeurons(void);
 #ifndef ARDUINO
 static uint32_t millis(void);
@@ -14,16 +14,25 @@ static uint32_t millis(void);
 
 /* Random float between -1 and 1 */
 #define RAND_WEIGHT() ((float)rand() / (RAND_MAX / 2)) - 1
+/* Throw an error if malloc failed */
+#define CHECK_MALLOC(a) if (!a) {abort();}
 
 void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
                             char *outputArray, uint16_t numInputs,
                             uint16_t numInputNeurons,
-                            uint16_t numHiddenNeurons, uint8_t numHiddenLayers,
+                            uint16_t numHiddenNeurons, 
+                            uint8_t numHiddenLayers,
                             uint16_t numOutputNeurons)
 {
+    network = (network_t*) malloc(sizeof(network_t) + 
+                                 (sizeof(hiddenLayer_t) * numHiddenLayers));
+    CHECK_MALLOC(network);
+    
     outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
                                                         (sizeof(wNeuron_t) * numOutputNeurons));
+    CHECK_MALLOC(outputLayer);
     neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
+    CHECK_MALLOC(outputNeuronParams);
 
     for (uint8_t i = 0; i < numOutputNeurons; i++)
     {
@@ -33,69 +42,51 @@ void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
             outputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
         }
     }
-    network.outputLayer = *outputLayer;
-    //network.outputLayer.neuron[0]->params[0]->bias;
+    network->outputLayer = *outputLayer;
 
     inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
                                                     (sizeof(uNeuron_t) * numInputNeurons));
+    CHECK_MALLOC(inputLayer);
 
     for (uint8_t i = 0; i < numInputNeurons; i++)
     {
         inputLayer->neuron[i]->activation = 0.0F;
     }
-    network.inputLayer = *inputLayer;
-    //network.inputLayer.neuron[0]->activation;
-
-    hiddenLayer_t* hiddenLayerHead = NULL;
-    hiddenLayer_t* hiddenLayerTail = NULL;
+    network->inputLayer = *inputLayer;
 
     for (uint8_t i = 0; i < numHiddenLayers; i++)
-    {        
-        hiddenLayer_t* hiddenLayerNode;
-        neuronParams_t* hiddenLayerNodeParams;
-
-        hiddenLayerNode = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
-                                                 (sizeof(wNeuron_t) * numHiddenNeurons));
-        if (!hiddenLayerNode) {abort();}
+    {
+        hiddenLayer_t* hiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
+                                                (sizeof(wNeuron_t) * numHiddenNeurons));
+        CHECK_MALLOC(hiddenLayer);
+        neuronParams_t* hiddenLayerParams;
 
         if (i == 0)
         {
-            hiddenLayerNodeParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numInputNeurons);
+            hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numInputNeurons);
         }
         else
         {
-            hiddenLayerNodeParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
+            hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
         }
-        if (!hiddenLayerNodeParams) {abort();}
+        CHECK_MALLOC(hiddenLayerParams);
 
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
-            hiddenLayerNode->neuron[j]->activation = 0.0F;
+            hiddenLayer->neuron[j]->activation = 0.0F;
             
             for (uint16_t k = 0; k < numInputNeurons; k++)
             {
-                hiddenLayerNode->neuron[j]->params[k]->bias = RAND_WEIGHT();
-                hiddenLayerNode->neuron[j]->params[k]->weight = RAND_WEIGHT();
+                hiddenLayer->neuron[j]->params[k]->bias = RAND_WEIGHT();
+                hiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
             }
         }
-        
-        hiddenLayerNode->prev = hiddenLayerTail;
-        hiddenLayerNode->next = NULL;
 
-        if (hiddenLayerHead == NULL)
-        {
-            hiddenLayerHead = hiddenLayerNode;
-            hiddenLayerTail = hiddenLayerNode;
-        }
-        else
-        {
-            hiddenLayerTail->next = hiddenLayerNode;
-            hiddenLayerTail = hiddenLayerNode;
-        }
+        network->hiddenLayer[i] = *hiddenLayer;
     }
 
-    network.numLayers = numHiddenLayers + 2;
-    network.networkResponse = 0;
+    network->numLayers = numHiddenLayers + 2;
+    network->networkResponse = 0;
 
     network.inputLayer.numNeurons = numInputNeurons;
     network.inputLayer.numRawInputs = numInputs;
@@ -115,9 +106,6 @@ void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
 
     network.hiddenLayer.numNeurons = numHiddenNeurons;
     network.hiddenLayer.numLayers = numHiddenLayers;
-    network.hiddenLayer.neuronTable = hiddenLayerNeuronTable;
-    network.hiddenLayer.weightLayerTable = hiddenLayerNeuronWeightLayerTable;
-    network.hiddenLayer.neuronBiasTable = hiddenLayerNeuronBiasTable;
 }
 
 void embann_initWithoutData(   uint16_t maxInput, char* outputArray,
