@@ -46,15 +46,51 @@ void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
     network.inputLayer = *inputLayer;
     //network.inputLayer.neuron[0]->activation;
 
+    hiddenLayer_t* hiddenLayerHead = NULL;
+    hiddenLayer_t* hiddenLayerTail = NULL;
+
+    for (uint8_t i = 0; i < numHiddenLayers; i++)
+    {        
+        hiddenLayer_t* hiddenLayerNode;
+        neuronParams_t* hiddenLayerNodeParams;
+
+        hiddenLayerNode = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
+                                                 (sizeof(wNeuron_t) * numHiddenNeurons));
+        if (!hiddenLayerNode) {abort();}
+
+        if (i == 0)
+        {
+            hiddenLayerNodeParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numInputNeurons);
+        }
+        else
+        {
+            hiddenLayerNodeParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
+        }
+        if (!hiddenLayerNodeParams) {abort();}
+
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
-            hiddenLayerNeuronTable[i][j] = 0;
-            hiddenLayerNeuronBiasTable[i][j] = ((float)rand())/RAND_MAX;
+            hiddenLayerNode->neuron[j]->activation = 0.0F;
+            
             for (uint16_t k = 0; k < numInputNeurons; k++)
             {
-                hiddenLayerNeuronWeightLayerTable[i][j][k] =
-                    ((float)rand())/RAND_MAX;
+                hiddenLayerNode->neuron[j]->params[k]->bias = RAND_WEIGHT();
+                hiddenLayerNode->neuron[j]->params[k]->weight = RAND_WEIGHT();
             }
+        }
+        
+        hiddenLayerNode->prev = hiddenLayerTail;
+        hiddenLayerNode->next = NULL;
+
+        if (hiddenLayerHead == NULL)
+        {
+            hiddenLayerHead = hiddenLayerNode;
+            hiddenLayerTail = hiddenLayerNode;
+        }
+        else
+        {
+            hiddenLayerTail->next = hiddenLayerNode;
+            hiddenLayerTail = hiddenLayerNode;
         }
     }
 
