@@ -12,6 +12,8 @@ static void embann_calculateInputNeurons(void);
 static uint32_t millis(void);
 #endif
 
+/* Random float between -1 and 1 */
+#define RAND_WEIGHT() ((float)rand() / (RAND_MAX / 2)) - 1
 
 void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
                             char *outputArray, uint16_t numInputs,
@@ -19,24 +21,31 @@ void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
                             uint16_t numHiddenNeurons, uint8_t numHiddenLayers,
                             uint16_t numOutputNeurons)
 {
-    float outputLayerWeightTable[numOutputNeurons][numHiddenNeurons];
-    float outputLayerBiases[numOutputNeurons];
+    outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
+                                                        (sizeof(wNeuron_t) * numOutputNeurons));
+    neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
 
     for (uint8_t i = 0; i < numOutputNeurons; i++)
     {
-        outputLayerBiases[i] = ((float)rand())/RAND_MAX;
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
-            outputLayerWeightTable[i][j] = ((float)rand())/RAND_MAX;
+            outputLayer->neuron[i]->params[j]->bias = RAND_WEIGHT();
+            outputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
         }
     }
+    network.outputLayer = *outputLayer;
+    //network.outputLayer.neuron[0]->params[0]->bias;
 
-    float hiddenLayerNeuronTable[numHiddenLayers][numHiddenNeurons];
-    float hiddenLayerNeuronBiasTable[numHiddenLayers][numHiddenNeurons];
-    float hiddenLayerNeuronWeightLayerTable[numHiddenLayers][numHiddenNeurons][numInputNeurons];
+    inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
+                                                    (sizeof(uNeuron_t) * numInputNeurons));
 
-    for (uint8_t i = 0; i < numHiddenLayers; i++)
+    for (uint8_t i = 0; i < numInputNeurons; i++)
     {
+        inputLayer->neuron[i]->activation = 0.0F;
+    }
+    network.inputLayer = *inputLayer;
+    //network.inputLayer.neuron[0]->activation;
+
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
             hiddenLayerNeuronTable[i][j] = 0;
