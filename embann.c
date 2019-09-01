@@ -8,6 +8,12 @@
 
 static network_t* network;
 static void embann_calculateInputNeurons(void);
+static void embann_initInputLayer(uint16_t numInputNeurons);
+static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
+                                   uint8_t numHiddenLayers,
+                                   uint16_t numInputNeurons);
+static void embann_initOutputLayer(uint16_t numOutputNeurons,
+                                   uint16_t numHiddenNeurons);
 #ifndef ARDUINO
 static uint32_t millis(void);
 #endif
@@ -17,33 +23,38 @@ static uint32_t millis(void);
 /* Throw an error if malloc failed */
 #define CHECK_MALLOC(a) if (!a) {abort();}
 
-void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
-                            char *outputArray, uint16_t numInputs,
-                            uint16_t numInputNeurons,
-                            uint16_t numHiddenNeurons, 
-                            uint8_t numHiddenLayers,
-                            uint16_t numOutputNeurons)
+void embann_init(uint16_t numInputNeurons,
+                 uint16_t numHiddenNeurons, 
+                 uint8_t numHiddenLayers,
+                 uint16_t numOutputNeurons)
 {
     network = (network_t*) malloc(sizeof(network_t) + 
                                  (sizeof(hiddenLayer_t) * numHiddenLayers));
     CHECK_MALLOC(network);
-    
-    outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
-                                                        (sizeof(wNeuron_t) * numOutputNeurons));
-    CHECK_MALLOC(outputLayer);
-    neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
-    CHECK_MALLOC(outputNeuronParams);
 
-    for (uint8_t i = 0; i < numOutputNeurons; i++)
-    {
-        for (uint16_t j = 0; j < numHiddenNeurons; j++)
-        {
-            outputLayer->neuron[i]->params[j]->bias = RAND_WEIGHT();
-            outputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
-        }
-    }
-    network->outputLayer = *outputLayer;
+    embann_initInputLayer(numInputNeurons);
+    embann_initHiddenLayer(numHiddenNeurons,
+                           numHiddenLayers,
+                           numInputNeurons);
+    embann_initOutputLayer(numOutputNeurons,
+                           numHiddenNeurons);
 
+    network->properties.numLayers = numHiddenLayers + 2;
+    network->properties.numHiddenNeurons = numHiddenNeurons;
+    network->properties.numHiddenLayers = numHiddenLayers;
+    network->properties.networkResponse = 0;
+
+    network->inputLayer.numNeurons = numInputNeurons;
+    network->inputLayer.groupThresholds = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
+    network->inputLayer.groupTotal = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
+
+    embann_calculateInputNeurons();
+
+    network->outputLayer.numNeurons = numOutputNeurons;
+}
+
+static void embann_initInputLayer(uint16_t numInputNeurons)
+{
     inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
                                                     (sizeof(uNeuron_t) * numInputNeurons));
     CHECK_MALLOC(inputLayer);
@@ -53,7 +64,12 @@ void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
         inputLayer->neuron[i]->activation = 0.0F;
     }
     network->inputLayer = *inputLayer;
+}
 
+static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
+                                   uint8_t numHiddenLayers,
+                                   uint16_t numInputNeurons)
+{
     for (uint8_t i = 0; i < numHiddenLayers; i++)
     {
         hiddenLayer_t* hiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
@@ -84,92 +100,26 @@ void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput,
 
         network->hiddenLayer[i] = *hiddenLayer;
     }
-
-    network->numLayers = numHiddenLayers + 2;
-    network->networkResponse = 0;
-
-    network.inputLayer.numNeurons = numInputNeurons;
-    network.inputLayer.numRawInputs = numInputs;
-    network.inputLayer.neurons = (float*) malloc(numInputNeurons * sizeof(float));
-    network.inputLayer.rawInputs = rawInputArray;
-    network.inputLayer.maxInput = maxInput;
-    network.inputLayer.groupThresholds = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
-    network.inputLayer.groupTotal = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
-
-    embann_calculateInputNeurons();
-
-    network.outputLayer.numNeurons = numOutputNeurons;
-    network.outputLayer.neurons = (float*) malloc(numOutputNeurons * sizeof(float));
-    network.outputLayer.weightTable = outputLayerWeightTable;
-    network.outputLayer.stringArray = outputArray;
-    network.outputLayer.neuronBiasTable = outputLayerBiases;
-
-    network.hiddenLayer.numNeurons = numHiddenNeurons;
-    network.hiddenLayer.numLayers = numHiddenLayers;
 }
 
-void embann_initWithoutData(   uint16_t maxInput, char* outputArray,
-                                uint16_t numInputNeurons,
-                                uint16_t numHiddenNeurons, uint8_t numHiddenLayers,
-                                uint16_t numOutputNeurons)
+static void embann_initOutputLayer(uint16_t numOutputNeurons,
+                                   uint16_t numHiddenNeurons)
 {
-
-    float outputLayerWeightTable[numOutputNeurons][numHiddenNeurons];
-    float outputLayerBiases[numOutputNeurons];
+    outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
+                                                        (sizeof(wNeuron_t) * numOutputNeurons));
+    CHECK_MALLOC(outputLayer);
+    neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
+    CHECK_MALLOC(outputNeuronParams);
 
     for (uint8_t i = 0; i < numOutputNeurons; i++)
     {
-        outputLayerBiases[i] = ((float)rand())/RAND_MAX;
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
-            outputLayerWeightTable[i][j] = ((float)rand())/RAND_MAX;
+            outputLayer->neuron[i]->params[j]->bias = RAND_WEIGHT();
+            outputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
         }
     }
-
-    float hiddenLayerNeuronTable[numHiddenLayers][numHiddenNeurons];
-    float hiddenLayerNeuronBiasTable[numHiddenLayers][numHiddenNeurons];
-    float hiddenLayerNeuronWeightLayerTable[numHiddenLayers][numHiddenNeurons][numInputNeurons];
-
-    for (uint8_t i = 0; i < numHiddenLayers; i++)
-    {
-        for (uint16_t j = 0; j < numHiddenNeurons; j++)
-        {
-            hiddenLayerNeuronTable[i][j] = 0;
-            hiddenLayerNeuronBiasTable[i][j] = ((float)rand())/RAND_MAX;
-            for (uint16_t k = 0; k < numInputNeurons; k++)
-            {
-                hiddenLayerNeuronWeightLayerTable[i][j][k] =
-                    ((float)rand())/RAND_MAX;
-            }
-        }
-    }
-
-    network.numLayers = numHiddenLayers + 2;
-    network.networkResponse = 0;
-
-    // network.inputLayer.numRawInputs = numInputs;
-    // network.inputLayer.rawInputs = rawInputArray;
-    //
-    // If initialising with this method, you must call NewInput()
-    // with some inputs before you can use the network, to set these
-    //
-    network.inputLayer.numNeurons = numInputNeurons;
-    network.inputLayer.neurons = (float*) malloc(numInputNeurons * sizeof(float));
-    network.inputLayer.maxInput = maxInput;
-    network.inputLayer.groupThresholds = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
-    network.inputLayer.groupTotal = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
-
-    network.outputLayer.numNeurons = numOutputNeurons;
-    network.outputLayer.neurons = (float*) malloc(numOutputNeurons * sizeof(float));
-    network.outputLayer.weightTable = outputLayerWeightTable;
-    network.outputLayer.stringArray = outputArray;
-    network.outputLayer.neuronBiasTable = outputLayerBiases;
-
-    network.hiddenLayer.numNeurons = numHiddenNeurons;
-    network.hiddenLayer.numLayers = numHiddenLayers;
-    network.hiddenLayer.neuronTable = hiddenLayerNeuronTable;
-    network.hiddenLayer.weightLayerTable = hiddenLayerNeuronWeightLayerTable;
-    network.hiddenLayer.neuronBiasTable = hiddenLayerNeuronBiasTable;
+    network->outputLayer = *outputLayer;
 }
 
 void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs)
