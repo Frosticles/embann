@@ -72,7 +72,6 @@ typedef struct
 {
     uint8_t numLayers;
     uint8_t numHiddenLayers;
-    uint16_t numHiddenNeurons;
     uint16_t networkResponse;
 } networkProperties_t;
 
@@ -94,18 +93,13 @@ typedef struct
 /*
   Combine these init statements with some pointer magic and null checking
 */
-void embann_initWithData(  uint16_t rawInputArray[], uint16_t maxInput, char *outputArray,
-                            uint16_t numInputs, uint16_t numInputNeurons,
-                            uint16_t numHiddenNeurons, uint8_t numHiddenLayers,
-                            uint16_t numOutputNeurons);
-
-void embann_initWithoutData(   uint16_t maxInput, char *outputArray,
-                                uint16_t numInputNeurons, uint16_t numHiddenNeurons,
-                                uint8_t numHiddenLayers, uint16_t numOutputNeurons);
-
+void embann_init(uint16_t numInputNeurons,
+                 uint16_t numHiddenNeurons, 
+                 uint8_t numHiddenLayers,
+                 uint16_t numOutputNeurons);
 uint8_t embann_inputLayer(void);
-void embann_sumAndSquash(float *Input, float *Output, float *Bias, float **Weights,
-                  uint16_t numInputs, uint16_t numOutputs);
+void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
+                           uint16_t numOutputs);
 uint8_t embann_outputLayer(void);
 void embann_printNetwork(void);
 void embann_trainDriverInTime(float learningRate, bool verbose, uint8_t numTrainingSets,
