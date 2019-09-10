@@ -641,12 +641,13 @@ void embann_printNetwork()
 
     printf("I think this is output %d ", network->properties.networkResponse);
 }
+
 void embann_printInputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network->inputLayer.numNeurons)
     {
         printf("\nInput Neuron %d: %.3f\n", neuronNum,
-                      network->inputLayer.neuron[neuronNum]);
+                      network->inputLayer.neuron[neuronNum]->activation);
     }
     else
     {
@@ -666,12 +667,12 @@ void embann_printOutputNeuronDetails(uint8_t neuronNum)
         {
             printf(
                 "%.3f-*->%.3f |",
-                network->hiddenLayer[network->properties.numHiddenLayers - 1].neuron[i],
+                network->hiddenLayer[network->properties.numHiddenLayers - 1].neuron[i]->activation,
                 network->outputLayer.neuron[neuronNum]->params[i]->weight);
 
             if (i == floor(network->hiddenLayer[0].numNeurons / 2))
             {
-                printf(" = %.3f", network->outputLayer.neuron[neuronNum]);
+                printf(" = %.3f", network->outputLayer.neuron[neuronNum]->activation);
             }
             printf("\n");
         }
@@ -696,13 +697,13 @@ void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
 
             for (uint16_t i = 0; i < network->inputLayer.numNeurons; i++)
             {
-                printf("%.3f-*->%.3f |", network->inputLayer.neuron[i],
+                printf("%.3f-*->%.3f |", network->inputLayer.neuron[i]->activation,
                               network->hiddenLayer[0].neuron[neuronNum]->params[i]->weight);
 
                 if (i == floor(network->inputLayer.numNeurons / 2))
                 {
                     printf(" = %.3f",
-                                  network->hiddenLayer[0].neuron[neuronNum]);
+                                  network->hiddenLayer[0].neuron[neuronNum]->activation);
                 }
                 printf("\n");
             }
@@ -713,13 +714,13 @@ void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
             for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
             {
                 printf(
-                    "%.3f-*->%.3f |", network->hiddenLayer[layerNum - 1].neuron[i],
+                    "%.3f-*->%.3f |", network->hiddenLayer[layerNum - 1].neuron[i]->activation,
                     network->hiddenLayer[layerNum - 1].neuron[neuronNum]->params[i]->weight);
 
                 if (i == floor(network->hiddenLayer[0].numNeurons / 2))
                 {
                     printf(" = %.3f",
-                                  network->hiddenLayer[0].neuron[neuronNum]);
+                                  network->hiddenLayer[0].neuron[neuronNum]->activation);
                 }
                 printf("\n");
             }
@@ -798,4 +799,37 @@ void embann_benchmark(void)
         printf("Float time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testFloat);
     }
 
-    averageTime /=
+    averageTime /= 10;
+    printf("Average float time was %d microseconds\n", averageTime);
+
+    averageTime = 0;
+
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        gettimeofday(&timeBefore, NULL);
+
+        for (uint32_t i = 0; i < 100000; i++)
+        {
+            testDouble *= 0.5;
+            testDouble += 5;
+        }
+
+        gettimeofday(&timeAfter, NULL);
+        timersub(&timeAfter, &timeBefore, &timeDiff);
+
+        averageTime += timeDiff.tv_usec;
+        printf("Double time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testDouble);
+    }
+
+    averageTime /= 10;
+    printf("Average double time was %d microseconds\n", averageTime);
+}
+
+#ifndef ARDUINO
+uint32_t millis(void)
+{
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    return (uint32_t) round(time.tv_usec / 1000);
+}
+#endif
