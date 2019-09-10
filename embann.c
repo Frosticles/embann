@@ -7,7 +7,11 @@
 
 
 static network_t* network;
-static void embann_calculateInputNeurons(void);
+static trainingDataCollection_t trainingDataCollection = {
+    .tail = NULL,
+    .head = NULL,
+    .numEntries = 0
+};
 static void embann_initInputLayer(uint16_t numInputNeurons);
 static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                    uint8_t numHiddenLayers,
@@ -173,51 +177,108 @@ void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev)
     }
 }
 
-    for (uint16_t i = 0; i < network->inputLayer.numNeurons; i++)
+float embann_getTrainingDataMean(void)
+{
+    float mean = 0.0F;
+    uint32_t sum = 0;
+    trainingData_t* pTrainingData = trainingDataCollection.head;
+    
+    while (pTrainingData)
     {
-        network->inputLayer.groupThresholds[i] =
-            ((network->inputLayer.maxInput + 1) / network->inputLayer.numNeurons) *
-            (i + 1);
-        network->inputLayer.groupTotal[i] = 0;
-        // printf(network->inputLayer.groupThresholds[i]);
+        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        {
+            sum += pTrainingData->data[j];
+        }
+        mean += sum / pTrainingData->length;
+        sum = 0;
+
+        pTrainingData = pTrainingData->next;
     }
 
-    for (uint16_t i = 0; i < network->inputLayer.numRawInputs; i++)
+    mean /= trainingDataCollection.numEntries;
+
+    return mean;
+}
+
+float embann_getTrainingDataStdDev(void)
+{
+    float stdDev = 0.0F;
+    float sumofSquares = 0.0F;
+    float mean = embann_getTrainingDataMean();
+    trainingData_t* pTrainingData = trainingDataCollection.head;
+    
+    while (pTrainingData)
     {
-        for (uint16_t j = 0; j < network->inputLayer.numNeurons; j++)
+        for (uint32_t j = 0; j < pTrainingData->length; j++)
         {
-            if (network->inputLayer.rawInputs[i] <=
-                network->inputLayer.groupThresholds[j])
+            sumofSquares += powf((float)pTrainingData->data[j] - mean, 2.0F);
+        }
+        sumofSquares /= pTrainingData->length;
+        pTrainingData = pTrainingData->next;
+    }
+
+    stdDev = sqrtf(sumofSquares);
+
+    return stdDev;
+}
+
+uint8_t embann_getTrainingDataMax(void)
+{
+    trainingData_t* pTrainingData = trainingDataCollection.head;
+    uint8_t max;
+    if (pTrainingData)
+    {
+        max = pTrainingData->data[0];
+    }
+    else
+    {
+        abort();
+    }
+    
+    
+    while (pTrainingData)
+    {
+        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        {
+            if (pTrainingData->data[j] > max)
             {
-                // printf("%d + 1 in group %d, ",
-                // network->inputLayer.groupTotal[j],
-                //              j);
-                network->inputLayer.groupTotal[j] += 1;
-                break;
+                max = pTrainingData->data[j];
             }
         }
+        pTrainingData = pTrainingData->next;
     }
 
-    for (uint16_t i = 0; i < network->inputLayer.numNeurons; i++)
-    {
-        if (network->inputLayer.groupTotal[i] >
-            network->inputLayer.groupTotal[largestGroup])
-        {
-            largestGroup = i;
-        }
-    }
-
-    for (uint16_t i = 0; i < network->inputLayer.numNeurons; i++)
-    {
-        // printf("group total i: %u group total largest: %u ",
-        //              network->inputLayer.groupTotal[i],
-        //              network->inputLayer.groupTotal[largestGroup]);
-        network->inputLayer.neuron[i] = network->inputLayer.groupTotal[i] /
-                                        network->inputLayer.groupTotal[largestGroup];
-        // printf("input neuron %d = %.3f, ", i,
-        // network->inputLayer.neuron[i]);
-    }
+    return max;
 }
+
+uint8_t embann_getTrainingDataMin(void)
+{
+    trainingData_t* pTrainingData = trainingDataCollection.head;
+    uint8_t min;
+    if (pTrainingData)
+    {
+        min = pTrainingData->data[0];
+    }
+    else
+    {
+        abort();
+    }
+
+    while (pTrainingData)
+    {
+        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        {
+            if (pTrainingData->data[j] < min)
+            {
+                min = pTrainingData->data[j];
+            }
+        }
+        pTrainingData = pTrainingData->next;
+    }
+
+    return min;
+}
+
 
 uint8_t embann_inputLayer()
 {
@@ -266,129 +327,68 @@ void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numIn
     }
 }
 
-uint8_t embann_outputLayer()
+void embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
 {
-    uint8_t mostLikelyOutput = 0;
+    trainingData_t* trainingDataNode;
 
-    for (uint16_t i = 0; i < network->outputLayer.numNeurons; i++)
+    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
+    CHECK_MALLOC(trainingDataNode);
+
+    trainingDataNode->prev = trainingDataCollection.tail;
+    trainingDataNode->next = NULL;
+    trainingDataNode->length = length;
+    trainingDataNode->correctResponse = correctResponse;
+    trainingDataNode->data[0] = data[0];
+
+    if (trainingDataCollection.head == NULL)
     {
-        if (network->outputLayer.neuron[i] >
-            network->outputLayer.neuron[mostLikelyOutput])
-        {
-            mostLikelyOutput = i;
-        }
-        // printf("i: %d neuron: %-3f likely: %d\n", i,
-        // network->outputLayer.neurons[i], mostLikelyOutput);
+        trainingDataCollection.head = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
     }
-    return mostLikelyOutput;
+    else
+    {
+        trainingDataCollection.tail->next = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
+    }
+
+    ++trainingDataCollection.numEntries;
 }
 
-void embann_printNetwork()
+void embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
 {
-    printf("\nInput: [");
-    for (uint16_t i = 0; i < (network->inputLayer.numRawInputs - 1); i++)
+    trainingData_t* trainingDataNode;
+
+    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
+    CHECK_MALLOC(trainingDataNode);
+
+    trainingDataNode->prev = trainingDataCollection.tail;
+    trainingDataNode->next = NULL;
+    trainingDataNode->length = length;
+    trainingDataNode->correctResponse = correctResponse;
+    memcpy(trainingDataNode->data, data, length);
+
+    if (trainingDataCollection.head == NULL)
     {
-        printf("%d, ", network->inputLayer.rawInputs[i]);
+        trainingDataCollection.head = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
     }
-    printf("%d]",network->inputLayer.rawInputs[network->inputLayer.numRawInputs - 1]);
-
-    printf("\nInput Layer | Hidden Layer ");
-    if (network->properties.numHiddenLayers > 1)
+    else
     {
-        printf("1 ");
-        for (uint8_t i = 2; i <= network->properties.numHiddenLayers; i++)
-        {
-            printf("| Hidden Layer %d ", i);
-        }
-    }
-    printf("| Output Layer");
-
-    bool nothingLeft = false;
-    uint16_t i = 0;
-    while (nothingLeft == false)
-    { /* TODO, Make this compatible with multiple hidden layers */
-        if ((i >= network->inputLayer.numNeurons) &&
-            (i >= network->hiddenLayer[0].numNeurons) &&
-            (i >= network->outputLayer.numNeurons))
-        {
-            nothingLeft = true;
-        }
-        else
-        {
-            if (i < network->inputLayer.numNeurons)
-            {
-                printf("%-12.3f| ", network->inputLayer.neuron[i]);
-            }
-            else
-            {
-                printf("            | ");
-            }
-
-            if (i < network->hiddenLayer[0].numNeurons)
-            {
-                if (network->properties.numHiddenLayers == 1)
-                {
-                    printf("%-13.3f| ", network->hiddenLayer[0].neuron[i]);
-                }
-                else
-                {
-                    for (uint8_t j = 0; j < network->properties.numHiddenLayers; j++)
-                    {
-                        printf("%-15.3f| ", network->hiddenLayer[j].neuron[i]);
-                    }
-                }
-            }
-            else
-            {
-                printf("             | ");
-                if (network->properties.numHiddenLayers > 1)
-                {
-                    printf("              | ");
-                }
-            }
-
-            if (i < network->outputLayer.numNeurons)
-            {
-                printf("%.3f", network->outputLayer.neuron[i]);
-            }
-        }
-        printf("\n");
-        i++;
+        trainingDataCollection.tail->next = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
     }
 
-    printf("I think this is output %d ", network->properties.networkResponse);
+    ++trainingDataCollection.numEntries;
 }
 
-void embann_trainDriverInTime(float learningRate, bool verbose,
-                          uint8_t numTrainingSets, uint8_t inputPin,
-                          uint16_t bufferSize, long numSeconds)
+void embann_shuffleTrainingData(void)
 {
-    char serialInput[10];
-    uint16_t trainingData[network->outputLayer.numNeurons][numTrainingSets]
-                         [bufferSize],
-        randomOutput, randomTrainingSet;
 
-    for (uint8_t i = 0; i < network->outputLayer.numNeurons; i++)
-    {
-        printf("\nAttach the sensor to material %u: ", i);
-        scanf("%s", serialInput);
-        while (serialInput[0] == 0)
-        {
-            scanf("%s", serialInput);
-        }
-        printf("\nReading...");
-        for (uint8_t j = 0; j < numTrainingSets; j++)
-        {
-            printf("%u...", j + 1);
-            for (uint16_t k = 0; k < bufferSize; k++)
-            {
-                trainingData[i][j][k] = analogRead(inputPin);
-                printf("%u, ", trainingData[i][j][k]);
-            }
-            printf("\n");
-            delay(50);
-        }
-    }
+}
+
+void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
+{
+    uint16_t randomOutput, randomTrainingSet;
 
     if (verbose == true)
     {
@@ -419,38 +419,11 @@ void embann_trainDriverInTime(float learningRate, bool verbose,
     }
 }
 
-void embann_trainDriverInError(float learningRate, bool verbose,
-                          uint8_t numTrainingSets, uint8_t inputPin,
-                          uint16_t bufferSize, float desiredCost)
+void embann_trainDriverInError(float learningRate, float desiredCost, bool verbose)
 {
-    char serialInput[10];
-    uint16_t trainingData[network->outputLayer.numNeurons][numTrainingSets]
-                         [bufferSize],
-        randomOutput, randomTrainingSet;
+    uint16_t randomOutput, randomTrainingSet;
     float currentCost[network->outputLayer.numNeurons];
     bool converged = false;
-
-    for (uint8_t i = 0; i < network->outputLayer.numNeurons; i++)
-    {
-        printf("\nAttach the sensor to material %u: ", i);
-        scanf("%s", serialInput);
-        while (serialInput[0] == 0)
-        {
-            scanf("%s", serialInput);
-        }
-        printf("Reading...");
-        for (uint8_t j = 0; j < numTrainingSets; j++)
-        {
-            printf("%u...", j + 1);
-            for (uint8_t k = 0; k < bufferSize; k++)
-            {
-                trainingData[i][j][k] = analogRead(inputPin);
-                printf("%u, ", trainingData[i][j][k]);
-            }
-            printf("\n");
-            delay(50);
-        }
-    }
 
     if (verbose == true)
     {
@@ -576,6 +549,98 @@ float embann_tanhDerivative(float inputValue)
     //}
 }
 
+uint8_t embann_outputLayer()
+{
+    uint8_t mostLikelyOutput = 0;
+
+    for (uint16_t i = 0; i < network->outputLayer.numNeurons; i++)
+    {
+        if (network->outputLayer.neuron[i] >
+            network->outputLayer.neuron[mostLikelyOutput])
+        {
+            mostLikelyOutput = i;
+        }
+        // printf("i: %d neuron: %-3f likely: %d\n", i,
+        // network->outputLayer.neurons[i], mostLikelyOutput);
+    }
+    return mostLikelyOutput;
+}
+
+void embann_printNetwork()
+{
+    printf("\nInput: [");
+    for (uint16_t i = 0; i < (network->inputLayer.numNeurons - 1); i++)
+    {
+        printf("%0.3f, ", network->inputLayer.neuron[i]->activation);
+    }
+    printf("%0.3f]", network->inputLayer.neuron[network->inputLayer.numNeurons - 1]->activation);
+
+    printf("\nInput Layer | Hidden Layer ");
+    if (network->properties.numHiddenLayers > 1)
+    {
+        printf("1 ");
+        for (uint8_t i = 2; i <= network->properties.numHiddenLayers; i++)
+        {
+            printf("| Hidden Layer %d ", i);
+        }
+    }
+    printf("| Output Layer");
+
+    bool nothingLeft = false;
+    uint16_t i = 0;
+    while (nothingLeft == false)
+    { /* TODO, Make this compatible with multiple hidden layers */
+        if ((i >= network->inputLayer.numNeurons) &&
+            (i >= network->hiddenLayer[0].numNeurons) &&
+            (i >= network->outputLayer.numNeurons))
+        {
+            nothingLeft = true;
+        }
+        else
+        {
+            if (i < network->inputLayer.numNeurons)
+            {
+                printf("%-12.3f| ", network->inputLayer.neuron[i]->activation);
+            }
+            else
+            {
+                printf("            | ");
+            }
+
+            if (i < network->hiddenLayer[0].numNeurons)
+            {
+                if (network->properties.numHiddenLayers == 1)
+                {
+                    printf("%-13.3f| ", network->hiddenLayer[0].neuron[i]->activation);
+                }
+                else
+                {
+                    for (uint8_t j = 0; j < network->properties.numHiddenLayers; j++)
+                    {
+                        printf("%-15.3f| ", network->hiddenLayer[j].neuron[i]->activation);
+                    }
+                }
+            }
+            else
+            {
+                printf("             | ");
+                if (network->properties.numHiddenLayers > 1)
+                {
+                    printf("              | ");
+                }
+            }
+
+            if (i < network->outputLayer.numNeurons)
+            {
+                printf("%.3f", network->outputLayer.neuron[i]->activation);
+            }
+        }
+        printf("\n");
+        i++;
+    }
+
+    printf("I think this is output %d ", network->properties.networkResponse);
+}
 void embann_printInputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network->inputLayer.numNeurons)

@@ -51,6 +51,21 @@ typedef struct
     float activation;
 } lstmCell_t;
 
+typedef struct trainingData
+{
+    uint16_t correctResponse;
+    uint32_t length;
+    struct trainingData* prev;
+    struct trainingData* next;
+    uint8_t data[];
+} trainingData_t;
+
+typedef struct 
+{
+    trainingData_t* head;
+    trainingData_t* tail;
+    uint32_t numEntries;
+} trainingDataCollection_t;
 
 typedef struct
 {
@@ -107,10 +122,8 @@ void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numIn
                            uint16_t numOutputs);
 uint8_t embann_outputLayer(void);
 void embann_printNetwork(void);
-void embann_trainDriverInTime(float learningRate, bool verbose, uint8_t numTrainingSets,
-                 uint8_t inputPin, uint16_t bufferSize, long numSeconds);
-void embann_trainDriverInError(float learningRate, bool verbose, uint8_t numTrainingSets,
-                 uint8_t inputPin, uint16_t bufferSize, float desiredError);
+void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose);
+void embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
 void embann_train(uint8_t correctOutput, float learningRate);
 float embann_tanhDerivative(float inputValue);
 void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs);
