@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <float.h>
 #include <sys/time.h>
+#include <string.h>
 #define PI 3.14159
 #endif
 
@@ -131,5 +132,6 @@ void embann_errorReporting(uint8_t correctResponse);
 void embann_printInputNeuronDetails(uint8_t neuronNum);
 void embann_printOutputNeuronDetails(uint8_t neuronNum);
 void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum);
+void embann_benchmark(void);
 
 #endif
