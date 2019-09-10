@@ -23,6 +23,14 @@ static uint32_t millis(void);
 /* Throw an error if malloc failed */
 #define CHECK_MALLOC(a) if (!a) {abort();}
 
+
+int __attribute__((weak)) main(int argc, char const *argv[])
+{
+    embann_benchmark();
+    embann_init(10, 10, 1, 10);
+}
+
+
 void embann_init(uint16_t numInputNeurons,
                  uint16_t numHiddenNeurons, 
                  uint8_t numHiddenLayers,
