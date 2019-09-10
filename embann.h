@@ -19,6 +19,13 @@
 #define PI 3.14159
 #endif
 
+typedef enum {
+    LINEAR_ACTIVATION,
+    TAN_H_ACTIVATION,
+    LOGISTIC_ACTIVATION,
+    RELU_ACTIVATION
+} activationFunction_t;
+
 typedef struct  {
     float weight;
     float bias;
