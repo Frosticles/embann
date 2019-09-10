@@ -657,60 +657,50 @@ void embann_errorReporting(uint8_t correctResponse)
 
 void embann_benchmark(void)
 {
-    uint32_t testint = UINT32_MAX;
-    float testfloat = FLT_MAX;
-    struct timespec timeBefore;
-    struct timespec timeAfter;
-    struct timespec averageTime = 
-    {
-        .tv_nsec = 0,
-    };
+    uint32_t testInt = UINT32_MAX;
+    float testFloat = FLT_MAX;
+    double testDouble = DBL_MAX;
+    struct timeval timeBefore;
+    struct timeval timeAfter;
+    struct timeval timeDiff;
+    uint32_t averageTime = 0;
 
-    for (uint8_t i = 0; i < 5; i++)
+    for (uint8_t i = 0; i < 10; i++)
     {
-        clock_gettime(CLOCK_REALTIME, &timeBefore);
+        gettimeofday(&timeBefore, NULL);
 
-        for (uint32_t i = 0; i < INT32_MAX; i++)
+        for (uint32_t i = 0; i < 100000; i++)
         {
-            testint /= 2;
-            testint += 5;
+            testInt /= 2;
+            testInt += 5;
         }
 
-        clock_gettime(CLOCK_REALTIME, &timeAfter);
+        gettimeofday(&timeAfter, NULL);
+        timersub(&timeAfter, &timeBefore, &timeDiff);
 
-        averageTime.tv_nsec += timeAfter.tv_nsec - timeBefore.tv_nsec;
-        printf("Integer time was %ul nanoseconds, result %ul", timeAfter.tv_nsec - timeBefore.tv_nsec, testint);
+        averageTime += timeDiff.tv_usec;
+        printf("Integer time was %ld microseconds, result %d\n", timeDiff.tv_usec, testInt);
     }
 
-    averageTime.tv_nsec /= 5;
-    printf("Average integer time was %ul nanoseconds", averageTime.tv_nsec);
-    averageTime.tv_nsec = 0;
+    averageTime /= 10;
+    printf("Average integer time was %d microseconds\n", averageTime);
+    averageTime = 0;
 
-    for (uint8_t i = 0; i < 5; i++)
+    for (uint8_t i = 0; i < 10; i++)
     {
-        clock_gettime(CLOCK_REALTIME, &timeBefore);
+        gettimeofday(&timeBefore, NULL);
 
-        for (uint32_t i = 0; i < INT32_MAX; i++)
+        for (uint32_t i = 0; i < 100000; i++)
         {
-            testfloat *= 0.5;
-            testfloat += 5;
+            testFloat *= 0.5F;
+            testFloat += 5;
         }
 
-        clock_gettime(CLOCK_REALTIME, &timeAfter);
+        gettimeofday(&timeAfter, NULL);
+        timersub(&timeAfter, &timeBefore, &timeDiff);
 
-        averageTime.tv_nsec += timeAfter.tv_nsec - timeBefore.tv_nsec;
-        printf("Float time was %ul nanoseconds, result %.2f", timeAfter.tv_nsec - timeBefore.tv_nsec, testfloat);
+        averageTime += timeDiff.tv_usec;
+        printf("Float time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testFloat);
     }
 
-    averageTime.tv_nsec /= 5;
-    printf("Average float time was %ul nanoseconds", averageTime.tv_nsec);
-}
-
-#ifndef ARDUINO
-uint32_t millis(void)
-{
-    struct timespec time;
-    clock_gettime(CLOCK_REALTIME, &time);
-    return (uint32_t) round(time.tv_nsec / 1000000);
-}
-#endif
+    averageTime /=
