@@ -94,11 +94,6 @@ typedef struct
     hiddenLayer_t hiddenLayer[];
 } network_t;
 
-typedef struct
-{
-    uint16_t* samples;
-    uint32_t sampleRate;
-} networkSampleBuffer_t;
 
 /*
   Combine these init statements with some pointer magic and null checking
@@ -119,7 +114,6 @@ void embann_trainDriverInError(float learningRate, bool verbose, uint8_t numTrai
 void embann_train(uint8_t correctOutput, float learningRate);
 float embann_tanhDerivative(float inputValue);
 void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs);
-void embann_newInputStruct(networkSampleBuffer_t sampleBuffer, uint16_t numInputs);
 void embann_errorReporting(uint8_t correctResponse);
 void embann_printInputNeuronDetails(uint8_t neuronNum);
 void embann_printOutputNeuronDetails(uint8_t neuronNum);

@@ -149,23 +149,29 @@ static void embann_initOutputLayer(uint16_t numOutputNeurons,
     printf("done output\n");
 }
 
-void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs)
+void embann_inputRaw(float data[])
 {
-    network->inputLayer.rawInputs = rawInputArray;
-    network->inputLayer.numRawInputs = numInputs;
-    embann_calculateInputNeurons();
+    for (uint32_t i = 0; i < network->inputLayer.numNeurons; i++)
+    {
+        network->inputLayer.neuron[i]->activation = data[i];
+    }
 }
 
-void embann_newInputStruct(networkSampleBuffer_t sampleBuffer, uint16_t numInputs)
+void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max)
 {
-    network->inputLayer.rawInputs = sampleBuffer.samples;
-    network->inputLayer.numRawInputs = numInputs;
-    embann_calculateInputNeurons();
+    for (uint32_t i = 0; i < network->inputLayer.numNeurons; i++)
+    {
+        network->inputLayer.neuron[i]->activation = ((float)(data[i] - min)) / (max - min);
+    }
 }
 
-void embann_calculateInputNeurons()
+void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev)
 {
-    uint8_t largestGroup = 0;
+    for (uint32_t i = 0; i < network->inputLayer.numNeurons; i++)
+    {
+        network->inputLayer.neuron[i]->activation = ((float)data[i] - mean) / stdDev;
+    }
+}
 
     for (uint16_t i = 0; i < network->inputLayer.numNeurons; i++)
     {
@@ -395,8 +401,12 @@ void embann_trainDriverInTime(float learningRate, bool verbose,
     while ((millis() - startTime) < numSeconds)
     {
         randomOutput = rand() % network->outputLayer.numNeurons;
-        randomTrainingSet = rand() % numTrainingSets;
-        embann_newInputRaw(trainingData[randomOutput][randomTrainingSet], bufferSize);
+        randomTrainingSet = rand() % trainingDataCollection.numEntries;
+
+        /*
+            TODO, these are not 'right' but they will let the program run
+        */
+        embann_inputMinMaxScale(trainingDataCollection.head->data, 0, UINT8_MAX);
         embann_inputLayer();
 
         if (verbose == true)
@@ -450,9 +460,9 @@ void embann_trainDriverInError(float learningRate, bool verbose,
     while (!converged)
     {
         randomOutput = rand() % network->outputLayer.numNeurons;
-        randomTrainingSet = rand() % numTrainingSets;
+        randomTrainingSet = rand() % trainingDataCollection.numEntries;
         currentCost[randomOutput] = 0.0;
-        embann_newInputRaw(trainingData[randomOutput][randomTrainingSet], bufferSize);
+        embann_inputMinMaxScale(trainingDataCollection.head->data, 0, UINT8_MAX);
         embann_inputLayer();
 
         if (verbose == true)
