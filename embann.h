@@ -54,16 +54,19 @@ typedef struct
 
 typedef struct
 {
-    uint16_t numNeurons;
     uint16_t numRawInputs;
     uint16_t maxInput;
     uint16_t* rawInputs;
     uint16_t* groupThresholds;
     uint16_t* groupTotal;
+} downscaler_t;
+typedef struct
+{
+    uint16_t numNeurons;
     uNeuron_t* neuron[];
 } inputLayer_t;
 
-typedef struct hiddenLayer
+typedef struct
 {
     uint16_t numNeurons;
     wNeuron_t* neuron[];

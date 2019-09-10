@@ -50,27 +50,27 @@ void embann_init(uint16_t numInputNeurons,
     network->properties.numLayers = numHiddenLayers + 2;
     network->properties.numHiddenLayers = numHiddenLayers;
     network->properties.networkResponse = 0;
-
-    network->inputLayer.numNeurons = numInputNeurons;
-    network->inputLayer.groupThresholds = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
-    network->inputLayer.groupTotal = (uint16_t*) malloc(numInputNeurons * sizeof(uint16_t));
-
-    embann_calculateInputNeurons();
-
-    network->outputLayer.numNeurons = numOutputNeurons;
 }
 
 static void embann_initInputLayer(uint16_t numInputNeurons)
 {
     inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
-                                                    (sizeof(uNeuron_t) * numInputNeurons));
+                                                (sizeof(uNeuron_t*) * numInputNeurons));
     CHECK_MALLOC(inputLayer);
 
+    printf("inputLayer: 0x%x, size: %d\n", (uint32_t) inputLayer, sizeof(inputLayer_t) + 
+                                                (sizeof(uNeuron_t*) * numInputNeurons));
+
+    inputLayer->numNeurons = numInputNeurons;
     for (uint8_t i = 0; i < numInputNeurons; i++)
     {
+        uNeuron_t* pNeuron = (uNeuron_t*) malloc(sizeof(uNeuron_t));
+        inputLayer->neuron[i] = pNeuron;
         inputLayer->neuron[i]->activation = 0.0F;
     }
     network->inputLayer = *inputLayer;
+
+    printf("done input\n");
 }
 
 static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
@@ -80,32 +80,39 @@ static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
     for (uint8_t i = 0; i < numHiddenLayers; i++)
     {
         hiddenLayer_t* hiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
-                                                (sizeof(wNeuron_t) * numHiddenNeurons));
+                                                (sizeof(wNeuron_t*) * numHiddenNeurons));
         CHECK_MALLOC(hiddenLayer);
-        neuronParams_t* hiddenLayerParams;
 
-        if (i == 0)
-        {
-            hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numInputNeurons);
-        }
-        else
-        {
-            hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
-        }
-        CHECK_MALLOC(hiddenLayerParams);
+        printf("hiddenlayer: 0x%x, size: %d\n", (uint32_t) hiddenLayer, sizeof(hiddenLayer_t) + 
+                                                (sizeof(wNeuron_t*) * numHiddenNeurons));
 
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
-        {
+        {    
+            wNeuron_t* pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * (i == 0 ? numInputNeurons : numHiddenNeurons)));
+            hiddenLayer->neuron[j] = pNeuron;
             hiddenLayer->neuron[j]->activation = 0.0F;
-            
-            for (uint16_t k = 0; k < numInputNeurons; k++)
+
+            for (uint16_t k = 0; k < (i == 0 ? numInputNeurons : numHiddenNeurons); k++)
             {
+                neuronParams_t* hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
+                CHECK_MALLOC(hiddenLayerParams);
+
+                hiddenLayer->neuron[j]->params[k] = hiddenLayerParams;
+
+                //printf("params array: 0x%x, bias 0x%x, weight 0x%x\n", (uint32_t) &hiddenLayer->neuron[j]->params[k],
+                //                    (uint32_t)&hiddenLayer->neuron[j]->params[k]->bias,
+                //                    (uint32_t)&hiddenLayer->neuron[j]->params[k]->weight);
+
                 hiddenLayer->neuron[j]->params[k]->bias = RAND_WEIGHT();
                 hiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
             }
         }
 
+        printf("done hidden\n");
+
         network->hiddenLayer[i] = *hiddenLayer;
+
+        printf("hiddenlayer[i]: 0x%x\n", (uint32_t) &network->hiddenLayer[i]);
     }
 }
 
@@ -113,20 +120,33 @@ static void embann_initOutputLayer(uint16_t numOutputNeurons,
                                    uint16_t numHiddenNeurons)
 {
     outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
-                                                        (sizeof(wNeuron_t) * numOutputNeurons));
+                                                        (sizeof(wNeuron_t*) * numOutputNeurons));
     CHECK_MALLOC(outputLayer);
-    neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t) * numHiddenNeurons);
-    CHECK_MALLOC(outputNeuronParams);
+
+    printf("outputLayer: 0x%x, size: %d\n", (uint32_t) outputLayer, sizeof(outputLayer_t) + 
+                                                (sizeof(wNeuron_t*) * numOutputNeurons));
 
     for (uint8_t i = 0; i < numOutputNeurons; i++)
     {
+        wNeuron_t* pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * numHiddenNeurons));
+        outputLayer->neuron[i] = pNeuron;
+        outputLayer->neuron[i]->activation = 0.0F;
+        
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
+            neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
+            CHECK_MALLOC(outputNeuronParams);
+
+            outputLayer->neuron[i]->params[j] = outputNeuronParams;
+            
             outputLayer->neuron[i]->params[j]->bias = RAND_WEIGHT();
             outputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
         }
     }
+    outputLayer->numNeurons = numOutputNeurons;
     network->outputLayer = *outputLayer;
+
+    printf("done output\n");
 }
 
 void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs)
