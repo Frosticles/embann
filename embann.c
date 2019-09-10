@@ -282,7 +282,7 @@ uint8_t embann_getTrainingDataMin(void)
 
 uint8_t embann_inputLayer()
 {
-    embann_sumAndSquash(network->inputLayer.neuron, 
+    embann_sumAndSquash((wNeuron_t**) network->inputLayer.neuron, 
                         network->hiddenLayer[0].neuron,
                         network->inputLayer.numNeurons, 
                         network->hiddenLayer[0].numNeurons);
