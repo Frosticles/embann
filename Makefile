@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. 
+CFLAGS=-I. -lm -O2 -march=native
 DEPS = embann.h
 OBJ = embann.o
 
