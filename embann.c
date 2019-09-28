@@ -62,8 +62,11 @@ static void embann_initInputLayer(uint16_t numInputNeurons)
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
     CHECK_MALLOC(inputLayer);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     printf("inputLayer: 0x%x, size: %d\n", (uint32_t) inputLayer, sizeof(inputLayer_t) + 
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
+#pragma GCC diagnostic pop
 
     inputLayer->numNeurons = numInputNeurons;
     for (uint8_t i = 0; i < numInputNeurons; i++)
@@ -87,8 +90,11 @@ static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
         CHECK_MALLOC(hiddenLayer);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
         printf("hiddenlayer: 0x%x, size: %d\n", (uint32_t) hiddenLayer, sizeof(hiddenLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
+#pragma GCC diagnostic pop
 
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {    
@@ -116,7 +122,10 @@ static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
         network->hiddenLayer[i] = *hiddenLayer;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
         printf("hiddenlayer[i]: 0x%x\n", (uint32_t) &network->hiddenLayer[i]);
+#pragma GCC diagnostic pop
     }
 }
 
@@ -127,8 +136,11 @@ static void embann_initOutputLayer(uint16_t numOutputNeurons,
                                                         (sizeof(wNeuron_t*) * numOutputNeurons));
     CHECK_MALLOC(outputLayer);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     printf("outputLayer: 0x%x, size: %d\n", (uint32_t) outputLayer, sizeof(outputLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numOutputNeurons));
+#pragma GCC diagnostic pop
 
     for (uint8_t i = 0; i < numOutputNeurons; i++)
     {
