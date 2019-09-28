@@ -768,77 +768,72 @@ void embann_errorReporting(uint8_t correctResponse)
 }
 
 void embann_benchmark(void)
-{
-    uint32_t testInt = UINT32_MAX;
-    float testFloat = FLT_MAX;
-    double testDouble = DBL_MAX;
+{    
+    int32_t __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testInt[256] = {INT32_MAX};
+    float __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testFloat[256] = {FLT_MAX};
+    double __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testDouble[256] = {DBL_MAX};
+    int32_t __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testIntWeight[256];
+    float __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testFloatWeight[256];
+    double __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testDoubleWeight[256];
+    int32_t __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testIntBias[256];
+    float __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testFloatBias[256];
+    double __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testDoubleBias[256];
     struct timeval timeBefore;
     struct timeval timeAfter;
     struct timeval timeDiff;
-    uint32_t averageTime = 0;
 
-    for (uint8_t i = 0; i < 10; i++)
+    for (uint16_t i = 0; i < 256; i++)
     {
-        gettimeofday(&timeBefore, NULL);
+        testIntWeight[i] = (random() % 1000) + 1;
+        testFloatWeight[i] = RAND_WEIGHT();
+        testDoubleWeight[i] = RAND_WEIGHT();
 
-        for (uint32_t i = 0; i < 100000; i++)
-        {
-            testInt /= 2;
-            testInt += 5;
-        }
-
-        gettimeofday(&timeAfter, NULL);
-        timersub(&timeAfter, &timeBefore, &timeDiff);
-
-        averageTime += timeDiff.tv_usec;
-        printf("Integer time was %ld microseconds, result %d\n", timeDiff.tv_usec, testInt);
+        testIntBias[i] = (random() % 21) - 10;
+        testFloatBias[i] = (float)(random() % 21) - 10;
+        testDoubleBias[i] = (double)(random() % 21) - 10;
     }
 
-    averageTime /= 10;
-    printf("Average integer time was %d microseconds\n", averageTime);
-    averageTime = 0;
-
-    for (uint8_t i = 0; i < 10; i++)
+    gettimeofday(&timeBefore, NULL);
+    //#pragma omp parallel for
+    for (int32_t i = 0; i < 100000; i++)
     {
-        gettimeofday(&timeBefore, NULL);
-
-        for (uint32_t i = 0; i < 100000; i++)
+        for (int16_t j = 0; j < 256; j++)
         {
-            testFloat *= 0.5F;
-            testFloat += 5;
+            testInt[j] /= testIntWeight[j];
+            testInt[j] += testIntBias[j];
         }
-
-        gettimeofday(&timeAfter, NULL);
-        timersub(&timeAfter, &timeBefore, &timeDiff);
-
-        averageTime += timeDiff.tv_usec;
-        printf("Float time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testFloat);
     }
+    gettimeofday(&timeAfter, NULL);
+    timersub(&timeAfter, &timeBefore, &timeDiff);
+    printf("Integer time was %ld microseconds, result %d\n", timeDiff.tv_usec, testInt[0]);
 
-    averageTime /= 10;
-    printf("Average float time was %d microseconds\n", averageTime);
-
-    averageTime = 0;
-
-    for (uint8_t i = 0; i < 10; i++)
+    gettimeofday(&timeBefore, NULL);
+    //#pragma omp parallel for
+    for (int32_t i = 0; i < 100000; i++)
     {
-        gettimeofday(&timeBefore, NULL);
-
-        for (uint32_t i = 0; i < 100000; i++)
+        for (int16_t j = 0; j < 256; j++)
         {
-            testDouble *= 0.5;
-            testDouble += 5;
+            testFloat[j] *= testFloatWeight[j];
+            testFloat[j] += testFloatBias[j];
         }
-
-        gettimeofday(&timeAfter, NULL);
-        timersub(&timeAfter, &timeBefore, &timeDiff);
-
-        averageTime += timeDiff.tv_usec;
-        printf("Double time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testDouble);
     }
+    gettimeofday(&timeAfter, NULL);
+    timersub(&timeAfter, &timeBefore, &timeDiff);
+    printf("Float time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testFloat[0]);
 
-    averageTime /= 10;
-    printf("Average double time was %d microseconds\n", averageTime);
+    gettimeofday(&timeBefore, NULL);
+    //#pragma omp parallel for
+    for (int32_t i = 0; i < 100000; i++)
+    {
+        for (int16_t j = 0; j < 256; j++)
+        {
+            testDouble[j] *= testDoubleWeight[j];
+            testDouble[j] += testDoubleBias[j];
+        }
+    }
+    gettimeofday(&timeAfter, NULL);
+    timersub(&timeAfter, &timeBefore, &timeDiff);
+    printf("Double time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testDouble[0]);
 }
 
 #ifndef ARDUINO
