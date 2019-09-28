@@ -1,0 +1,4 @@
+{
+    "script": "./cppcheck/addons/misra.py",
+    "args": [ "--rule-texts=../../Books/MISRA.C.2012_Rules.txt" ]
+}
