@@ -23,13 +23,17 @@ static uint32_t millis(void);
 #endif
 
 /* Random float between -1 and 1 */
-#define RAND_WEIGHT() ((float)rand() / (RAND_MAX / 2)) - 1
+#define RAND_WEIGHT() ((float)random() / (RAND_MAX / 2)) - 1
 /* Throw an error if malloc failed */
 #define CHECK_MALLOC(a) if (!a) {abort();}
 
 
 int __attribute__((weak)) main(int argc, char const *argv[])
 {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    srandom(tv.tv_usec ^ tv.tv_sec);  /* Seed the PRNG */
+    
     embann_benchmark();
     embann_init(10, 10, 1, 10);
 }
@@ -412,8 +416,8 @@ void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
 
     while ((millis() - startTime) < numSeconds)
     {
-        randomOutput = rand() % network->outputLayer.numNeurons;
-        randomTrainingSet = rand() % trainingDataCollection.numEntries;
+        randomOutput = random() % network->outputLayer.numNeurons;
+        randomTrainingSet = random() % trainingDataCollection.numEntries;
 
         /*
             TODO, these are not 'right' but they will let the program run
@@ -444,8 +448,8 @@ void embann_trainDriverInError(float learningRate, float desiredCost, bool verbo
 
     while (!converged)
     {
-        randomOutput = rand() % network->outputLayer.numNeurons;
-        randomTrainingSet = rand() % trainingDataCollection.numEntries;
+        randomOutput = random() % network->outputLayer.numNeurons;
+        randomTrainingSet = random() % trainingDataCollection.numEntries;
         currentCost[randomOutput] = 0.0;
         embann_inputMinMaxScale(trainingDataCollection.head->data, 0, UINT8_MAX);
         embann_inputLayer();
