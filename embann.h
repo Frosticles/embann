@@ -78,6 +78,7 @@
 #define EMBANN_LOGV(tag, format, ...) EMBANN_LOG_LEVEL_LOCAL(EMBANN_LOG_VERBOSE, tag, format, ##__VA_ARGS__)
 
 typedef enum {
+    EMBANN_LOG_NONE,       /*!< No log output */
     EMBANN_LOG_ERROR,      /*!< Critical errors, software module can not recover on its own */
     EMBANN_LOG_WARN,       /*!< Error conditions from which recovery measures have been taken */
     EMBANN_LOG_INFO,       /*!< Information messages which describe normal flow of events */
