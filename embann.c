@@ -22,11 +22,6 @@ static void embann_initOutputLayer(uint16_t numOutputNeurons,
 static uint32_t millis(void);
 #endif
 
-/* Random float between -1 and 1 */
-#define RAND_WEIGHT() ((float)random() / (RAND_MAX / 2)) - 1
-/* Throw an error if malloc failed */
-#define CHECK_MALLOC(a) if (!a) {abort();}
-
 
 int __attribute__((weak)) main(int argc, char const *argv[])
 {

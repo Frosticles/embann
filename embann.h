@@ -8,7 +8,7 @@
 
 #ifdef ARDUINO
 #include "Arduino.h"
-#else
+#else// ARDUINO
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
@@ -18,8 +18,14 @@
 #include <sys/time.h>
 #include <string.h>
 #define PI 3.14159
-#endif
+#endif// ARDUINO
 
+/* Random float between -1 and 1 */
+#define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
+/* Throw an error if malloc failed */
+#define CHECK_MALLOC(a) if (!a) {return ENOMEM;}
+/* Calculate number of elements in an array */
+#define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
 typedef enum {
     LINEAR_ACTIVATION,
     TAN_H_ACTIVATION,
