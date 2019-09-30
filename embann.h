@@ -16,9 +16,15 @@
 #include <stdlib.h>
 #include <float.h>
 #include <sys/time.h>
+#include <sys/cdefs.h>
+#include <errno.h>
 #include <string.h>
 #define PI 3.14159
 #endif// ARDUINO
+
+#ifndef EOK
+#define EOK 0 /* Provides more clarity than just writing return 0; */
+#endif// EOK
 
 /* Random float between -1 and 1 */
 #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
@@ -120,11 +126,10 @@ typedef struct
 /*
   Combine these init statements with some pointer magic and null checking
 */
-void embann_init(uint16_t numInputNeurons,
+int embann_init(uint16_t numInputNeurons,
                  uint16_t numHiddenNeurons, 
                  uint8_t numHiddenLayers,
                  uint16_t numOutputNeurons);
-uint8_t embann_inputLayer(void);
 void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs);
 uint8_t embann_outputLayer(void);

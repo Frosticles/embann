@@ -12,11 +12,11 @@ static trainingDataCollection_t trainingDataCollection = {
     .head = NULL,
     .numEntries = 0
 };
-static void embann_initInputLayer(uint16_t numInputNeurons);
-static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
+static int embann_initInputLayer(uint16_t numInputNeurons);
+static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                    uint8_t numHiddenLayers,
                                    uint16_t numInputNeurons);
-static void embann_initOutputLayer(uint16_t numOutputNeurons,
+static int embann_initOutputLayer(uint16_t numOutputNeurons,
                                    uint16_t numHiddenNeurons);
 #ifndef ARDUINO
 static uint32_t millis(void);
@@ -34,7 +34,7 @@ int __attribute__((weak)) main(int argc, char const *argv[])
 }
 
 
-void embann_init(uint16_t numInputNeurons,
+int embann_init(uint16_t numInputNeurons,
                  uint16_t numHiddenNeurons, 
                  uint8_t numHiddenLayers,
                  uint16_t numOutputNeurons)
@@ -53,9 +53,11 @@ void embann_init(uint16_t numInputNeurons,
     network->properties.numLayers = numHiddenLayers + 2;
     network->properties.numHiddenLayers = numHiddenLayers;
     network->properties.networkResponse = 0;
+
+    return EOK;
 }
 
-static void embann_initInputLayer(uint16_t numInputNeurons)
+static int embann_initInputLayer(uint16_t numInputNeurons)
 {
     inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
@@ -77,9 +79,10 @@ static void embann_initInputLayer(uint16_t numInputNeurons)
     network->inputLayer = *inputLayer;
 
     printf("done input\n");
+    return EOK;
 }
 
-static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
+static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                    uint8_t numHiddenLayers,
                                    uint16_t numInputNeurons)
 {
@@ -126,9 +129,10 @@ static void embann_initHiddenLayer(uint16_t numHiddenNeurons,
         printf("hiddenlayer[i]: 0x%x\n", (uint32_t) &network->hiddenLayer[i]);
 #pragma GCC diagnostic pop
     }
+    return EOK;
 }
 
-static void embann_initOutputLayer(uint16_t numOutputNeurons,
+static int embann_initOutputLayer(uint16_t numOutputNeurons,
                                    uint16_t numHiddenNeurons)
 {
     outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
@@ -162,6 +166,7 @@ static void embann_initOutputLayer(uint16_t numOutputNeurons,
     network->outputLayer = *outputLayer;
 
     printf("done output\n");
+    return EOK;
 }
 
 void embann_inputRaw(float data[])
@@ -188,11 +193,19 @@ void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev)
     }
 }
 
-float embann_getTrainingDataMean(void)
+int embann_getTrainingDataMean(float* mean)
 {
-    float mean = 0.0F;
     uint32_t sum = 0;
     trainingData_t* pTrainingData = trainingDataCollection.head;
+
+    if (pTrainingData)
+    {
+        *mean = pTrainingData->data[0];
+    }
+    else
+    {
+        return ENOENT;
+    }
     
     while (pTrainingData)
     {
@@ -200,23 +213,36 @@ float embann_getTrainingDataMean(void)
         {
             sum += pTrainingData->data[j];
         }
-        mean += sum / pTrainingData->length;
+        *mean += sum / pTrainingData->length;
         sum = 0;
 
         pTrainingData = pTrainingData->next;
     }
 
-    mean /= trainingDataCollection.numEntries;
+    *mean /= trainingDataCollection.numEntries;
 
-    return mean;
+    return EOK;
 }
 
-float embann_getTrainingDataStdDev(void)
+int embann_getTrainingDataStdDev(float* stdDev)
 {
-    float stdDev = 0.0F;
     float sumofSquares = 0.0F;
-    float mean = embann_getTrainingDataMean();
+    float mean;
     trainingData_t* pTrainingData = trainingDataCollection.head;
+
+    if (pTrainingData)
+    {
+        *stdDev = pTrainingData->data[0];
+    }
+    else
+    {
+        return ENOENT;
+    }
+
+    if (embann_getTrainingDataMean(&mean) != EOK)
+    {
+        return ENOENT;
+    }
     
     while (pTrainingData)
     {
@@ -228,22 +254,21 @@ float embann_getTrainingDataStdDev(void)
         pTrainingData = pTrainingData->next;
     }
 
-    stdDev = sqrtf(sumofSquares);
+    *stdDev = sqrtf(sumofSquares);
 
-    return stdDev;
+    return EOK;
 }
 
-uint8_t embann_getTrainingDataMax(void)
+int embann_getTrainingDataMax(uint8_t* max)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
-    uint8_t max;
     if (pTrainingData)
     {
-        max = pTrainingData->data[0];
+        *max = pTrainingData->data[0];
     }
     else
     {
-        abort();
+        return ENOENT;
     }
     
     
@@ -251,43 +276,42 @@ uint8_t embann_getTrainingDataMax(void)
     {
         for (uint32_t j = 0; j < pTrainingData->length; j++)
         {
-            if (pTrainingData->data[j] > max)
+            if (pTrainingData->data[j] > *max)
             {
-                max = pTrainingData->data[j];
+                *max = pTrainingData->data[j];
             }
         }
         pTrainingData = pTrainingData->next;
     }
 
-    return max;
+    return EOK;
 }
 
-uint8_t embann_getTrainingDataMin(void)
+int embann_getTrainingDataMin(uint8_t* min)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
-    uint8_t min;
     if (pTrainingData)
     {
-        min = pTrainingData->data[0];
+        *min = pTrainingData->data[0];
     }
     else
     {
-        abort();
+        return ENOENT;
     }
 
     while (pTrainingData)
     {
         for (uint32_t j = 0; j < pTrainingData->length; j++)
         {
-            if (pTrainingData->data[j] < min)
+            if (pTrainingData->data[j] < *min)
             {
-                min = pTrainingData->data[j];
+                *min = pTrainingData->data[j];
             }
         }
         pTrainingData = pTrainingData->next;
     }
 
-    return min;
+    return EOK;
 }
 
 
@@ -338,7 +362,7 @@ void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numIn
     }
 }
 
-void embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
+int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
 {
     trainingData_t* trainingDataNode;
 
@@ -363,9 +387,10 @@ void embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctRes
     }
 
     ++trainingDataCollection.numEntries;
+    return EOK;
 }
 
-void embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
+int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
 {
     trainingData_t* trainingDataNode;
 
@@ -390,6 +415,7 @@ void embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctRe
     }
 
     ++trainingDataCollection.numEntries;
+    return EOK;
 }
 
 void embann_shuffleTrainingData(void)
