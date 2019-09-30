@@ -22,6 +22,7 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
 static uint32_t millis(void);
 #endif
 
+#define TAG "Embann Core"
 
 int __attribute__((weak)) main(int argc, char const *argv[])
 {
@@ -65,7 +66,7 @@ static int embann_initInputLayer(uint16_t numInputNeurons)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-    printf("inputLayer: 0x%x, size: %d\n", (uint32_t) inputLayer, sizeof(inputLayer_t) + 
+    EMBANN_LOGI(TAG, "inputLayer: 0x%x, size: %ld\n", (uint32_t) inputLayer, sizeof(inputLayer_t) + 
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
 #pragma GCC diagnostic pop
 
@@ -78,7 +79,7 @@ static int embann_initInputLayer(uint16_t numInputNeurons)
     }
     network->inputLayer = *inputLayer;
 
-    printf("done input\n");
+    EMBANN_LOGI(TAG, "done input\n");
     return EOK;
 }
 
@@ -94,7 +95,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-        printf("hiddenlayer: 0x%x, size: %d\n", (uint32_t) hiddenLayer, sizeof(hiddenLayer_t) + 
+        EMBANN_LOGI(TAG, "hiddenlayer: 0x%x, size: %ld\n", (uint32_t) hiddenLayer, sizeof(hiddenLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
 #pragma GCC diagnostic pop
 
@@ -111,7 +112,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
                 hiddenLayer->neuron[j]->params[k] = hiddenLayerParams;
 
-                //printf("params array: 0x%x, bias 0x%x, weight 0x%x\n", (uint32_t) &hiddenLayer->neuron[j]->params[k],
+                //EMBANN_LOGI(TAG, "params array: 0x%x, bias 0x%x, weight 0x%x\n", (uint32_t) &hiddenLayer->neuron[j]->params[k],
                 //                    (uint32_t)&hiddenLayer->neuron[j]->params[k]->bias,
                 //                    (uint32_t)&hiddenLayer->neuron[j]->params[k]->weight);
 
@@ -120,13 +121,13 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
             }
         }
 
-        printf("done hidden\n");
+        EMBANN_LOGI(TAG, "done hidden\n");
 
         network->hiddenLayer[i] = *hiddenLayer;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-        printf("hiddenlayer[i]: 0x%x\n", (uint32_t) &network->hiddenLayer[i]);
+        EMBANN_LOGI(TAG, "hiddenlayer[i]: 0x%x\n", (uint32_t) &network->hiddenLayer[i]);
 #pragma GCC diagnostic pop
     }
     return EOK;
@@ -141,7 +142,7 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-    printf("outputLayer: 0x%x, size: %d\n", (uint32_t) outputLayer, sizeof(outputLayer_t) + 
+    EMBANN_LOGI(TAG, "outputLayer: 0x%x, size: %ld\n", (uint32_t) outputLayer, sizeof(outputLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numOutputNeurons));
 #pragma GCC diagnostic pop
 
@@ -165,7 +166,7 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
     outputLayer->numNeurons = numOutputNeurons;
     network->outputLayer = *outputLayer;
 
-    printf("done output\n");
+    EMBANN_LOGI(TAG, "done output\n");
     return EOK;
 }
 
@@ -321,14 +322,14 @@ uint8_t embann_inputLayer()
                         network->hiddenLayer[0].neuron,
                         network->inputLayer.numNeurons, 
                         network->hiddenLayer[0].numNeurons);
-    // printf("Done Input -> 1st Hidden Layer");
+    // EMBANN_LOGI(TAG, "Done Input -> 1st Hidden Layer");
     for (uint8_t i = 1; i < network->properties.numHiddenLayers; i++)
     {
         embann_sumAndSquash(network->hiddenLayer[i - 1].neuron,
                             network->hiddenLayer[i].neuron,
                             network->hiddenLayer[i - 1].numNeurons,
                             network->hiddenLayer[i].numNeurons);
-        // printf("Done Hidden Layer %d -> Hidden Layer %d\n", i - 1, i);
+        // EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Hidden Layer %d\n", i - 1, i);
     }
 
     embann_sumAndSquash(
@@ -337,7 +338,7 @@ uint8_t embann_inputLayer()
         network->hiddenLayer[network->properties.numHiddenLayers - 1].numNeurons,
         network->outputLayer.numNeurons);
 
-    /*printf("Done Hidden Layer %d -> Output Layer\n",
+    /*EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Output Layer\n",
                 network->properties.numHiddenLayers);*/
 
     network->properties.networkResponse = embann_outputLayer();
@@ -357,7 +358,7 @@ void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numIn
         Output[i]->activation = tanh(Output[i]->activation * PI);
 
         // tanh is a quicker alternative to sigmoid
-        // printf("i:%d This is the embann_SumAndSquash Output %.2f\n", i,
+        // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f\n", i,
         // Output[i]);
     }
 }
@@ -429,7 +430,7 @@ void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
 
     if (verbose == true)
     {
-        printf("\nOutput Errors: \n");
+        EMBANN_LOGI(TAG, "\nOutput Errors: \n");
     }
 
     unsigned long startTime = millis();
@@ -449,7 +450,7 @@ void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
         if (verbose == true)
         {
             embann_errorReporting(randomOutput);
-            printf("%u | %u ", randomOutput, randomTrainingSet);
+            EMBANN_LOGI(TAG, "%u | %u ", randomOutput, randomTrainingSet);
         }
 
         embann_train(randomOutput, learningRate);
@@ -464,7 +465,7 @@ void embann_trainDriverInError(float learningRate, float desiredCost, bool verbo
 
     if (verbose == true)
     {
-        printf("\nOutput Errors: \n");
+        EMBANN_LOGI(TAG, "\nOutput Errors: \n");
     }
 
     while (!converged)
@@ -478,7 +479,7 @@ void embann_trainDriverInError(float learningRate, float desiredCost, bool verbo
         if (verbose == true)
         {
             embann_errorReporting(randomOutput);
-            printf("%u | %u ", randomOutput, randomTrainingSet);
+            EMBANN_LOGI(TAG, "%u | %u ", randomOutput, randomTrainingSet);
         }
 
         embann_train(randomOutput, learningRate);
@@ -497,8 +498,8 @@ void embann_trainDriverInError(float learningRate, float desiredCost, bool verbo
 
         for (uint8_t i = 0; i < network->outputLayer.numNeurons; i++)
         {
-            printf("%f", currentCost[i]);
-            printf(", ");
+            EMBANN_LOGI(TAG, "%f", currentCost[i]);
+            EMBANN_LOGI(TAG, ", ");
             if (currentCost[i] > desiredCost)
             {
                 break;
@@ -508,7 +509,7 @@ void embann_trainDriverInError(float learningRate, float desiredCost, bool verbo
                 converged = true;
             }
         }
-        printf("%f", desiredCost);
+        EMBANN_LOGI(TAG, "%f", desiredCost);
     }
 }
 
@@ -534,7 +535,7 @@ void embann_train(uint8_t correctOutput, float learningRate)
                 -network->outputLayer.neuron[i]->activation *
                 embann_tanhDerivative(network->outputLayer.neuron[i]->activation);
         }
-        // printf("\ndOutputErrorToOutputSum[%d]: %.3f", i,
+        // EMBANN_LOGI(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i,
         // dOutputErrorToOutputSum[i]);
         for (uint16_t j = 0; j < network->hiddenLayer[0].numNeurons; j++)
         {
@@ -542,7 +543,7 @@ void embann_train(uint8_t correctOutput, float learningRate)
                 dOutputErrorToOutputSum[i] *
                 network->hiddenLayer[network->properties.numHiddenLayers - 1].neuron[j]->activation *
                 learningRate;
-            // printf("\n  outputNeuronWeightChange[%d][%d]: %.3f", i, j,
+            // EMBANN_LOGI(TAG, "\n  outputNeuronWeightChange[%d][%d]: %.3f", i, j,
             //              outputNeuronWeightChange[i][j]);
         }
     }
@@ -554,21 +555,21 @@ void embann_train(uint8_t correctOutput, float learningRate)
         {
             dTotalErrorToHiddenNeuron +=
                 dOutputErrorToOutputSum[j] * network->outputLayer.neuron[j]->params[i]->weight;
-            // printf("\nOld Output Weight[%d][%d]: %.3f", i, j,
+            // EMBANN_LOGI(TAG, "\nOld Output Weight[%d][%d]: %.3f", i, j,
             // network->outputLayer.neuron[j]->params[i]->weight);
             network->outputLayer.neuron[j]->params[i]->weight += outputNeuronWeightChange[j][i];
-            // printf("\nNew Output Weight[%d][%d]: %.3f", i, j,
+            // EMBANN_LOGI(TAG, "\nNew Output Weight[%d][%d]: %.3f", i, j,
             // network->outputLayer.neuron[j]->params[i]->weight);
         }
         for (uint16_t k = 0; k < network->inputLayer.numNeurons; k++)
         {
-            // printf("\nOld Hidden Weight[%d][%d]: %.3f", i, k,
+            // EMBANN_LOGI(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k,
             // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
             network->hiddenLayer[0].neuron[i]->params[k]->weight +=
                 dTotalErrorToHiddenNeuron *
                 embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation) *
                 network->inputLayer.neuron[k]->activation * learningRate;
-            // printf("\nNew Hidden Weight[%d][%d]: %.3f", i, k,
+            // EMBANN_LOGI(TAG, "\nNew Hidden Weight[%d][%d]: %.3f", i, k,
             // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
         }
     }
@@ -597,7 +598,7 @@ uint8_t embann_outputLayer()
         {
             mostLikelyOutput = i;
         }
-        // printf("i: %d neuron: %-3f likely: %d\n", i,
+        // EMBANN_LOGI(TAG, "i: %d neuron: %-3f likely: %d\n", i,
         // network->outputLayer.neurons[i], mostLikelyOutput);
     }
     return mostLikelyOutput;
@@ -605,23 +606,23 @@ uint8_t embann_outputLayer()
 
 void embann_printNetwork()
 {
-    printf("\nInput: [");
+    EMBANN_LOGI(TAG, "\nInput: [");
     for (uint16_t i = 0; i < (network->inputLayer.numNeurons - 1); i++)
     {
-        printf("%0.3f, ", network->inputLayer.neuron[i]->activation);
+        EMBANN_LOGI(TAG, "%0.3f, ", network->inputLayer.neuron[i]->activation);
     }
-    printf("%0.3f]", network->inputLayer.neuron[network->inputLayer.numNeurons - 1]->activation);
+    EMBANN_LOGI(TAG, "%0.3f]", network->inputLayer.neuron[network->inputLayer.numNeurons - 1]->activation);
 
-    printf("\nInput Layer | Hidden Layer ");
+    EMBANN_LOGI(TAG, "\nInput Layer | Hidden Layer ");
     if (network->properties.numHiddenLayers > 1)
     {
-        printf("1 ");
+        EMBANN_LOGI(TAG, "1 ");
         for (uint8_t i = 2; i <= network->properties.numHiddenLayers; i++)
         {
-            printf("| Hidden Layer %d ", i);
+            EMBANN_LOGI(TAG, "| Hidden Layer %d ", i);
         }
     }
-    printf("| Output Layer");
+    EMBANN_LOGI(TAG, "| Output Layer");
 
     bool nothingLeft = false;
     uint16_t i = 0;
@@ -637,58 +638,58 @@ void embann_printNetwork()
         {
             if (i < network->inputLayer.numNeurons)
             {
-                printf("%-12.3f| ", network->inputLayer.neuron[i]->activation);
+                EMBANN_LOGI(TAG, "%-12.3f| ", network->inputLayer.neuron[i]->activation);
             }
             else
             {
-                printf("            | ");
+                EMBANN_LOGI(TAG, "            | ");
             }
 
             if (i < network->hiddenLayer[0].numNeurons)
             {
                 if (network->properties.numHiddenLayers == 1)
                 {
-                    printf("%-13.3f| ", network->hiddenLayer[0].neuron[i]->activation);
+                    EMBANN_LOGI(TAG, "%-13.3f| ", network->hiddenLayer[0].neuron[i]->activation);
                 }
                 else
                 {
                     for (uint8_t j = 0; j < network->properties.numHiddenLayers; j++)
                     {
-                        printf("%-15.3f| ", network->hiddenLayer[j].neuron[i]->activation);
+                        EMBANN_LOGI(TAG, "%-15.3f| ", network->hiddenLayer[j].neuron[i]->activation);
                     }
                 }
             }
             else
             {
-                printf("             | ");
+                EMBANN_LOGI(TAG, "             | ");
                 if (network->properties.numHiddenLayers > 1)
                 {
-                    printf("              | ");
+                    EMBANN_LOGI(TAG, "              | ");
                 }
             }
 
             if (i < network->outputLayer.numNeurons)
             {
-                printf("%.3f", network->outputLayer.neuron[i]->activation);
+                EMBANN_LOGI(TAG, "%.3f", network->outputLayer.neuron[i]->activation);
             }
         }
-        printf("\n");
+        EMBANN_LOGI(TAG, "\n");
         i++;
     }
 
-    printf("I think this is output %d ", network->properties.networkResponse);
+    EMBANN_LOGI(TAG, "I think this is output %d ", network->properties.networkResponse);
 }
 
 void embann_printInputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network->inputLayer.numNeurons)
     {
-        printf("\nInput Neuron %d: %.3f\n", neuronNum,
+        EMBANN_LOGI(TAG, "\nInput Neuron %d: %.3f\n", neuronNum,
                       network->inputLayer.neuron[neuronNum]->activation);
     }
     else
     {
-        printf("\nERROR: You've asked for input neuron %d when only %d exist\n",
+        EMBANN_LOGI(TAG, "\nERROR: You've asked for input neuron %d when only %d exist\n",
             neuronNum, network->inputLayer.numNeurons);
     }
 }
@@ -698,25 +699,25 @@ void embann_printOutputNeuronDetails(uint8_t neuronNum)
     if (neuronNum < network->outputLayer.numNeurons)
     {
 
-        printf("\nOutput Neuron %d:\n", neuronNum);
+        EMBANN_LOGI(TAG, "\nOutput Neuron %d:\n", neuronNum);
 
         for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
         {
-            printf(
+            EMBANN_LOGI(TAG, 
                 "%.3f-*->%.3f |",
                 network->hiddenLayer[network->properties.numHiddenLayers - 1].neuron[i]->activation,
                 network->outputLayer.neuron[neuronNum]->params[i]->weight);
 
             if (i == floor(network->hiddenLayer[0].numNeurons / 2))
             {
-                printf(" = %.3f", network->outputLayer.neuron[neuronNum]->activation);
+                EMBANN_LOGI(TAG, " = %.3f", network->outputLayer.neuron[neuronNum]->activation);
             }
-            printf("\n");
+            EMBANN_LOGI(TAG, "\n");
         }
     }
     else
     {
-        printf(
+        EMBANN_LOGI(TAG, 
             "\nERROR: You've asked for output neuron %d when only %d exist\n",
             neuronNum, network->outputLayer.numNeurons);
     }
@@ -727,22 +728,22 @@ void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
     if (neuronNum < network->hiddenLayer[0].numNeurons)
     {
 
-        printf("\nHidden Neuron %d:\n", neuronNum);
+        EMBANN_LOGI(TAG, "\nHidden Neuron %d:\n", neuronNum);
 
         if (layerNum == 0)
         {
 
             for (uint16_t i = 0; i < network->inputLayer.numNeurons; i++)
             {
-                printf("%.3f-*->%.3f |", network->inputLayer.neuron[i]->activation,
+                EMBANN_LOGI(TAG, "%.3f-*->%.3f |", network->inputLayer.neuron[i]->activation,
                               network->hiddenLayer[0].neuron[neuronNum]->params[i]->weight);
 
                 if (i == floor(network->inputLayer.numNeurons / 2))
                 {
-                    printf(" = %.3f",
+                    EMBANN_LOGI(TAG, " = %.3f",
                                   network->hiddenLayer[0].neuron[neuronNum]->activation);
                 }
-                printf("\n");
+                EMBANN_LOGI(TAG, "\n");
             }
         }
         else
@@ -750,22 +751,22 @@ void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
 
             for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
             {
-                printf(
+                EMBANN_LOGI(TAG, 
                     "%.3f-*->%.3f |", network->hiddenLayer[layerNum - 1].neuron[i]->activation,
                     network->hiddenLayer[layerNum - 1].neuron[neuronNum]->params[i]->weight);
 
                 if (i == floor(network->hiddenLayer[0].numNeurons / 2))
                 {
-                    printf(" = %.3f",
+                    EMBANN_LOGI(TAG, " = %.3f",
                                   network->hiddenLayer[0].neuron[neuronNum]->activation);
                 }
-                printf("\n");
+                EMBANN_LOGI(TAG, "\n");
             }
         }
     }
     else
     {
-        printf(
+        EMBANN_LOGI(TAG, 
             "\nERROR: You've asked for hidden neuron %d when only %d exist\n",
             neuronNum, network->hiddenLayer[0].numNeurons);
     }
@@ -773,17 +774,17 @@ void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
 
 void embann_errorReporting(uint8_t correctResponse)
 {
-    printf("\n");
+    EMBANN_LOGI(TAG, "\n");
     for (uint8_t i = 0; i < network->outputLayer.numNeurons; i++)
     {
         if (i == correctResponse)
         {
-            printf("%-7.3f | ",
+            EMBANN_LOGI(TAG, "%-7.3f | ",
                           (1 - network->outputLayer.neuron[correctResponse]->activation));
         }
         else
         {
-            printf("%-7.3f | ", -network->outputLayer.neuron[i]->activation);
+            EMBANN_LOGI(TAG, "%-7.3f | ", -network->outputLayer.neuron[i]->activation);
         }
     }
 }
@@ -826,7 +827,7 @@ void embann_benchmark(void)
     }
     gettimeofday(&timeAfter, NULL);
     timersub(&timeAfter, &timeBefore, &timeDiff);
-    printf("Integer time was %ld microseconds, result %d\n", timeDiff.tv_usec, testInt[0]);
+    EMBANN_LOGI(TAG, "Integer time was %ld microseconds, result %d\n", timeDiff.tv_usec, testInt[0]);
 
     gettimeofday(&timeBefore, NULL);
     //#pragma omp parallel for
@@ -840,7 +841,7 @@ void embann_benchmark(void)
     }
     gettimeofday(&timeAfter, NULL);
     timersub(&timeAfter, &timeBefore, &timeDiff);
-    printf("Float time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testFloat[0]);
+    EMBANN_LOGI(TAG, "Float time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testFloat[0]);
 
     gettimeofday(&timeBefore, NULL);
     //#pragma omp parallel for
@@ -854,7 +855,7 @@ void embann_benchmark(void)
     }
     gettimeofday(&timeAfter, NULL);
     timersub(&timeAfter, &timeBefore, &timeDiff);
-    printf("Double time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testDouble[0]);
+    EMBANN_LOGI(TAG, "Double time was %ld microseconds, result %.2f\n", timeDiff.tv_usec, testDouble[0]);
 }
 
 #ifndef ARDUINO
