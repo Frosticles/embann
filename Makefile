@@ -13,7 +13,7 @@ endif
 # log regex filter "Analyzing loop at(.|.\n)*LOOP VECTORIZED\n"
 
 LIBS = -lm
-CFLAGS = -I. -O3 -march=native -Wall -fopenmp -fverbose-asm -ffast-math -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed
+CFLAGS = -I. -O3 -march=native -Wall -fopenmp -flto -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math
 DEPS = embann.h
 OBJ = embann.o
 
