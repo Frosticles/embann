@@ -791,39 +791,45 @@ void embann_errorReporting(uint8_t correctResponse)
 
 void embann_benchmark(void)
 {    
-    int32_t MAX_ALIGNMENT testInt[256];
-    float MAX_ALIGNMENT testFloat[256];
-    double MAX_ALIGNMENT testDouble[256];
-    int32_t MAX_ALIGNMENT testIntWeight[256];
-    float MAX_ALIGNMENT testFloatWeight[256];
-    double MAX_ALIGNMENT testDoubleWeight[256];
-    int32_t MAX_ALIGNMENT testIntBias[256];
-    float MAX_ALIGNMENT testFloatBias[256];
-    double MAX_ALIGNMENT testDoubleBias[256];
+    int32_t MAX_ALIGNMENT testInt[300];
+    float MAX_ALIGNMENT testFloat[300];
+    double MAX_ALIGNMENT testDouble[300];
+    int32_t MAX_ALIGNMENT testIntWeight[300];
+    float MAX_ALIGNMENT testFloatWeight[300];
+    double MAX_ALIGNMENT testDoubleWeight[300];
+    int32_t MAX_ALIGNMENT testIntBias[300];
+    float MAX_ALIGNMENT testFloatBias[300];
+    double MAX_ALIGNMENT testDoubleBias[300];
     struct timeval timeBefore;
     struct timeval timeAfter;
     struct timeval timeDiff;
 
-    for (uint16_t i = 0; i < 256; i++)
+    for (uint16_t i = 0; i < NUM_ARRAY_ELEMENTS(testInt); i++)
     {
         testInt[i] = INT32_MAX;
-        testFloat[i] = FLT_MAX;
-        testDouble[i] = DBL_MAX;
-        
-        testIntWeight[i] = (random() % 1000) + 1;
-        testFloatWeight[i] = RAND_WEIGHT();
-        testDoubleWeight[i] = RAND_WEIGHT();
-
         testIntBias[i] = (random() % 21) - 10;
+        testIntWeight[i] = (random() % 1000) + 1;  
+    }
+    
+    for (uint16_t i = 0; i < NUM_ARRAY_ELEMENTS(testFloat); i++)
+    {
+        testFloat[i] = FLT_MAX;
         testFloatBias[i] = (float)(random() % 21) - 10;
+        testFloatWeight[i] = RAND_WEIGHT();
+    }
+
+    for (uint16_t i = 0; i < NUM_ARRAY_ELEMENTS(testDouble); i++)
+    {
+        testDouble[i] = DBL_MAX;
         testDoubleBias[i] = (double)(random() % 21) - 10;
+        testDoubleWeight[i] = RAND_WEIGHT();
     }
 
     gettimeofday(&timeBefore, NULL);
     //#pragma omp parallel for
     for (int32_t i = 0; i < 100000; i++)
     {
-        for (int16_t j = 0; j < 256; j++)
+        for (int16_t j = 0; j < NUM_ARRAY_ELEMENTS(testInt); j++)
         {
             testInt[j] /= testIntWeight[j];
             testInt[j] += testIntBias[j];
@@ -837,7 +843,7 @@ void embann_benchmark(void)
     //#pragma omp parallel for
     for (int32_t i = 0; i < 100000; i++)
     {
-        for (int16_t j = 0; j < 256; j++)
+        for (int16_t j = 0; j < NUM_ARRAY_ELEMENTS(testFloat); j++)
         {
             testFloat[j] *= testFloatWeight[j];
             testFloat[j] += testFloatBias[j];
@@ -851,7 +857,7 @@ void embann_benchmark(void)
     //#pragma omp parallel for
     for (int32_t i = 0; i < 100000; i++)
     {
-        for (int16_t j = 0; j < 256; j++)
+        for (int16_t j = 0; j < NUM_ARRAY_ELEMENTS(testDouble); j++)
         {
             testDouble[j] *= testDoubleWeight[j];
             testDouble[j] += testDoubleBias[j];
