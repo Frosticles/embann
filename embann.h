@@ -67,7 +67,7 @@
     } while(0)
 
 #define EMBANN_LOG_LEVEL_LOCAL(level, tag, format, ...) do {               \
-        if ( LOG_LOCAL_LEVEL >= level ) EMBANN_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+        if (LOG_LOCAL_LEVEL >= level) EMBANN_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
     } while(0)
 
 
