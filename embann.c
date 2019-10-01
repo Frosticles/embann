@@ -806,6 +806,10 @@ void embann_benchmark(void)
 
     for (uint16_t i = 0; i < 256; i++)
     {
+        testInt[i] = INT32_MAX;
+        testFloat[i] = FLT_MAX;
+        testDouble[i] = DBL_MAX;
+        
         testIntWeight[i] = (random() % 1000) + 1;
         testFloatWeight[i] = RAND_WEIGHT();
         testDoubleWeight[i] = RAND_WEIGHT();
