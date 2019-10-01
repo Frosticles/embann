@@ -91,6 +91,14 @@ typedef enum {
 
 
 
+#if __GNUC__ >= 3
+    #define MAX_ALIGNMENT __attribute__ ((aligned(__BIGGEST_ALIGNMENT__)))
+    #define WEAK_FUNCTION __attribute__((weak))
+#else
+    #define MAX_ALIGNMENT
+    #define WEAK_FUNCTION
+#endif
+
 
 typedef enum {
     LINEAR_ACTIVATION,

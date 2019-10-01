@@ -24,7 +24,7 @@ static uint32_t millis(void);
 
 #define TAG "Embann Core"
 
-int __attribute__((weak)) main(int argc, char const *argv[])
+int WEAK_FUNCTION main(int argc, char const *argv[])
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -791,15 +791,15 @@ void embann_errorReporting(uint8_t correctResponse)
 
 void embann_benchmark(void)
 {    
-    int32_t __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testInt[256] = {INT32_MAX};
-    float __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testFloat[256] = {FLT_MAX};
-    double __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testDouble[256] = {DBL_MAX};
-    int32_t __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testIntWeight[256];
-    float __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testFloatWeight[256];
-    double __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testDoubleWeight[256];
-    int32_t __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testIntBias[256];
-    float __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testFloatBias[256];
-    double __attribute__ ((aligned(__BIGGEST_ALIGNMENT__))) testDoubleBias[256];
+    int32_t MAX_ALIGNMENT testInt[256];
+    float MAX_ALIGNMENT testFloat[256];
+    double MAX_ALIGNMENT testDouble[256];
+    int32_t MAX_ALIGNMENT testIntWeight[256];
+    float MAX_ALIGNMENT testFloatWeight[256];
+    double MAX_ALIGNMENT testDoubleWeight[256];
+    int32_t MAX_ALIGNMENT testIntBias[256];
+    float MAX_ALIGNMENT testFloatBias[256];
+    double MAX_ALIGNMENT testDoubleBias[256];
     struct timeval timeBefore;
     struct timeval timeAfter;
     struct timeval timeDiff;
