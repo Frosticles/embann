@@ -15,24 +15,41 @@ endif
 
 # log regex filter "Analyzing loop at(.|.\n)*LOOP VECTORIZED\n"
 
-LIBS = -lm
-CFLAGS = -I. -O3 -march=native -Wall -fopenmp -flto -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math
 DEPS = embann.h
 OBJ = embann.o
+LIBS = -lm
+DEFAULT_CFLAGS = -I. -O3 -march=native -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math -flto 
+GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
+USE_PROFILE_CFLAGS = -fprofile-use
+CFLAGS = 
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+embann: CFLAGS := $(DEFAULT_CFLAGS)
 embann: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
-.PHONY: clean check debug
+embann-generate-profile: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	./embann-generate-profile
+
+embann-profiled: CFLAGS := $(DEFAULT_CFLAGS) $(USE_PROFILE_CFLAGS)
+embann-profiled: $(OBJ)
+	$(CC) -c -o embann.o embann.c $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+.PHONY: clean check debug profile
 
 clean:
-	rm -f ./*.o ./*.s ./*.i ./*.c.dump ./embann ./opt.log
+	rm -f ./*.o ./*.out ./*.s ./*.i ./*.res ./*.c.dump ./*.gcda \
+	./embann ./embann-generate-profile ./embann-profiled ./opt.log
 
 check:
 	CPP_CHECK --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
 
-debug: CFLAGS+=-g
+debug: CFLAGS += -g -pg
 debug: embann
+
+profile: CFLAGS := $(DEFAULT_CFLAGS) $(GEN_PROFILE_CFLAGS) 
+profile: | embann-generate-profile embann-profiled
