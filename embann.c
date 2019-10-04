@@ -791,15 +791,17 @@ void embann_errorReporting(uint8_t correctResponse)
 
 void embann_benchmark(void)
 {    
-    int32_t MAX_ALIGNMENT testInt[300];
-    float MAX_ALIGNMENT testFloat[300];
-    double MAX_ALIGNMENT testDouble[300];
-    int32_t MAX_ALIGNMENT testIntWeight[300];
-    float MAX_ALIGNMENT testFloatWeight[300];
-    double MAX_ALIGNMENT testDoubleWeight[300];
-    int32_t MAX_ALIGNMENT testIntBias[300];
-    float MAX_ALIGNMENT testFloatBias[300];
-    double MAX_ALIGNMENT testDoubleBias[300];
+    uint16_t numElements = (random() % 2) + 300;
+    
+    int32_t MAX_ALIGNMENT testInt[numElements];
+    float MAX_ALIGNMENT testFloat[numElements];
+    double MAX_ALIGNMENT testDouble[numElements];
+    int32_t MAX_ALIGNMENT testIntWeight[numElements];
+    float MAX_ALIGNMENT testFloatWeight[numElements];
+    double MAX_ALIGNMENT testDoubleWeight[numElements];
+    int32_t MAX_ALIGNMENT testIntBias[numElements];
+    float MAX_ALIGNMENT testFloatBias[numElements];
+    double MAX_ALIGNMENT testDoubleBias[numElements];
     struct timeval timeBefore;
     struct timeval timeAfter;
     struct timeval timeDiff;
