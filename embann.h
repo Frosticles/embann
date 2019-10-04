@@ -25,13 +25,17 @@
 #endif// ARDUINO
 
 #ifndef EOK
-#define EOK 0 /* Provides more clarity than just writing return 0; */
+/* Provides more clarity than just writing return 0; */
+#define EOK 0 
 #endif// EOK
+
+/* errno value specifically for internal embann errors */
+static int embann_errno = EOK;
 
 /* Random float between -1 and 1 */
 #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 /* Throw an error if malloc failed */
-#define CHECK_MALLOC(a) if (!(a)) {return ENOMEM;}
+#define CHECK_MALLOC(a) if (!(a)) {embann_errno = ENOMEM;}
 /* Calculate number of elements in an array */
 #define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
 
@@ -66,7 +70,7 @@
 
 #define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag " - " format LOG_RESET_COLOR "\n"
 
-#define PRINT_CHECK(a) if ((a) < 0) return EIO;
+#define PRINT_CHECK(a) if ((a) < 0) embann_errno = EIO;
 
 #define EMBANN_LOG_LEVEL(level, tag, format, ...) do {                     \
         if      (level==EMBANN_LOG_ERROR)     { PRINT_CHECK(printf(LOG_FORMAT(E, tag, format), ##__VA_ARGS__)); } \

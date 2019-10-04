@@ -205,6 +205,8 @@ int embann_getTrainingDataMean(float* mean)
     }
     else
     {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
     
@@ -237,11 +239,15 @@ int embann_getTrainingDataStdDev(float* stdDev)
     }
     else
     {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
 
     if (embann_getTrainingDataMean(&mean) != EOK)
     {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
     
@@ -269,6 +275,8 @@ int embann_getTrainingDataMax(uint8_t* max)
     }
     else
     {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
     
@@ -297,6 +305,8 @@ int embann_getTrainingDataMin(uint8_t* min)
     }
     else
     {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
 
