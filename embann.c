@@ -435,9 +435,8 @@ int embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
     }
 
     unsigned long startTime = millis();
-    numSeconds *= 1000;
 
-    while ((millis() - startTime) < numSeconds)
+    while ((millis() - startTime) < (numSeconds * 1000))
     {
         randomOutput = random() % network->outputLayer.numNeurons;
         randomTrainingSet = random() % trainingDataCollection.numEntries;
