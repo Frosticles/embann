@@ -46,7 +46,7 @@ clean:
 	./embann ./embann-generate-profile ./embann-profiled ./opt.log
 
 check:
-	$(CPP_CHECK) --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
+	$(CPP_CHECK) --inline-suppr --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
 
 debug: CFLAGS += -g -pg
 debug: embann

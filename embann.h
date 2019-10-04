@@ -31,9 +31,9 @@
 /* Random float between -1 and 1 */
 #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 /* Throw an error if malloc failed */
-#define CHECK_MALLOC(a) if (!a) {return ENOMEM;}
+#define CHECK_MALLOC(a) if (!(a)) {return ENOMEM;}
 /* Calculate number of elements in an array */
-#define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
+#define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
 
 
 
@@ -45,7 +45,9 @@
 #define LOG_COLOR_BLUE    "34"
 #define LOG_COLOR_PURPLE  "35"
 #define LOG_COLOR_CYAN    "36"
+// cppcheck-suppress misra-c2012-20.7 
 #define LOG_COLOR(COLOR)  "\033[0;" COLOR "m"
+// cppcheck-suppress misra-c2012-20.7
 #define LOG_BOLD(COLOR)   "\033[1;" COLOR "m"
 #define LOG_COLOR_E       LOG_COLOR(LOG_COLOR_RED)
 #define LOG_COLOR_W       LOG_COLOR(LOG_COLOR_BROWN)
@@ -64,7 +66,7 @@
 
 #define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag " - " format LOG_RESET_COLOR "\n"
 
-#define PRINT_CHECK(a) if (a < 0) return EIO;
+#define PRINT_CHECK(a) if ((a) < 0) return EIO;
 
 #define EMBANN_LOG_LEVEL(level, tag, format, ...) do {                     \
         if      (level==EMBANN_LOG_ERROR)     { PRINT_CHECK(printf(LOG_FORMAT(E, tag, format), ##__VA_ARGS__)); } \
