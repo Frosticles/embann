@@ -345,7 +345,7 @@ uint8_t embann_inputLayer()
     return network->properties.networkResponse;
 }
 
-void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
+int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs)
 {
     for (uint16_t i = 0; i < numOutputs; i++)
@@ -361,6 +361,7 @@ void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numIn
         // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i,
         // Output[i]);
     }
+    return EOK;
 }
 
 int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
@@ -424,7 +425,7 @@ void embann_shuffleTrainingData(void)
 
 }
 
-void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
+int embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
 {
     uint16_t randomOutput, randomTrainingSet;
 
@@ -455,9 +456,10 @@ void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose)
 
         embann_train(randomOutput, learningRate);
     }
+    return EOK;
 }
 
-void embann_trainDriverInError(float learningRate, float desiredCost, bool verbose)
+int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose)
 {
     uint16_t randomOutput, randomTrainingSet;
     float currentCost[network->outputLayer.numNeurons];
@@ -511,29 +513,31 @@ void embann_trainDriverInError(float learningRate, float desiredCost, bool verbo
         }
         EMBANN_LOGI(TAG, "%f", desiredCost);
     }
+    return EOK;
 }
 
-void embann_train(uint8_t correctOutput, float learningRate)
+int embann_train(uint8_t correctOutput, float learningRate)
 {
     float dOutputErrorToOutputSum[network->outputLayer.numNeurons];
     float dTotalErrorToHiddenNeuron = 0.0;
     /* TODO, add support for multiple hidden layers */
     float outputNeuronWeightChange[network->outputLayer.numNeurons]
                                   [network->hiddenLayer[0].numNeurons];
+    float tanhDerivative;
 
     for (uint16_t i = 0; i < network->outputLayer.numNeurons; i++)
     {
         if (i == correctOutput)
         {
+            embann_tanhDerivative(network->outputLayer.neuron[i]->activation, &tanhDerivative);
             dOutputErrorToOutputSum[i] =
-                (1 - network->outputLayer.neuron[i]->activation) *
-                embann_tanhDerivative(network->outputLayer.neuron[i]->activation);
+                (1 - network->outputLayer.neuron[i]->activation) * tanhDerivative;
         }
         else
         {
+            embann_tanhDerivative(network->outputLayer.neuron[i]->activation, &tanhDerivative);
             dOutputErrorToOutputSum[i] =
-                -network->outputLayer.neuron[i]->activation *
-                embann_tanhDerivative(network->outputLayer.neuron[i]->activation);
+                -network->outputLayer.neuron[i]->activation * tanhDerivative;
         }
         // EMBANN_LOGI(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i,
         // dOutputErrorToOutputSum[i]);
@@ -565,26 +569,21 @@ void embann_train(uint8_t correctOutput, float learningRate)
         {
             // EMBANN_LOGI(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k,
             // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
+            embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation, &tanhDerivative);
             network->hiddenLayer[0].neuron[i]->params[k]->weight +=
-                dTotalErrorToHiddenNeuron *
-                embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation) *
+                dTotalErrorToHiddenNeuron * tanhDerivative *
                 network->inputLayer.neuron[k]->activation * learningRate;
             // EMBANN_LOGI(TAG, "\nNew Hidden Weight[%d][%d]: %.3f", i, k,
             // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
         }
     }
+    return EOK;
 }
 
-float embann_tanhDerivative(float inputValue)
+int embann_tanhDerivative(float inputValue, float* outputValue)
 {
-    // if (inputValue < 0)
-    //{
-    //  return -1 * (1 - pow(tanh(inputValue), 2));
-    //}
-    // else
-    //{
-    return 1 - pow(tanh(inputValue * PI), 2);
-    //}
+    *outputValue = 1 - pow(tanh(inputValue * PI), 2);
+    return EOK;
 }
 
 uint8_t embann_outputLayer()
@@ -604,7 +603,7 @@ uint8_t embann_outputLayer()
     return mostLikelyOutput;
 }
 
-void embann_printNetwork()
+int embann_printNetwork(void)
 {
     EMBANN_LOGI(TAG, "\nInput: [");
     for (uint16_t i = 0; i < (network->inputLayer.numNeurons - 1); i++)
@@ -678,9 +677,10 @@ void embann_printNetwork()
     }
 
     EMBANN_LOGI(TAG, "I think this is output %d ", network->properties.networkResponse);
+    return EOK;
 }
 
-void embann_printInputNeuronDetails(uint8_t neuronNum)
+int embann_printInputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network->inputLayer.numNeurons)
     {
@@ -692,9 +692,10 @@ void embann_printInputNeuronDetails(uint8_t neuronNum)
         EMBANN_LOGI(TAG, "\nERROR: You've asked for input neuron %d when only %d exist",
             neuronNum, network->inputLayer.numNeurons);
     }
+    return EOK;
 }
 
-void embann_printOutputNeuronDetails(uint8_t neuronNum)
+int embann_printOutputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < network->outputLayer.numNeurons)
     {
@@ -721,9 +722,10 @@ void embann_printOutputNeuronDetails(uint8_t neuronNum)
             "\nERROR: You've asked for output neuron %d when only %d exist",
             neuronNum, network->outputLayer.numNeurons);
     }
+    return EOK;
 }
 
-void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
+int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
 {
     if (neuronNum < network->hiddenLayer[0].numNeurons)
     {
@@ -770,9 +772,10 @@ void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
             "\nERROR: You've asked for hidden neuron %d when only %d exist",
             neuronNum, network->hiddenLayer[0].numNeurons);
     }
+    return EOK;
 }
 
-void embann_errorReporting(uint8_t correctResponse)
+int embann_errorReporting(uint8_t correctResponse)
 {
     EMBANN_LOGI(TAG, "\n");
     for (uint8_t i = 0; i < network->outputLayer.numNeurons; i++)
@@ -787,9 +790,10 @@ void embann_errorReporting(uint8_t correctResponse)
             EMBANN_LOGI(TAG, "%-7.3f | ", -network->outputLayer.neuron[i]->activation);
         }
     }
+    return EOK;
 }
 
-void embann_benchmark(void)
+int embann_benchmark(void)
 {    
     uint16_t numElements = (random() % 2) + 300;
     
@@ -868,6 +872,8 @@ void embann_benchmark(void)
     gettimeofday(&timeAfter, NULL);
     timersub(&timeAfter, &timeBefore, &timeDiff);
     EMBANN_LOGI(TAG, "Double time was %ld microseconds, result %.2f", timeDiff.tv_usec, testDouble[0]);
+
+    return EOK;
 }
 
 #ifndef ARDUINO

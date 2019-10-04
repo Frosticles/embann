@@ -206,19 +206,19 @@ int embann_init(uint16_t numInputNeurons,
                  uint16_t numHiddenNeurons, 
                  uint8_t numHiddenLayers,
                  uint16_t numOutputNeurons);
-void embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
+int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs);
 uint8_t embann_outputLayer(void);
-void embann_printNetwork(void);
-void embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose);
-void embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
-void embann_train(uint8_t correctOutput, float learningRate);
-float embann_tanhDerivative(float inputValue);
-void embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs);
-void embann_errorReporting(uint8_t correctResponse);
-void embann_printInputNeuronDetails(uint8_t neuronNum);
-void embann_printOutputNeuronDetails(uint8_t neuronNum);
-void embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum);
-void embann_benchmark(void);
+int embann_printNetwork(void);
+int embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose);
+int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
+int embann_train(uint8_t correctOutput, float learningRate);
+int embann_tanhDerivative(float inputValue, float* outputValue);
+int embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs);
+int embann_errorReporting(uint8_t correctResponse);
+int embann_printInputNeuronDetails(uint8_t neuronNum);
+int embann_printOutputNeuronDetails(uint8_t neuronNum);
+int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum);
+int embann_benchmark(void);
 
 #endif
