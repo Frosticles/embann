@@ -1,7 +1,8 @@
+**.DS_Store
 *.o
 *.s
 *.i
+*.dump
 .vscode
 embann
 .config*
-**.DS_Store
