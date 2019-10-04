@@ -39,7 +39,7 @@ embann-profiled: $(OBJ)
 	$(CC) -c -o embann.o embann.c $(CFLAGS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
-.PHONY: clean check debug profile
+.PHONY: clean check debug profile menuconfig
 
 clean:
 	rm -f ./*.o ./*.out ./*.s ./*.i ./*.res ./*.c.dump ./*.gcda \
@@ -53,3 +53,7 @@ debug: embann
 
 profile: CFLAGS := $(DEFAULT_CFLAGS) $(GEN_PROFILE_CFLAGS) 
 profile: | embann-generate-profile embann-profiled
+
+menuconfig:
+	python ./Kconfiglib/menuconfig.py ./Kconfig
+	python ./Kconfiglib/genconfig.py

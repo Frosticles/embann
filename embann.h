@@ -6,7 +6,7 @@
 #ifndef Embann_h
 #define Embann_h
 
-#define LOG_LOCAL_LEVEL EMBANN_LOG_INFO // TODO move this to a Kconfig thing
+#include "config.h"
 
 #ifdef ARDUINO
 #include "Arduino.h"
@@ -37,7 +37,7 @@
 
 
 
-
+#ifdef CONFIG_LOG_COLORS
 #define LOG_COLOR_BLACK   "30"
 #define LOG_COLOR_RED     "31"
 #define LOG_COLOR_GREEN   "32"
@@ -53,6 +53,14 @@
 #define LOG_COLOR_D       LOG_COLOR(LOG_COLOR_CYAN)
 #define LOG_COLOR_V       LOG_COLOR(LOG_COLOR_PURPLE)
 #define LOG_RESET_COLOR   "\033[0m"
+#else //CONFIG_LOG_COLORS
+#define LOG_COLOR_E
+#define LOG_COLOR_W
+#define LOG_COLOR_I
+#define LOG_COLOR_D
+#define LOG_COLOR_V
+#define LOG_RESET_COLOR
+#endif //CONFIG_LOG_COLORS
 
 #define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag " - " format LOG_RESET_COLOR "\n"
 
@@ -67,7 +75,7 @@
     } while(0)
 
 #define EMBANN_LOG_LEVEL_LOCAL(level, tag, format, ...) do {               \
-        if (LOG_LOCAL_LEVEL >= level) EMBANN_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
+        if (CONFIG_LOG_DEFAULT_LEVEL >= level) EMBANN_LOG_LEVEL(level, tag, format, ##__VA_ARGS__); \
     } while(0)
 
 

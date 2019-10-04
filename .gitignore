@@ -3,4 +3,5 @@
 *.i
 .vscode
 embann
+.config*
 **.DS_Store
