@@ -101,11 +101,11 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {    
-            wNeuron_t* pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * (i == 0 ? numInputNeurons : numHiddenNeurons)));
+            wNeuron_t* pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * (i == (0 ? numInputNeurons : numHiddenNeurons))));
             hiddenLayer->neuron[j] = pNeuron;
             hiddenLayer->neuron[j]->activation = 0.0F;
 
-            for (uint16_t k = 0; k < (i == 0 ? numInputNeurons : numHiddenNeurons); k++)
+            for (uint16_t k = 0; k < (i == (0 ? numInputNeurons : numHiddenNeurons)); k++)
             {
                 neuronParams_t* hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
                 CHECK_MALLOC(hiddenLayerParams);
