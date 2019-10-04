@@ -1,12 +1,15 @@
 ifeq ($(OS),Windows_NT)
 	CC=gcc
+	CPP_CHECK=./cppcheck/cppcheck.exe
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
 		CC=gcc
+		CPP_CHECK=./cppcheck/cppcheck
 	endif
 	ifeq ($(UNAME_S),Darwin)
 		CC=gcc-9
+		CPP_CHECK=./cppcheck/cppcheck-mac
 	endif
 endif
 
@@ -29,7 +32,7 @@ clean:
 	rm -f ./*.o ./*.s ./*.i ./*.c.dump ./embann ./opt.log
 
 check:
-	./cppcheck/cppcheck --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
+	CPP_CHECK --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
 
 debug: CFLAGS+=-g
 debug: embann
