@@ -190,7 +190,7 @@ void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max)
 {
     for (uint32_t i = 0; i < network->inputLayer.numNeurons; i++)
     {
-        network->inputLayer.neuron[i]->activation = ((float)(data[i] - min)) / (max - min);
+        network->inputLayer.neuron[i]->activation = (((float)data[i] - min)) / (max - min);
     }
 }
 
