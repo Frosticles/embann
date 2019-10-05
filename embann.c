@@ -372,7 +372,7 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInp
         {
             Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
         }
-        Output[i]->activation = tanh(Output[i]->activation * PI);
+        Output[i]->activation = tanhf(Output[i]->activation * PI);
 
         // tanh is a quicker alternative to sigmoid
         // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
