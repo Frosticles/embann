@@ -649,45 +649,45 @@ int embann_printNetwork(void)
     if (network->properties.numHiddenLayers > 1U)
     {
         EMBANN_LOGI(TAG, "1 ");
-        for (uint8_t i = 2; i <= network->properties.numHiddenLayers; i++)
+        for (uint8_t j = 2; j <= network->properties.numHiddenLayers; j++)
         {
-            EMBANN_LOGI(TAG, "| Hidden Layer %d ", i);
+            EMBANN_LOGI(TAG, "| Hidden Layer %d ", j);
         }
     }
     EMBANN_LOGI(TAG, "| Output Layer");
 
     bool nothingLeft = false;
-    uint16_t i = 0;
+    uint16_t k = 0;
     while (nothingLeft == false)
     { /* TODO, Make this compatible with multiple hidden layers */
-        if ((i >= network->inputLayer.numNeurons) &&
-            (i >= network->hiddenLayer[0].numNeurons) &&
-            (i >= network->outputLayer.numNeurons))
+        if ((k >= network->inputLayer.numNeurons) &&
+            (k >= network->hiddenLayer[0].numNeurons) &&
+            (k >= network->outputLayer.numNeurons))
         {
             nothingLeft = true;
         }
         else
         {
-            if (i < network->inputLayer.numNeurons)
+            if (k < network->inputLayer.numNeurons)
             {
-                EMBANN_LOGI(TAG, "%-12.3f| ", network->inputLayer.neuron[i]->activation);
+                EMBANN_LOGI(TAG, "%-12.3f| ", network->inputLayer.neuron[k]->activation);
             }
             else
             {
                 EMBANN_LOGI(TAG, "            | ");
             }
 
-            if (i < network->hiddenLayer[0].numNeurons)
+            if (k < network->hiddenLayer[0].numNeurons)
             {
                 if (network->properties.numHiddenLayers == 1U)
                 {
-                    EMBANN_LOGI(TAG, "%-13.3f| ", network->hiddenLayer[0].neuron[i]->activation);
+                    EMBANN_LOGI(TAG, "%-13.3f| ", network->hiddenLayer[0].neuron[k]->activation);
                 }
                 else
                 {
-                    for (uint8_t j = 0; j < network->properties.numHiddenLayers; j++)
+                    for (uint8_t l = 0; l < network->properties.numHiddenLayers; l++)
                     {
-                        EMBANN_LOGI(TAG, "%-15.3f| ", network->hiddenLayer[j].neuron[i]->activation);
+                        EMBANN_LOGI(TAG, "%-15.3f| ", network->hiddenLayer[l].neuron[k]->activation);
                     }
                 }
             }
@@ -700,13 +700,13 @@ int embann_printNetwork(void)
                 }
             }
 
-            if (i < network->outputLayer.numNeurons)
+            if (k < network->outputLayer.numNeurons)
             {
-                EMBANN_LOGI(TAG, "%.3f", network->outputLayer.neuron[i]->activation);
+                EMBANN_LOGI(TAG, "%.3f", network->outputLayer.neuron[k]->activation);
             }
         }
         EMBANN_LOGI(TAG, "\n");
-        i++;
+        k++;
     }
 
     EMBANN_LOGI(TAG, "I think this is output %d ", network->properties.networkResponse);
