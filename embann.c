@@ -336,7 +336,7 @@ int embann_getTrainingDataMin(uint8_t* min)
 
 uint8_t embann_inputLayer()
 {
-    embann_sumAndSquash((wNeuron_t**) network->inputLayer.neuron, 
+    embann_sumAndSquashInput(network->inputLayer.neuron, 
                         network->hiddenLayer[0].neuron,
                         network->inputLayer.numNeurons, 
                         network->hiddenLayer[0].numNeurons);
@@ -356,8 +356,7 @@ uint8_t embann_inputLayer()
         network->hiddenLayer[network->properties.numHiddenLayers - 1].numNeurons,
         network->outputLayer.numNeurons);
 
-    /*EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Output Layer",
-                network->properties.numHiddenLayers);*/
+    /*EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);*/
 
     network->properties.networkResponse = embann_outputLayer();
     return network->properties.networkResponse;
@@ -376,8 +375,25 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInp
         Output[i]->activation = tanh(Output[i]->activation * PI);
 
         // tanh is a quicker alternative to sigmoid
-        // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i,
-        // Output[i]);
+        // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
+    }
+    return EOK;
+}
+
+int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
+                           uint16_t numOutputs)
+{
+    for (uint16_t i = 0; i < numOutputs; i++)
+    {
+        Output[i]->activation = 0; // Bias[i];
+        for (uint16_t j = 0; j < numInputs; j++)
+        {
+            Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
+        }
+        Output[i]->activation = tanhf(Output[i]->activation * PI);
+
+        // tanh is a quicker alternative to sigmoid
+        // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
     }
     return EOK;
 }
