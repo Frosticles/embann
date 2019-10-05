@@ -5,7 +5,7 @@ else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
 		CC=gcc
-		CPP_CHECK=./cppcheck/cppcheck
+		CPP_CHECK=./cppcheck/cppcheck-linux
 	endif
 	ifeq ($(UNAME_S),Darwin)
 		CC=gcc-9
