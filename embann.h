@@ -70,7 +70,7 @@ static int embann_errno = EOK;
 
 #define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag " - " format LOG_RESET_COLOR "\n"
 
-#define PRINT_CHECK(a) if ((a) < 0) embann_errno = EIO;
+#define PRINT_CHECK(a) if ((a) < 0) embann_errno = EIO
 
 #define EMBANN_LOG_LEVEL(level, tag, format, ...) do {                     \
         if      (level==EMBANN_LOG_ERROR)     { PRINT_CHECK(printf(LOG_FORMAT(E, tag, format), ##__VA_ARGS__)); } \
@@ -91,14 +91,14 @@ static int embann_errno = EOK;
 #define EMBANN_LOGD(tag, format, ...) EMBANN_LOG_LEVEL_LOCAL(EMBANN_LOG_DEBUG,   tag, format, ##__VA_ARGS__)
 #define EMBANN_LOGV(tag, format, ...) EMBANN_LOG_LEVEL_LOCAL(EMBANN_LOG_VERBOSE, tag, format, ##__VA_ARGS__)
 
-typedef enum {
+enum {
     EMBANN_LOG_NONE,       /*!< No log output */
     EMBANN_LOG_ERROR,      /*!< Critical errors, software module can not recover on its own */
     EMBANN_LOG_WARN,       /*!< Error conditions from which recovery measures have been taken */
     EMBANN_LOG_INFO,       /*!< Information messages which describe normal flow of events */
     EMBANN_LOG_DEBUG,      /*!< Extra information which is not necessary for normal use (values, pointers, sizes, etc). */
     EMBANN_LOG_VERBOSE     /*!< Bigger chunks of debugging information, or frequent messages which can potentially flood the output. */
-} embannLogLevel_t;
+};
 
 
 
@@ -218,7 +218,7 @@ int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t n
                            uint16_t numOutputs);
 uint8_t embann_outputLayer(void);
 int embann_printNetwork(void);
-int embann_trainDriverInTime(float learningRate, long numSeconds, bool verbose);
+int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbose);
 int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
 int embann_train(uint8_t correctOutput, float learningRate);
 int embann_tanhDerivative(float inputValue, float* outputValue);
