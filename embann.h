@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
+// Deviation from MISRA C2012 21.6 for printf() used in logging
+// cppcheck-suppress misra-c2012-21.6
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
