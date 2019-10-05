@@ -35,11 +35,20 @@ static int embann_errno = EOK;
 /* Random float between -1 and 1 */
 #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 /* Throw an error if malloc failed */
-#define CHECK_MALLOC(a) if (!(a)) {embann_errno = ENOMEM;}
+#define CHECK_MALLOC(a) if (!(a)) embann_errno = ENOMEM
 /* Calculate number of elements in an array */
 #define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
 
-
+#ifdef CONFIG_ERROR_CHECK_SET_ERRNO
+#define EMBANN_ERROR_CHECK(x) embann_errno = (x)
+#elif defined(CONFIG_ERROR_CHECK_ABORT)
+#define EMBANN_ERROR_CHECK(x) do {                                     \
+        embann_errno = (x);                                         \
+        if (embann_errno != EOK) {                                  \
+            abort();                                                \
+        }                                                           \
+    } while(0)
+#endif
 
 #ifdef CONFIG_LOG_COLORS
 #define LOG_COLOR_BLACK   "30"
