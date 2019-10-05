@@ -30,8 +30,8 @@ int WEAK_FUNCTION main(int argc, char const *argv[])
     gettimeofday(&tv, NULL);
     srandom(tv.tv_usec ^ tv.tv_sec);  /* Seed the PRNG */
     
-    embann_benchmark();
-    embann_init(10U, 10U, 1U, 10U);
+    EMBANN_ERROR_CHECK(embann_benchmark());
+    EMBANN_ERROR_CHECK(embann_init(10U, 10U, 1U, 10U));
 }
 
 
@@ -44,12 +44,12 @@ int embann_init(uint16_t numInputNeurons,
                                  (sizeof(hiddenLayer_t) * numHiddenLayers));
     CHECK_MALLOC(network);
 
-    embann_initInputLayer(numInputNeurons);
-    embann_initHiddenLayer(numHiddenNeurons,
+    EMBANN_ERROR_CHECK(embann_initInputLayer(numInputNeurons));
+    EMBANN_ERROR_CHECK(embann_initHiddenLayer(numHiddenNeurons,
                            numHiddenLayers,
-                           numInputNeurons);
-    embann_initOutputLayer(numOutputNeurons,
-                           numHiddenNeurons);
+                           numInputNeurons));
+    EMBANN_ERROR_CHECK(embann_initOutputLayer(numOutputNeurons,
+                           numHiddenNeurons));
 
     network->properties.numLayers = numHiddenLayers + 2U;
     network->properties.numHiddenLayers = numHiddenLayers;
@@ -483,11 +483,11 @@ int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbo
 
         if (verbose == true)
         {
-            embann_errorReporting(randomOutput);
+            EMBANN_ERROR_CHECK(embann_errorReporting(randomOutput));
             EMBANN_LOGI(TAG, "%u | %u ", randomOutput, randomTrainingSet);
         }
 
-        embann_train(randomOutput, learningRate);
+        EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate));
     }
     return EOK;
 }
@@ -513,11 +513,11 @@ int embann_trainDriverInError(float learningRate, float desiredCost, bool verbos
 
         if (verbose == true)
         {
-            embann_errorReporting(randomOutput);
+            EMBANN_ERROR_CHECK(embann_errorReporting(randomOutput));
             EMBANN_LOGI(TAG, "%u | %u ", randomOutput, randomTrainingSet);
         }
 
-        embann_train(randomOutput, learningRate);
+        EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate));
         for (uint8_t i = 0; i < network->outputLayer.numNeurons; i++)
         {
             if (i == randomOutput)
@@ -562,13 +562,13 @@ int embann_train(uint8_t correctOutput, float learningRate)
     {
         if (i == correctOutput)
         {
-            embann_tanhDerivative(network->outputLayer.neuron[i]->activation, &tanhDerivative);
+            EMBANN_ERROR_CHECK(embann_tanhDerivative(network->outputLayer.neuron[i]->activation, &tanhDerivative));
             dOutputErrorToOutputSum[i] =
                 (1 - network->outputLayer.neuron[i]->activation) * tanhDerivative;
         }
         else
         {
-            embann_tanhDerivative(network->outputLayer.neuron[i]->activation, &tanhDerivative);
+            EMBANN_ERROR_CHECK(embann_tanhDerivative(network->outputLayer.neuron[i]->activation, &tanhDerivative));
             dOutputErrorToOutputSum[i] =
                 -network->outputLayer.neuron[i]->activation * tanhDerivative;
         }
@@ -602,7 +602,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
         {
             // EMBANN_LOGI(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k,
             // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
-            embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation, &tanhDerivative);
+            EMBANN_ERROR_CHECK(embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation, &tanhDerivative));
             network->hiddenLayer[0].neuron[i]->params[k]->weight +=
                 dTotalErrorToHiddenNeuron * tanhDerivative *
                 network->inputLayer.neuron[k]->activation * learningRate;
