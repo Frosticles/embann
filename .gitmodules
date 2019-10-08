@@ -1,6 +1,6 @@
 [submodule "cppcheck"]
-	path = cppcheck
+	path = tools/cppcheck
 	url = https://github.com/danmar/cppcheck
 [submodule "Kconfiglib"]
-	path = Kconfiglib
+	path = tools/Kconfiglib
 	url = https://github.com/ulfalizer/Kconfiglib
