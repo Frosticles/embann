@@ -246,13 +246,13 @@ typedef double weight_t;
 #endif
 
 typedef struct  {
-    float weight;
-    float bias;
+    weight_t weight;
+    bias_t bias;
 } neuronParams_t;
 
 typedef struct
 {
-    float activation;
+    activation_t activation;
     neuronParams_t* params[];
 } wNeuron_t;
 
