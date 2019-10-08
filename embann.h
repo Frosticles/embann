@@ -134,8 +134,9 @@ typedef enum {
 } activationFunction_t;
 
 /*
-    Types for use with Intel VPDPBUSD Instruction:
-    
+    Types for use with Intel VPDPBUSD Instruction: 
+    https://software.intel.com/en-us/articles/lower-numerical-precision-deep-learning-inference-and-training
+
         typedef uint8_t activation_t;
         typedef int32_t bias_t;
         typedef int8_t weight_t;
@@ -144,6 +145,7 @@ typedef enum {
         ... Repeated 15 more times ...
 
     Types for use with Xtensa MAC16 Instruction:
+    https://iis-people.ee.ethz.ch/~gmichi/asocd/exercises/ex_05.pdf
 
         typedef int16_t activation_t;
         typedef int32_t bias_t;
