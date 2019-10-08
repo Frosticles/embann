@@ -334,7 +334,7 @@ int embann_getTrainingDataMin(uint8_t* min)
 }
 
 
-uint8_t embann_inputLayer()
+int embann_inputLayer(uint16_t* networkResponse)
 {
     embann_sumAndSquashInput(network->inputLayer->neuron, 
                         network->hiddenLayer[0].neuron,
@@ -358,8 +358,17 @@ uint8_t embann_inputLayer()
 
     /*EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);*/
 
-    network->properties.networkResponse = embann_outputLayer();
-    return network->properties.networkResponse;
+    EMBANN_ERROR_CHECK(embann_outputLayer(&network->properties.networkResponse));
+
+    if (networkResponse == NULL)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
+
+    *networkResponse = network->properties.networkResponse;
+    return EOK;
 }
 
 int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
@@ -479,7 +488,7 @@ int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbo
             TODO, these are not 'right' but they will let the program run
         */
         embann_inputMinMaxScale(trainingDataCollection.head->data, 0U, UINT8_MAX);
-        embann_inputLayer();
+        EMBANN_ERROR_CHECK(embann_inputLayer(NULL));
 
         if (verbose == true)
         {
@@ -509,7 +518,8 @@ int embann_trainDriverInError(float learningRate, float desiredCost, bool verbos
         randomTrainingSet = random() % trainingDataCollection.numEntries;
         currentCost[randomOutput] = 0.0;
         embann_inputMinMaxScale(trainingDataCollection.head->data, 0U, UINT8_MAX);
-        embann_inputLayer();
+
+        EMBANN_ERROR_CHECK(embann_inputLayer(NULL));
 
         if (verbose == true)
         {
@@ -619,7 +629,7 @@ int embann_tanhDerivative(float inputValue, float* outputValue)
     return EOK;
 }
 
-uint8_t embann_outputLayer()
+int embann_outputLayer(uint16_t* networkResponse)
 {
     uint8_t mostLikelyOutput = 0;
 
@@ -633,7 +643,16 @@ uint8_t embann_outputLayer()
         // EMBANN_LOGI(TAG, "i: %d neuron: %-3f likely: %d", i,
         // network->outputLayer->neurons[i], mostLikelyOutput);
     }
-    return mostLikelyOutput;
+
+    if (networkResponse == NULL)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
+    
+    *networkResponse = mostLikelyOutput;
+    return EOK;
 }
 
 int embann_printNetwork(void)

@@ -342,7 +342,8 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInp
                            uint16_t numOutputs);
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs);
-uint8_t embann_outputLayer(void);
+int embann_outputLayer(uint16_t* networkResponse);
+int embann_inputLayer(uint16_t* networkResponse);
 int embann_printNetwork(void);
 int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbose);
 int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
