@@ -125,6 +125,7 @@ enum {
 #endif
 
 
+// TODO, could put in a linear approximation for these
 typedef enum {
     LINEAR_ACTIVATION,
     TAN_H_ACTIVATION,
@@ -150,10 +151,10 @@ typedef struct
 
 typedef struct
 {
-    wNeuron_t forgetGate;
-    wNeuron_t inputGate;
-    wNeuron_t outputGate;
-    wNeuron_t cell;
+    wNeuron_t* forgetGate;
+    wNeuron_t* inputGate;
+    wNeuron_t* outputGate;
+    wNeuron_t* cell;
     float activation;
 } lstmCell_t;
 
@@ -210,8 +211,8 @@ typedef struct
 typedef struct
 {
     networkProperties_t properties;
-    inputLayer_t inputLayer;
-    outputLayer_t outputLayer;
+    inputLayer_t* inputLayer;
+    outputLayer_t* outputLayer;
     hiddenLayer_t hiddenLayer[];
 } network_t;
 
