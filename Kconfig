@@ -61,3 +61,101 @@ mainmenu "Embann Configuration"
                 help
                     Executes the abort() function.
     endchoice
+
+
+    menu "Data Types"
+        choice ACTIVATION_DATA_TYPE
+            bool "Activation Data Type"
+            default ACTIVATION_DATA_TYPE_UINT8
+            help
+                Select the data type use for neuron activaions.
+
+                This will significantly impact performance depending on
+                what instructions / extensions are available.
+
+            config ACTIVATION_DATA_TYPE_INT8
+                bool "Signed 8-bit Integer"
+            config ACTIVATION_DATA_TYPE_INT16
+                bool "Signed 16-bit Integer"
+            config ACTIVATION_DATA_TYPE_INT32
+                bool "Signed 32-bit Integer"
+            config ACTIVATION_DATA_TYPE_INT64
+                bool "Signed 64-bit Integer"
+            config ACTIVATION_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config ACTIVATION_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config ACTIVATION_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config ACTIVATION_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+            config ACTIVATION_DATA_TYPE_FLOAT
+                bool "Single-Precision Floating Point"
+            config ACTIVATION_DATA_TYPE_DOUBLE
+                bool "Double-Precision Floating Point"
+        endchoice
+
+
+        choice BIAS_DATA_TYPE
+            bool "Bias Data Type"
+            default BIAS_DATA_TYPE_INT32
+            help
+                Select the data type use for neuron biases.
+
+                This will significantly impact performance depending on
+                what instructions / extensions are available.
+
+            config BIAS_DATA_TYPE_INT8
+                bool "Signed 8-bit Integer"
+            config BIAS_DATA_TYPE_INT16
+                bool "Signed 16-bit Integer"
+            config BIAS_DATA_TYPE_INT32
+                bool "Signed 32-bit Integer"
+            config BIAS_DATA_TYPE_INT64
+                bool "Signed 64-bit Integer"
+            config BIAS_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config BIAS_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config BIAS_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config BIAS_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+            config BIAS_DATA_TYPE_FLOAT
+                bool "Single-Precision Floating Point"
+            config BIAS_DATA_TYPE_DOUBLE
+                bool "Double-Precision Floating Point"
+        endchoice
+
+
+        choice WEIGHT_DATA_TYPE
+            bool "Weight Data Type"
+            default WEIGHT_DATA_TYPE_INT8
+            help
+                Select the data type use for neuron weights.
+
+                This will significantly impact performance depending on
+                what instructions / extensions are available.
+
+            config WEIGHT_DATA_TYPE_INT8
+                bool "Signed 8-bit Integer"
+            config WEIGHT_DATA_TYPE_INT16
+                bool "Signed 16-bit Integer"
+            config WEIGHT_DATA_TYPE_INT32
+                bool "Signed 32-bit Integer"
+            config WEIGHT_DATA_TYPE_INT64
+                bool "Signed 64-bit Integer"
+            config WEIGHT_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config WEIGHT_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config WEIGHT_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config WEIGHT_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+            config WEIGHT_DATA_TYPE_FLOAT
+                bool "Single-Precision Floating Point"
+            config WEIGHT_DATA_TYPE_DOUBLE
+                bool "Double-Precision Floating Point"
+        endchoice
+    endmenu

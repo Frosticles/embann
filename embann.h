@@ -44,7 +44,7 @@ static int embann_errno = EOK;
 #ifdef CONFIG_ERROR_CHECK_SET_ERRNO
 #define EMBANN_ERROR_CHECK(x) embann_errno = (x)
 #elif defined(CONFIG_ERROR_CHECK_ABORT)
-#define EMBANN_ERROR_CHECK(x) do {                                     \
+#define EMBANN_ERROR_CHECK(x) do {                                  \
         embann_errno = (x);                                         \
         if (embann_errno != EOK) {                                  \
             abort();                                                \
@@ -132,6 +132,118 @@ typedef enum {
     LOGISTIC_ACTIVATION,
     RELU_ACTIVATION
 } activationFunction_t;
+
+/*
+    Types for use with Intel VPDPBUSD Instruction:
+    
+        typedef uint8_t activation_t;
+        typedef int32_t bias_t;
+        typedef int8_t weight_t;
+
+        s32Accum += ((u8Act[0] * s8Wei[0]) + (u8Act[1] * s8Wei[1]) + (u8Act[2] * s8Wei[2]) + (u8Act[3] * s8Wei[3])) + u32Bias[0]
+        ... Repeated 15 more times ...
+
+    Types for use with Xtensa MAC16 Instruction:
+
+        typedef int16_t activation_t;
+        typedef int32_t bias_t;
+        typedef int16_t weight_t;
+
+        s32Accum += ((s16Act * s16Wei) + u32Bias
+*/
+
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_INT8
+typedef int8_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_INT16
+typedef int16_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_INT32
+typedef int32_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_INT64
+typedef int64_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT8
+typedef uint8_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT16
+typedef uint16_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT32
+typedef uint32_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT64
+typedef uint64_t activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_FLOAT
+typedef float activation_t;
+#endif
+#ifdef CONFIG_ACTIVATION_DATA_TYPE_DOUBLE
+typedef double activation_t;
+#endif
+
+#ifdef CONFIG_BIAS_DATA_TYPE_INT8
+typedef int8_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_INT16
+typedef int16_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_INT32
+typedef int32_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_INT64
+typedef int64_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_UINT8
+typedef uint8_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_UINT16
+typedef uint16_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_UINT32
+typedef uint32_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_UINT64
+typedef uint64_t bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_FLOAT
+typedef float bias_t;
+#endif
+#ifdef CONFIG_BIAS_DATA_TYPE_DOUBLE
+typedef double bias_t;
+#endif
+
+#ifdef CONFIG_WEIGHT_DATA_TYPE_INT8
+typedef int8_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_INT16
+typedef int16_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_INT32
+typedef int32_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_INT64
+typedef int64_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_UINT8
+typedef uint8_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_UINT16
+typedef uint16_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_UINT32
+typedef uint32_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_UINT64
+typedef uint64_t weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_FLOAT
+typedef float weight_t;
+#endif
+#ifdef CONFIG_WEIGHT_DATA_TYPE_DOUBLE
+typedef double weight_t;
+#endif
 
 typedef struct  {
     float weight;
