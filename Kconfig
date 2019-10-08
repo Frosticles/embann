@@ -73,6 +73,11 @@ mainmenu "Embann Configuration"
                 This will significantly impact performance depending on
                 what instructions / extensions are available.
 
+                Changing neuron data types to different essential types
+                (i.e. mixing unsigned and signed, or integer and float) will
+                cause MISRA C non-compliances, although this may be necassary
+                to take advantage of specific assembly instructions (e.g. VPDPBUSD).
+
             config ACTIVATION_DATA_TYPE_INT8
                 bool "Signed 8-bit Integer"
             config ACTIVATION_DATA_TYPE_INT16
@@ -105,6 +110,11 @@ mainmenu "Embann Configuration"
                 This will significantly impact performance depending on
                 what instructions / extensions are available.
 
+                Changing neuron data types to different essential types
+                (i.e. mixing unsigned and signed, or integer and float) will
+                cause MISRA C non-compliances, although this may be necassary
+                to take advantage of specific assembly instructions (e.g. VPDPBUSD).
+
             config BIAS_DATA_TYPE_INT8
                 bool "Signed 8-bit Integer"
             config BIAS_DATA_TYPE_INT16
@@ -136,6 +146,11 @@ mainmenu "Embann Configuration"
 
                 This will significantly impact performance depending on
                 what instructions / extensions are available.
+
+                Changing neuron data types to different essential types
+                (i.e. mixing unsigned and signed, or integer and float) will
+                cause MISRA C non-compliances, although this may be necassary
+                to take advantage of specific assembly instructions (e.g. VPDPBUSD).
 
             config WEIGHT_DATA_TYPE_INT8
                 bool "Signed 8-bit Integer"
