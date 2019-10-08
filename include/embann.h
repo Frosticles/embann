@@ -6,7 +6,7 @@
 #ifndef Embann_h
 #define Embann_h
 
-#include "config.h"
+#include <config.h>
 
 #ifdef ARDUINO
 #include "Arduino.h"
