@@ -7,10 +7,6 @@
 #ifndef Embann_h
 #define Embann_h
 
-#include "embann_config.h"
-#include "embann_data_types.h"
-#include "embann_macros.h"
-
 #ifdef ARDUINO
 #include "Arduino.h"
 #else// ARDUINO
@@ -28,6 +24,10 @@
 #include <string.h>
 #define PI 3.14159
 #endif// ARDUINO
+
+#include "embann_config.h"
+#include "embann_data_types.h"
+#include "embann_macros.h"
 
 
 /* errno value specifically for internal embann errors */
