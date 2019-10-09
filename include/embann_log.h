@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+    embann_log.h - EMbedded Backpropogating Artificial Neural Network.
+    Copyright Peter Frost 2019
+*/
+
 #ifndef Embann_log_h
 #define Embann_log_h
 

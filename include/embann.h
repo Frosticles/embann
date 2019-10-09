@@ -1,8 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
-  Embann.h - ARDuino Backpropogating Artificial Neural Network.
-  Created by Peter Frost, February 9, 2017.
-  Released into the public domain.
+    embann.h - EMbedded Backpropogating Artificial Neural Network.
+    Copyright Peter Frost 2019
 */
+
 #ifndef Embann_h
 #define Embann_h
 

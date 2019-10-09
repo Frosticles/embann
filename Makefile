@@ -1,3 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+#   Makefile - EMbedded Backpropogating Artificial Neural Network.
+#   Copyright Peter Frost 2019
+
 ifeq ($(OS),Windows_NT)
 	CC=gcc
 	CPP_CHECK=./tools/cppcheck/cppcheck.exe
@@ -70,3 +75,4 @@ check-all:
 menuconfig:
 	python ./tools/Kconfiglib/menuconfig.py ./Kconfig
 	python ./tools/Kconfiglib/genconfig.py --header-path ./include/embann_config.h
+	

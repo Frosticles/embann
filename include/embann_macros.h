@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+    Embann_macros.h - EMbedded Backpropogating Artificial Neural Network.
+    Copyright Peter Frost 2019
+*/
+
 #ifndef Embann_macros_h
 #define Embann_macros_h
 

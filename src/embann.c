@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
-  Embann.cpp - EMbedded Backpropogating Artificial Neural Network.
-  Created by Peter Frost, 27th August 2019
+    embann.c - EMbedded Backpropogating Artificial Neural Network.
+    Copyright Peter Frost 2019
 */
 
 #include "embann.h"
