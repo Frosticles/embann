@@ -69,4 +69,4 @@ check-all:
 
 menuconfig:
 	python ./tools/Kconfiglib/menuconfig.py ./Kconfig
-	python ./tools/Kconfiglib/genconfig.py --header-path ./include/config.h
+	python ./tools/Kconfiglib/genconfig.py --header-path ./include/embann_config.h
