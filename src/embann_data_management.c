@@ -220,5 +220,5 @@ int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctRes
 
 int embann_shuffleTrainingData(void)
 {
-
+    return EOK;
 }
