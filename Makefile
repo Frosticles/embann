@@ -30,7 +30,7 @@ LIBS = -lm
 
 
 OPT_CFLAGS = -O3 -ffinite-math-only -fno-signed-zeros -march=native
-CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -flto -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math
+CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -flto -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
 GEN_TREE_CFLAGS = -fdump-tree-optimized-graph
@@ -47,7 +47,7 @@ $(EXE): $(OBJ)
 	$(info ### executable is located at ${EXE})
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(INC_DIRS) $(CFLAGS) -c $< -o $@
+	$(CC) $(INC_DIRS) $(CFLAGS) --save-temps -c $< -o $@
 
 
 
