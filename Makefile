@@ -36,7 +36,7 @@ USE_PROFILE_CFLAGS = -fprofile-use
 GEN_TREE_CFLAGS = -fdump-tree-optimized-graph
 GRAPH_PDF_NAME = embann-graph.pdf
 
-.PHONY: clean check debug generate-profile use-profile menuconfig all graph
+.PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all
 
 all: $(EXE)
 
