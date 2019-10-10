@@ -8,21 +8,12 @@
 #include "embann_log.h"
 
 
-static network_t* network;
-static trainingDataCollection_t trainingDataCollection = {
-    .tail = NULL,
-    .head = NULL,
-    .numEntries = 0U
-};
 static int embann_initInputLayer(uint16_t numInputNeurons);
 static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                    uint8_t numHiddenLayers,
                                    uint16_t numInputNeurons);
 static int embann_initOutputLayer(uint16_t numOutputNeurons,
                                    uint16_t numHiddenNeurons);
-#ifndef ARDUINO
-static uint32_t millis(void);
-#endif
 
 #define TAG "Embann Core"
 
@@ -118,9 +109,15 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
                 hiddenLayer->neuron[j]->params[k] = hiddenLayerParams;
 
-                //EMBANN_LOGI(TAG, "params array: 0x%x, bias 0x%x, weight 0x%x", (uint32_t) &hiddenLayer->neuron[j]->params[k],
-                //                    (uint32_t)&hiddenLayer->neuron[j]->params[k]->bias,
-                //                    (uint32_t)&hiddenLayer->neuron[j]->params[k]->weight);
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+                // MISRA C 2012 14.4 - deliberate cast from pointer to integer
+                // cppcheck-suppress misra-c2012-11.4
+                EMBANN_LOGV(TAG, "params array: 0x%x, bias 0x%x, weight 0x%x", 
+                                    (uint32_t) &hiddenLayer->neuron[j]->params[k],
+                                    (uint32_t) &hiddenLayer->neuron[j]->params[k]->bias,
+                                    (uint32_t) &hiddenLayer->neuron[j]->params[k]->weight);
+                #pragma GCC diagnostic pop
 
                 hiddenLayer->neuron[j]->params[k]->bias = RAND_WEIGHT();
                 hiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
@@ -180,176 +177,26 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
     return EOK;
 }
 
-void embann_inputRaw(float data[])
-{
-    for (uint32_t i = 0; i < network->inputLayer->numNeurons; i++)
-    {
-        network->inputLayer->neuron[i]->activation = data[i];
-    }
-}
 
-void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max)
-{
-    for (uint32_t i = 0; i < network->inputLayer->numNeurons; i++)
-    {
-        network->inputLayer->neuron[i]->activation = (((float)data[i] - min)) / (max - min);
-    }
-}
 
-void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev)
-{
-    for (uint32_t i = 0; i < network->inputLayer->numNeurons; i++)
-    {
-        network->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
-    }
-}
-
-int embann_getTrainingDataMean(float* mean)
-{
-    uint32_t sum = 0;
-    trainingData_t* pTrainingData = trainingDataCollection.head;
-
-    if (pTrainingData != NULL)
-    {
-        *mean = pTrainingData->data[0];
-    }
-    else
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return ENOENT;
-    }
-    
-    while (pTrainingData != NULL)
-    {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
-        {
-            sum += pTrainingData->data[j];
-        }
-        *mean += sum / pTrainingData->length;
-        sum = 0;
-
-        pTrainingData = pTrainingData->next;
-    }
-
-    *mean /= trainingDataCollection.numEntries;
-
-    return EOK;
-}
-
-int embann_getTrainingDataStdDev(float* stdDev)
-{
-    float sumofSquares = 0.0F;
-    float mean;
-    trainingData_t* pTrainingData = trainingDataCollection.head;
-
-    if (pTrainingData != NULL)
-    {
-        *stdDev = pTrainingData->data[0];
-    }
-    else
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return ENOENT;
-    }
-
-    if (embann_getTrainingDataMean(&mean) != EOK)
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return ENOENT;
-    }
-    
-    while (pTrainingData != NULL)
-    {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
-        {
-            sumofSquares += powf((float)pTrainingData->data[j] - mean, 2.0F);
-        }
-        sumofSquares /= pTrainingData->length;
-        pTrainingData = pTrainingData->next;
-    }
-
-    *stdDev = sqrtf(sumofSquares);
-
-    return EOK;
-}
-
-int embann_getTrainingDataMax(uint8_t* max)
-{
-    trainingData_t* pTrainingData = trainingDataCollection.head;
-    if (pTrainingData != NULL)
-    {
-        *max = pTrainingData->data[0];
-    }
-    else
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return ENOENT;
-    }
-    
-    
-    while (pTrainingData != NULL)
-    {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
-        {
-            if (pTrainingData->data[j] > *max)
-            {
-                *max = pTrainingData->data[j];
-            }
-        }
-        pTrainingData = pTrainingData->next;
-    }
-
-    return EOK;
-}
-
-int embann_getTrainingDataMin(uint8_t* min)
-{
-    trainingData_t* pTrainingData = trainingDataCollection.head;
-    if (pTrainingData != NULL)
-    {
-        *min = pTrainingData->data[0];
-    }
-    else
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return ENOENT;
-    }
-
-    while (pTrainingData != NULL)
-    {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
-        {
-            if (pTrainingData->data[j] < *min)
-            {
-                *min = pTrainingData->data[j];
-            }
-        }
-        pTrainingData = pTrainingData->next;
-    }
-
-    return EOK;
-}
 
 
 int embann_inputLayer(uint16_t* networkResponse)
 {
     embann_sumAndSquashInput(network->inputLayer->neuron, 
-                        network->hiddenLayer[0].neuron,
-                        network->inputLayer->numNeurons, 
-                        network->hiddenLayer[0].numNeurons);
-    // EMBANN_LOGI(TAG, "Done Input -> 1st Hidden Layer");
+                             network->hiddenLayer[0].neuron,
+                             network->inputLayer->numNeurons, 
+                             network->hiddenLayer[0].numNeurons);
+
+    EMBANN_LOGD(TAG, "Done Input -> 1st Hidden Layer");
     for (uint8_t i = 1; i < network->properties.numHiddenLayers; i++)
     {
         embann_sumAndSquash(network->hiddenLayer[i - 1U].neuron,
                             network->hiddenLayer[i].neuron,
                             network->hiddenLayer[i - 1U].numNeurons,
                             network->hiddenLayer[i].numNeurons);
-        // EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1, i);
+
+        EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1U, i);
     }
 
     embann_sumAndSquash(
@@ -358,7 +205,7 @@ int embann_inputLayer(uint16_t* networkResponse)
         network->hiddenLayer[network->properties.numHiddenLayers - 1U].numNeurons,
         network->outputLayer->numNeurons);
 
-    /*EMBANN_LOGI(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);*/
+    EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);
 
     EMBANN_ERROR_CHECK(embann_outputLayer(&network->properties.networkResponse));
 
@@ -385,8 +232,7 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInp
         }
         Output[i]->activation = tanhf(Output[i]->activation * PI);
 
-        // tanh is a quicker alternative to sigmoid
-        // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
+        EMBANN_LOGV(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
     }
     return EOK;
 }
@@ -403,233 +249,12 @@ int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t n
         }
         Output[i]->activation = tanhf(Output[i]->activation * PI);
 
-        // tanh is a quicker alternative to sigmoid
-        // EMBANN_LOGI(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
+        EMBANN_LOGV(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
     }
     return EOK;
 }
 
-int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
-{
-    trainingData_t* trainingDataNode;
 
-    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
-    CHECK_MALLOC(trainingDataNode);
-
-    trainingDataNode->prev = trainingDataCollection.tail;
-    trainingDataNode->next = NULL;
-    trainingDataNode->length = length;
-    trainingDataNode->correctResponse = correctResponse;
-    trainingDataNode->data[0] = data[0];
-
-    if (trainingDataCollection.head == NULL)
-    {
-        trainingDataCollection.head = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
-    }
-    else
-    {
-        trainingDataCollection.tail->next = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
-    }
-
-    ++trainingDataCollection.numEntries;
-    return EOK;
-}
-
-int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
-{
-    trainingData_t* trainingDataNode;
-
-    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
-    CHECK_MALLOC(trainingDataNode);
-
-    trainingDataNode->prev = trainingDataCollection.tail;
-    trainingDataNode->next = NULL;
-    trainingDataNode->length = length;
-    trainingDataNode->correctResponse = correctResponse;
-    memcpy(trainingDataNode->data, data, length);
-
-    if (trainingDataCollection.head == NULL)
-    {
-        trainingDataCollection.head = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
-    }
-    else
-    {
-        trainingDataCollection.tail->next = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
-    }
-
-    ++trainingDataCollection.numEntries;
-    return EOK;
-}
-
-void embann_shuffleTrainingData(void)
-{
-
-}
-
-int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbose)
-{
-    uint16_t randomOutput, randomTrainingSet;
-
-    if (verbose == true)
-    {
-        EMBANN_LOGI(TAG, "\nOutput Errors: ");
-    }
-
-    uint32_t startTime = millis();
-
-    while ((millis() - startTime) < (numSeconds * 1000UL))
-    {
-        randomOutput = random() % network->outputLayer->numNeurons;
-        randomTrainingSet = random() % trainingDataCollection.numEntries;
-
-        /*
-            TODO, these are not 'right' but they will let the program run
-        */
-        embann_inputMinMaxScale(trainingDataCollection.head->data, 0U, UINT8_MAX);
-        EMBANN_ERROR_CHECK(embann_inputLayer(NULL));
-
-        if (verbose == true)
-        {
-            EMBANN_ERROR_CHECK(embann_errorReporting(randomOutput));
-            EMBANN_LOGI(TAG, "%u | %u ", randomOutput, randomTrainingSet);
-        }
-
-        EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate));
-    }
-    return EOK;
-}
-
-int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose)
-{
-    uint16_t randomOutput, randomTrainingSet;
-    float currentCost[network->outputLayer->numNeurons];
-    bool converged = false;
-
-    if (verbose == true)
-    {
-        EMBANN_LOGI(TAG, "\nOutput Errors: ");
-    }
-
-    while (!converged)
-    {
-        randomOutput = random() % network->outputLayer->numNeurons;
-        randomTrainingSet = random() % trainingDataCollection.numEntries;
-        currentCost[randomOutput] = 0.0;
-        embann_inputMinMaxScale(trainingDataCollection.head->data, 0U, UINT8_MAX);
-
-        EMBANN_ERROR_CHECK(embann_inputLayer(NULL));
-
-        if (verbose == true)
-        {
-            EMBANN_ERROR_CHECK(embann_errorReporting(randomOutput));
-            EMBANN_LOGI(TAG, "%u | %u ", randomOutput, randomTrainingSet);
-        }
-
-        EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate));
-        for (uint8_t i = 0; i < network->outputLayer->numNeurons; i++)
-        {
-            if (i == randomOutput)
-            {
-                currentCost[randomOutput] += pow(1 - network->outputLayer->neuron[i]->activation, 2.0F);
-            }
-            else
-            {
-                currentCost[randomOutput] += pow(network->outputLayer->neuron[i]->activation, 2.0F);
-            }
-        }
-        currentCost[randomOutput] /= network->outputLayer->numNeurons;
-
-        for (uint8_t i = 0; i < network->outputLayer->numNeurons; i++)
-        {
-            EMBANN_LOGI(TAG, "%f", currentCost[i]);
-            EMBANN_LOGI(TAG, ", ");
-            if (currentCost[i] > desiredCost)
-            {
-                break;
-            }
-            if (i == (network->outputLayer->numNeurons - 1U))
-            {
-                converged = true;
-            }
-        }
-        EMBANN_LOGI(TAG, "%f", desiredCost);
-    }
-    return EOK;
-}
-
-int embann_train(uint8_t correctOutput, float learningRate)
-{
-    float dOutputErrorToOutputSum[network->outputLayer->numNeurons];
-    float dTotalErrorToHiddenNeuron = 0.0F;
-    /* TODO, add support for multiple hidden layers */
-    float outputNeuronWeightChange[network->outputLayer->numNeurons]
-                                  [network->hiddenLayer[0].numNeurons];
-    float tanhDerivative;
-
-    for (uint16_t i = 0; i < network->outputLayer->numNeurons; i++)
-    {
-        if (i == correctOutput)
-        {
-            EMBANN_ERROR_CHECK(embann_tanhDerivative(network->outputLayer->neuron[i]->activation, &tanhDerivative));
-            dOutputErrorToOutputSum[i] =
-                (1 - network->outputLayer->neuron[i]->activation) * tanhDerivative;
-        }
-        else
-        {
-            EMBANN_ERROR_CHECK(embann_tanhDerivative(network->outputLayer->neuron[i]->activation, &tanhDerivative));
-            dOutputErrorToOutputSum[i] =
-                -network->outputLayer->neuron[i]->activation * tanhDerivative;
-        }
-        // EMBANN_LOGI(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i,
-        // dOutputErrorToOutputSum[i]);
-        for (uint16_t j = 0; j < network->hiddenLayer[0].numNeurons; j++)
-        {
-            outputNeuronWeightChange[i][j] =
-                dOutputErrorToOutputSum[i] *
-                network->hiddenLayer[network->properties.numHiddenLayers - 1U].neuron[j]->activation *
-                learningRate;
-            // EMBANN_LOGI(TAG, "\n  outputNeuronWeightChange[%d][%d]: %.3f", i, j,
-            //              outputNeuronWeightChange[i][j]);
-        }
-    }
-
-    for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
-    {
-        dTotalErrorToHiddenNeuron = 0.0F;
-        for (uint16_t j = 0; j < network->outputLayer->numNeurons; j++)
-        {
-            dTotalErrorToHiddenNeuron +=
-                dOutputErrorToOutputSum[j] * network->outputLayer->neuron[j]->params[i]->weight;
-            // EMBANN_LOGI(TAG, "\nOld Output Weight[%d][%d]: %.3f", i, j,
-            // network->outputLayer->neuron[j]->params[i]->weight);
-            network->outputLayer->neuron[j]->params[i]->weight += outputNeuronWeightChange[j][i];
-            // EMBANN_LOGI(TAG, "\nNew Output Weight[%d][%d]: %.3f", i, j,
-            // network->outputLayer->neuron[j]->params[i]->weight);
-        }
-        for (uint16_t k = 0; k < network->inputLayer->numNeurons; k++)
-        {
-            // EMBANN_LOGI(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k,
-            // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
-            EMBANN_ERROR_CHECK(embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation, &tanhDerivative));
-            network->hiddenLayer[0].neuron[i]->params[k]->weight +=
-                dTotalErrorToHiddenNeuron * tanhDerivative *
-                network->inputLayer->neuron[k]->activation * learningRate;
-            // EMBANN_LOGI(TAG, "\nNew Hidden Weight[%d][%d]: %.3f", i, k,
-            // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
-        }
-    }
-    return EOK;
-}
-
-int embann_tanhDerivative(float inputValue, float* outputValue)
-{
-    *outputValue = 1.0F - powf(tanh(inputValue * PI), 2.0F);
-    return EOK;
-}
 
 int embann_outputLayer(uint16_t* networkResponse)
 {
@@ -642,8 +267,7 @@ int embann_outputLayer(uint16_t* networkResponse)
         {
             mostLikelyOutput = i;
         }
-        // EMBANN_LOGI(TAG, "i: %d neuron: %-3f likely: %d", i,
-        // network->outputLayer->neurons[i], mostLikelyOutput);
+        EMBANN_LOGV(TAG, "i: %d neuron: %-3f likely: %d", i, network->outputLayer->neuron[i]->activation, mostLikelyOutput);
     }
 
     if (networkResponse == NULL)
@@ -654,196 +278,6 @@ int embann_outputLayer(uint16_t* networkResponse)
     }
     
     *networkResponse = mostLikelyOutput;
-    return EOK;
-}
-
-int embann_printNetwork(void)
-{
-    EMBANN_LOGI(TAG, "\nInput: [");
-    for (uint16_t i = 0; i < (network->inputLayer->numNeurons - 1U); i++)
-    {
-        EMBANN_LOGI(TAG, "%0.3f, ", network->inputLayer->neuron[i]->activation);
-    }
-    EMBANN_LOGI(TAG, "%0.3f]", network->inputLayer->neuron[network->inputLayer->numNeurons - 1U]->activation);
-
-    EMBANN_LOGI(TAG, "\nInput Layer | Hidden Layer ");
-    if (network->properties.numHiddenLayers > 1U)
-    {
-        EMBANN_LOGI(TAG, "1 ");
-        for (uint8_t j = 2; j <= network->properties.numHiddenLayers; j++)
-        {
-            EMBANN_LOGI(TAG, "| Hidden Layer %d ", j);
-        }
-    }
-    EMBANN_LOGI(TAG, "| Output Layer");
-
-    bool nothingLeft = false;
-    uint16_t k = 0;
-    while (nothingLeft == false)
-    { /* TODO, Make this compatible with multiple hidden layers */
-        if ((k >= network->inputLayer->numNeurons) &&
-            (k >= network->hiddenLayer[0].numNeurons) &&
-            (k >= network->outputLayer->numNeurons))
-        {
-            nothingLeft = true;
-        }
-        else
-        {
-            if (k < network->inputLayer->numNeurons)
-            {
-                EMBANN_LOGI(TAG, "%-12.3f| ", network->inputLayer->neuron[k]->activation);
-            }
-            else
-            {
-                EMBANN_LOGI(TAG, "            | ");
-            }
-
-            if (k < network->hiddenLayer[0].numNeurons)
-            {
-                if (network->properties.numHiddenLayers == 1U)
-                {
-                    EMBANN_LOGI(TAG, "%-13.3f| ", network->hiddenLayer[0].neuron[k]->activation);
-                }
-                else
-                {
-                    for (uint8_t l = 0; l < network->properties.numHiddenLayers; l++)
-                    {
-                        EMBANN_LOGI(TAG, "%-15.3f| ", network->hiddenLayer[l].neuron[k]->activation);
-                    }
-                }
-            }
-            else
-            {
-                EMBANN_LOGI(TAG, "             | ");
-                if (network->properties.numHiddenLayers > 1U)
-                {
-                    EMBANN_LOGI(TAG, "              | ");
-                }
-            }
-
-            if (k < network->outputLayer->numNeurons)
-            {
-                EMBANN_LOGI(TAG, "%.3f", network->outputLayer->neuron[k]->activation);
-            }
-        }
-        EMBANN_LOGI(TAG, "\n");
-        k++;
-    }
-
-    EMBANN_LOGI(TAG, "I think this is output %d ", network->properties.networkResponse);
-    return EOK;
-}
-
-int embann_printInputNeuronDetails(uint8_t neuronNum)
-{
-    if (neuronNum < network->inputLayer->numNeurons)
-    {
-        EMBANN_LOGI(TAG, "\nInput Neuron %d: %.3f", neuronNum,
-                      network->inputLayer->neuron[neuronNum]->activation);
-    }
-    else
-    {
-        EMBANN_LOGI(TAG, "\nERROR: You've asked for input neuron %d when only %d exist",
-            neuronNum, network->inputLayer->numNeurons);
-    }
-    return EOK;
-}
-
-int embann_printOutputNeuronDetails(uint8_t neuronNum)
-{
-    if (neuronNum < network->outputLayer->numNeurons)
-    {
-
-        EMBANN_LOGI(TAG, "\nOutput Neuron %d:", neuronNum);
-
-        for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
-        {
-            EMBANN_LOGI(TAG, 
-                "%.3f-*->%.3f |",
-                network->hiddenLayer[network->properties.numHiddenLayers - 1U].neuron[i]->activation,
-                network->outputLayer->neuron[neuronNum]->params[i]->weight);
-
-            if (i == floor(network->hiddenLayer[0].numNeurons / 2U))
-            {
-                EMBANN_LOGI(TAG, " = %.3f", network->outputLayer->neuron[neuronNum]->activation);
-            }
-            EMBANN_LOGI(TAG, "\n");
-        }
-    }
-    else
-    {
-        EMBANN_LOGI(TAG, 
-            "\nERROR: You've asked for output neuron %d when only %d exist",
-            neuronNum, network->outputLayer->numNeurons);
-    }
-    return EOK;
-}
-
-int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
-{
-    if (neuronNum < network->hiddenLayer[0].numNeurons)
-    {
-
-        EMBANN_LOGI(TAG, "\nHidden Neuron %d:", neuronNum);
-
-        if (layerNum == 0U)
-        {
-
-            for (uint16_t i = 0; i < network->inputLayer->numNeurons; i++)
-            {
-                EMBANN_LOGI(TAG, "%.3f-*->%.3f |", network->inputLayer->neuron[i]->activation,
-                              network->hiddenLayer[0].neuron[neuronNum]->params[i]->weight);
-
-                if (i == floor(network->inputLayer->numNeurons / 2U))
-                {
-                    EMBANN_LOGI(TAG, " = %.3f",
-                                  network->hiddenLayer[0].neuron[neuronNum]->activation);
-                }
-                EMBANN_LOGI(TAG, "\n");
-            }
-        }
-        else
-        {
-
-            for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
-            {
-                EMBANN_LOGI(TAG, 
-                    "%.3f-*->%.3f |", network->hiddenLayer[layerNum - 1U].neuron[i]->activation,
-                    network->hiddenLayer[layerNum - 1U].neuron[neuronNum]->params[i]->weight);
-
-                if (i == floor(network->hiddenLayer[0].numNeurons / 2U))
-                {
-                    EMBANN_LOGI(TAG, " = %.3f",
-                                  network->hiddenLayer[0].neuron[neuronNum]->activation);
-                }
-                EMBANN_LOGI(TAG, "\n");
-            }
-        }
-    }
-    else
-    {
-        EMBANN_LOGI(TAG, 
-            "\nERROR: You've asked for hidden neuron %d when only %d exist",
-            neuronNum, network->hiddenLayer[0].numNeurons);
-    }
-    return EOK;
-}
-
-int embann_errorReporting(uint8_t correctResponse)
-{
-    EMBANN_LOGI(TAG, "\n");
-    for (uint8_t i = 0; i < network->outputLayer->numNeurons; i++)
-    {
-        if (i == correctResponse)
-        {
-            EMBANN_LOGI(TAG, "%-7.3f | ",
-                          (1 - network->outputLayer->neuron[correctResponse]->activation));
-        }
-        else
-        {
-            EMBANN_LOGI(TAG, "%-7.3f | ", -network->outputLayer->neuron[i]->activation);
-        }
-    }
     return EOK;
 }
 
@@ -929,12 +363,3 @@ int embann_benchmark(void)
 
     return EOK;
 }
-
-#ifndef ARDUINO
-uint32_t millis(void)
-{
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    return (uint32_t) round(time.tv_usec / 1000);
-}
-#endif

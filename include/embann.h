@@ -30,8 +30,6 @@
 #include "embann_macros.h"
 
 
-/* errno value specifically for internal embann errors */
-static int embann_errno = EOK;
 
 
 // TODO, could put in a linear approximation for these
@@ -116,7 +114,6 @@ typedef struct
     uint16_t networkResponse;
 } networkProperties_t;
 
-
 typedef struct
 {
     networkProperties_t properties;
@@ -126,9 +123,19 @@ typedef struct
 } network_t;
 
 
-/*
-  Combine these init statements with some pointer magic and null checking
-*/
+
+/* errno value specifically for internal embann errors */
+static int embann_errno = EOK;
+/* Pointer to the current network */
+static network_t* network;
+/* Structure of pointers to training data */
+static trainingDataCollection_t trainingDataCollection = {
+    .tail = NULL,
+    .head = NULL,
+    .numEntries = 0U
+};
+
+
 int embann_init(uint16_t numInputNeurons,
                  uint16_t numHiddenNeurons, 
                  uint8_t numHiddenLayers,
@@ -144,11 +151,29 @@ int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbo
 int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
 int embann_train(uint8_t correctOutput, float learningRate);
 int embann_tanhDerivative(float inputValue, float* outputValue);
-int embann_newInputRaw(uint16_t rawInputArray[], uint16_t numInputs);
 int embann_errorReporting(uint8_t correctResponse);
 int embann_printInputNeuronDetails(uint8_t neuronNum);
 int embann_printOutputNeuronDetails(uint8_t neuronNum);
 int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum);
 int embann_benchmark(void);
+void embann_inputRaw(float data[]);
+void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max);
+void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev);
+int embann_getTrainingDataMean(float* mean);
+int embann_getTrainingDataStdDev(float* stdDev);
+int embann_getTrainingDataMax(uint8_t* max);
+int embann_getTrainingDataMin(uint8_t* min);
+int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse);
+int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse);
+int embann_shuffleTrainingData(void);
+
+#ifndef ARDUINO
+static inline uint32_t millis(void)
+{
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    return (uint32_t) roundf(time.tv_usec / 1000);
+}
+#endif
 
 #endif // Embann_h
