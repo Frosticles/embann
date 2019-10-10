@@ -32,7 +32,7 @@ CFLAGS = -O3 -march=native -Wall -Wno-format -flto -fopenmp -fverbose-asm -fopt-
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
 
-.PHONY: clean check debug generate-profile use-profile menuconfig all
+.PHONY: clean check debug generate-profile use-profile menuconfig all graph
 
 all: $(EXE)
 
@@ -64,7 +64,8 @@ use-profile: all
 clean:
 	rm -f ./$(OBJ_DIR)/* ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
 	./$(SRC_DIR)/*.gcda ./$(EXE) ./$(EXE)-generate-profile ./$(EXE)-profiled \
-	./opt.log ./$(SRC_DIR)/$(EXE)
+	./opt.log ./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* ./embann-graph.pdf \
+	./$(OBJ_DIR)/embann.c.*
 
 check:
 	$(CPP_CHECK) --inline-suppr --max-configs=1 --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
@@ -75,4 +76,7 @@ check-all:
 menuconfig:
 	python ./tools/Kconfiglib/menuconfig.py ./Kconfig
 	python ./tools/Kconfiglib/genconfig.py --header-path ./include/embann_config.h
-	
+
+graph: CFLAGS += -fdump-tree-optimized-graph
+graph: all
+	dot -Tpdf embann.ltrans0.231t.optimized.dot -o embann-graph.pdf
