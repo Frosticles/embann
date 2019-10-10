@@ -33,6 +33,8 @@ OPT_CFLAGS = -O3 -ffinite-math-only -fno-signed-zeros -march=native
 CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -flto -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
+GEN_TREE_CFLAGS = -fdump-tree-optimized-graph
+GRAPH_PDF_NAME = embann-graph.pdf
 
 .PHONY: clean check debug generate-profile use-profile menuconfig all graph
 
@@ -53,20 +55,26 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 debug: CFLAGS += -g -pg
 debug: all
 
-generate-profile: CFLAGS += $(GEN_PROFILE_CFLAGS)
-generate-profile: EXE := $(SRC_DIR)/embann
-generate-profile: all 
+generate-profile: CFLAGS += $(GEN_PROFILE_CFLAGS) $(GEN_TREE_CFLAGS)
+generate-profile: all
 	
 
-use-profile: CFLAGS += $(USE_PROFILE_CFLAGS)
-use-profile: all
+use-profile: CFLAGS += $(USE_PROFILE_CFLAGS) $(GEN_TREE_CFLAGS)
+use-profile: GRAPH_PDF_NAME := after-profile.pdf
+use-profile: | all graph
 
 
 
 clean:
 	rm -f ./$(OBJ_DIR)/* ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
 	./$(SRC_DIR)/*.gcda ./$(EXE) ./$(EXE)-generate-profile ./$(EXE)-profiled \
-	./opt.log ./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* ./embann-graph.pdf \
+	./opt.log ./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* \
+	./$(OBJ_DIR)/embann.c.*
+
+clean-keep-profile:
+	rm -f ./$(OBJ_DIR)/*.o ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
+	./$(EXE) ./$(EXE)-generate-profile ./$(EXE)-profiled ./opt.log \
+	./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* \
 	./$(OBJ_DIR)/embann.c.*
 
 check:
@@ -79,6 +87,6 @@ menuconfig:
 	python ./tools/Kconfiglib/menuconfig.py ./Kconfig
 	python ./tools/Kconfiglib/genconfig.py --header-path ./include/embann_config.h
 
-graph: CFLAGS += -fdump-tree-optimized-graph
+graph: CFLAGS += $(GEN_TREE_CFLAGS)
 graph: all
-	dot -Tpdf embann.ltrans0.231t.optimized.dot -o embann-graph.pdf
+	dot -Tpdf embann.ltrans0.231t.optimized.dot -o $(GRAPH_PDF_NAME)
