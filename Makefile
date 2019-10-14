@@ -38,7 +38,6 @@ GRAPH_PDF_NAME = embann-graph.pdf
 .PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all
 
 all: $(EXE)
-	ls -al
 
 
 
@@ -47,6 +46,7 @@ $(EXE): $(OBJ)
 	$(info ### executable is located at ${EXE})
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	ls -al
 	$(CC) $(INC_DIRS) $(CFLAGS) -c $< -o $@
 
 
