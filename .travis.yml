@@ -1,0 +1,17 @@
+languange: c
+addons:
+  sonarcloud:
+    organization: "frosticles"
+    token:
+      secure: "wn5EpvFJ/t87Qoco13Vss1Blzcr1qmY9G2LPyuwPC05VjTMQwi7JdE24bO49vyq0zo3e3GPZsZc5KeqvavAtcyuvdqP88AaeCVWDBR9QcVlQ6pND59rCNNpehzbxCQscrX7/eXcdGjeeUSW+97yNYkgNYKvIE0B8eCiImd6ngj/8y5r4I0/AKpwQlTokXAjUjoK2b4nPCPsvGyRX1bGqWLxxwFz9vUvoNconYKrvyeZ/rujJvKs1MuzIQiSxIk4Yp50aF/ozYEy5Z4KBOKsh+g9iq/qWNT4qpw16/XjCBVogNj8AF6Kq7T7JlDTalB5iX0/dw9skdY9cKiKfD3PK6QfhufSyLh8iIoeeaQrKZtobzn6x9kGOZZ/de7D3CT9zJW3Kn5/DwItDZlq8p+jrHMkIngNaDcuChh38B8RjrLWhecIVbTMo5T+IYwnY19OsA4AMpF3czTbmHbJuU/nY7odaE0p6AeREhjmRoyKX9aL5GUFOzkOeDgbJ8DIWEECUFxmK6LnpiIXpiQHqi81zDs8f5T0fPsP699QtPodZnopd8MxOuy1A1C9dLobQ0PPLK0h2yDPlL5aMpJyDXzSs8y4K+UUJPAcwyYqjKdzb0kvoEs/RraKZ7mxfdBDJ0sNI8RwY3ERQM0FYId5+GlnqPt6x+bpBzd9AIoaKzYAu3FE="
+
+script:
+  - make clean
+  # Wraps the compilation with the Build Wrapper to generate configuration (used
+  # later by the SonarQube Scanner) into the "bw-output" folder
+  - build-wrapper-linux-x86-64 --out-dir bw-output make all
+  # Execute some tests
+  # - make test
+  # And finally run the SonarQube analysis - read the "sonar-project.properties"
+  # file to see the specific configuration
+  - sonar-scanner
