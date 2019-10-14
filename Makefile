@@ -20,8 +20,8 @@ endif
 
 EXE = embann
 
-SRC_DIR = src
-OBJ_DIR = obj
+SRC_DIR = ./src
+OBJ_DIR = ./obj
 INC_DIRS = -Iinclude
 
 SRC = $(wildcard $(SRC_DIR)/*.c)
