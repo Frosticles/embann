@@ -120,7 +120,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
         }
         // EMBANN_LOGI(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i,
         // dOutputErrorToOutputSum[i]);
-        for (uint16_t j = 0; j < network->hiddenLayer[0].numNeurons; j++)
+        for (uint16_t j = 0; j < network->hiddenLayer[0].numNeurons - 1; j++)
         {
             outputNeuronWeightChange[i][j] =
                 dOutputErrorToOutputSum[i] *
