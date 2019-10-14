@@ -131,7 +131,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
         }
     }
 
-    for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons; i++)
+    for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons - 1; i++)
     {
         dTotalErrorToHiddenNeuron = 0.0F;
         for (uint16_t j = 0; j < network->outputLayer->numNeurons; j++)
