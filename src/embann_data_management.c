@@ -35,7 +35,7 @@ int embann_getTrainingDataMean(float* mean)
     uint32_t sum = 0;
     trainingData_t* pTrainingData = trainingDataCollection.head;
 
-    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
+    if (pTrainingData != NULL)
     {
         *mean = pTrainingData->data[0];
     }
@@ -69,7 +69,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
     float mean;
     trainingData_t* pTrainingData = trainingDataCollection.head;
 
-    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
+    if (pTrainingData != NULL)
     {
         *stdDev = pTrainingData->data[0];
     }
@@ -105,7 +105,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
 int embann_getTrainingDataMax(uint8_t* max)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
-    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
+    if (pTrainingData != NULL)
     {
         *max = pTrainingData->data[0];
     }
@@ -135,7 +135,7 @@ int embann_getTrainingDataMax(uint8_t* max)
 int embann_getTrainingDataMin(uint8_t* min)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
-    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
+    if (pTrainingData != NULL)
     {
         *min = pTrainingData->data[0];
     }
@@ -166,6 +166,13 @@ int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResp
 {
     trainingData_t* trainingDataNode;
 
+    if (length == 0U)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
+
     trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
     CHECK_MALLOC(trainingDataNode);
 
@@ -193,6 +200,13 @@ int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResp
 int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
 {
     trainingData_t* trainingDataNode;
+
+    if (length == 0U)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
 
     trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
     CHECK_MALLOC(trainingDataNode);
