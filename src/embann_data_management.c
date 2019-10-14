@@ -35,7 +35,7 @@ int embann_getTrainingDataMean(float* mean)
     uint32_t sum = 0;
     trainingData_t* pTrainingData = trainingDataCollection.head;
 
-    if (pTrainingData != NULL)
+    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
     {
         *mean = pTrainingData->data[0];
     }
@@ -69,7 +69,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
     float mean;
     trainingData_t* pTrainingData = trainingDataCollection.head;
 
-    if (pTrainingData != NULL)
+    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
     {
         *stdDev = pTrainingData->data[0];
     }
@@ -105,7 +105,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
 int embann_getTrainingDataMax(uint8_t* max)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
-    if (pTrainingData != NULL)
+    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
     {
         *max = pTrainingData->data[0];
     }
@@ -135,7 +135,7 @@ int embann_getTrainingDataMax(uint8_t* max)
 int embann_getTrainingDataMin(uint8_t* min)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
-    if (pTrainingData != NULL)
+    if ((pTrainingData != NULL) && (pTrainingData->length > 0U))
     {
         *min = pTrainingData->data[0];
     }
