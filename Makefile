@@ -46,12 +46,6 @@ $(EXE): $(OBJ)
 	$(info ### executable is located at ${EXE})
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	ls -al
-	ls src -al
-	echo $(SRC)
-	echo $(SRC_DIR)
-	echo $(OBJ)
-	echo $(OBJ_DIR)
 	$(CC) $(INC_DIRS) $(CFLAGS) -c $< -o $@
 
 
