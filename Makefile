@@ -28,9 +28,8 @@ SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 LIBS = -lm
 
-
-OPT_CFLAGS = -O3 -ffinite-math-only -fno-signed-zeros -march=native
-CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -flto -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns
+OPT_CFLAGS = -O3 -fno-signed-zeros -ffinite-math-only -march=native # -flto
+CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
 GEN_TREE_CFLAGS = -fdump-tree-optimized-graph
@@ -47,7 +46,7 @@ $(EXE): $(OBJ)
 	$(info ### executable is located at ${EXE})
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(INC_DIRS) $(CFLAGS) --save-temps -c $< -o $@
+	$(CC) $(INC_DIRS) $(CFLAGS) -c $< -o $@
 
 
 
@@ -67,13 +66,13 @@ use-profile: | all graph
 
 clean:
 	rm -f ./$(OBJ_DIR)/* ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
-	./$(SRC_DIR)/*.gcda ./$(EXE) ./$(EXE)-generate-profile ./$(EXE)-profiled \
+	./$(SRC_DIR)/*.gcda ./$(EXE) ./$(EXE)-generate-profile \
 	./opt.log ./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* \
 	./$(OBJ_DIR)/embann.c.*
 
 clean-keep-profile:
 	rm -f ./$(OBJ_DIR)/*.o ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
-	./$(EXE) ./$(EXE)-generate-profile ./$(EXE)-profiled ./opt.log \
+	./$(EXE) ./$(EXE)-generate-profile ./opt.log \
 	./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* \
 	./$(OBJ_DIR)/embann.c.*
 
@@ -89,4 +88,4 @@ menuconfig:
 
 graph: CFLAGS += $(GEN_TREE_CFLAGS)
 graph: all
-	dot -Tpdf embann.ltrans0.231t.optimized.dot -o $(GRAPH_PDF_NAME)
+	dot -Tpdf $(OBJ_DIR)/embann.c.231t.optimized.dot -o $(GRAPH_PDF_NAME)
