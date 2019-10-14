@@ -20,8 +20,8 @@ endif
 
 EXE = embann
 
-SRC_DIR = ./src
-OBJ_DIR = ./obj
+SRC_DIR = src
+OBJ_DIR = obj
 INC_DIRS = -Iinclude
 
 SRC = $(wildcard $(SRC_DIR)/*.c)
@@ -38,6 +38,7 @@ GRAPH_PDF_NAME = embann-graph.pdf
 .PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all
 
 all: $(EXE)
+	ls -al
 
 
 
