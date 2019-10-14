@@ -33,6 +33,14 @@ int embann_init(uint16_t numInputNeurons,
                  uint8_t numHiddenLayers,
                  uint16_t numOutputNeurons)
 {
+    if ((numInputNeurons == 0) || (numHiddenNeurons == 0) || 
+        (numHiddenLayers == 0) || (numOutputNeurons == 0))
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return EINVAL;
+    }
+    
     network = (network_t*) malloc(sizeof(network_t) + 
                                  (sizeof(hiddenLayer_t) * numHiddenLayers));
     CHECK_MALLOC(network);
