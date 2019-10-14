@@ -104,7 +104,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
                                   [network->hiddenLayer[0].numNeurons];
     float tanhDerivative;
 
-    for (uint16_t i = 0; i < network->outputLayer->numNeurons; i++)
+    for (uint16_t i = 0; i < network->outputLayer->numNeurons - 1; i++)
     {
         if (i == correctOutput)
         {
@@ -134,7 +134,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
     for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons - 1; i++)
     {
         dTotalErrorToHiddenNeuron = 0.0F;
-        for (uint16_t j = 0; j < network->outputLayer->numNeurons; j++)
+        for (uint16_t j = 0; j < network->outputLayer->numNeurons - 1; j++)
         {
             dTotalErrorToHiddenNeuron +=
                 dOutputErrorToOutputSum[j] * network->outputLayer->neuron[j]->params[i]->weight;
@@ -144,7 +144,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
             // EMBANN_LOGI(TAG, "\nNew Output Weight[%d][%d]: %.3f", i, j,
             // network->outputLayer->neuron[j]->params[i]->weight);
         }
-        for (uint16_t k = 0; k < network->inputLayer->numNeurons; k++)
+        for (uint16_t k = 0; k < network->inputLayer->numNeurons - 1; k++)
         {
             // EMBANN_LOGI(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k,
             // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
