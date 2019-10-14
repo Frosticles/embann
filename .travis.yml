@@ -1,9 +1,6 @@
 languange: c
 compiler: gcc
 os: linux
-dist: trusty
-git:
-  depth: false
 addons:
   sonarcloud:
     organization: "frosticles"
