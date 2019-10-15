@@ -25,7 +25,7 @@ int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbo
             TODO, these are not 'right' but they will let the program run
         */
         embann_inputMinMaxScale(embann_getDataCollection()->head->data, 0U, UINT8_MAX);
-        EMBANN_ERROR_CHECK(embann_inputLayer(NULL));
+        EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
         if (verbose == true)
         {
@@ -57,7 +57,7 @@ int embann_trainDriverInError(float learningRate, float desiredCost, bool verbos
         currentCost[randomOutput] = 0.0;
         embann_inputMinMaxScale(embann_getDataCollection()->head->data, 0U, UINT8_MAX);
 
-        EMBANN_ERROR_CHECK(embann_inputLayer(NULL));
+        EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
         if (verbose == true)
         {
