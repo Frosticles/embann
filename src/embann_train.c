@@ -120,16 +120,14 @@ int embann_train(uint8_t correctOutput, float learningRate)
             dOutputErrorToOutputSum[i] =
                 -network->outputLayer->neuron[i]->activation * tanhDerivative;
         }
-        // EMBANN_LOGI(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i,
-        // dOutputErrorToOutputSum[i]);
+        EMBANN_LOGV(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i, dOutputErrorToOutputSum[i]);
         for (uint16_t j = 0; j < network->hiddenLayer[0].numNeurons - 1; j++)
         {
             outputNeuronWeightChange[i][j] =
                 dOutputErrorToOutputSum[i] *
                 network->hiddenLayer[network->properties.numHiddenLayers - 1U].neuron[j]->activation *
                 learningRate;
-            // EMBANN_LOGI(TAG, "\n  outputNeuronWeightChange[%d][%d]: %.3f", i, j,
-            //              outputNeuronWeightChange[i][j]);
+            EMBANN_LOGV(TAG, "\n  outputNeuronWeightChange[%d][%d]: %.3f", i, j, outputNeuronWeightChange[i][j]);
         }
     }
 
@@ -140,22 +138,18 @@ int embann_train(uint8_t correctOutput, float learningRate)
         {
             dTotalErrorToHiddenNeuron +=
                 dOutputErrorToOutputSum[j] * network->outputLayer->neuron[j]->params[i]->weight;
-            // EMBANN_LOGI(TAG, "\nOld Output Weight[%d][%d]: %.3f", i, j,
-            // network->outputLayer->neuron[j]->params[i]->weight);
+            EMBANN_LOGV(TAG, "\nOld Output Weight[%d][%d]: %.3f", i, j, network->outputLayer->neuron[j]->params[i]->weight);
             network->outputLayer->neuron[j]->params[i]->weight += outputNeuronWeightChange[j][i];
-            // EMBANN_LOGI(TAG, "\nNew Output Weight[%d][%d]: %.3f", i, j,
-            // network->outputLayer->neuron[j]->params[i]->weight);
+            EMBANN_LOGV(TAG, "\nNew Output Weight[%d][%d]: %.3f", i, j, network->outputLayer->neuron[j]->params[i]->weight);
         }
         for (uint16_t k = 0; k < network->inputLayer->numNeurons - 1; k++)
         {
-            // EMBANN_LOGI(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k,
-            // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
+            EMBANN_LOGV(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k, network->hiddenLayer[0].neuron[i]->params[k]->weight);
             EMBANN_ERROR_CHECK(embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation, &tanhDerivative));
             network->hiddenLayer[0].neuron[i]->params[k]->weight +=
                 dTotalErrorToHiddenNeuron * tanhDerivative *
                 network->inputLayer->neuron[k]->activation * learningRate;
-            // EMBANN_LOGI(TAG, "\nNew Hidden Weight[%d][%d]: %.3f", i, k,
-            // network->network->hiddenLayer[0].neuron[i]->params[k]->weight);
+            EMBANN_LOGV(TAG, "\nNew Hidden Weight[%d][%d]: %.3f", i, k, network->hiddenLayer[0].neuron[i]->params[k]->weight);
         }
     }
     return EOK;
