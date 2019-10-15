@@ -106,7 +106,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
                                   [network->hiddenLayer[0].numNeurons];
     float tanhDerivative;
 
-    for (uint16_t i = 0; i < network->outputLayer->numNeurons - 1; i++)
+    for (uint16_t i = 0; i < (network->outputLayer->numNeurons - 1); i++)
     {
         if (i == correctOutput)
         {
@@ -121,7 +121,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
                 -network->outputLayer->neuron[i]->activation * tanhDerivative;
         }
         EMBANN_LOGV(TAG, "\ndOutputErrorToOutputSum[%d]: %.3f", i, dOutputErrorToOutputSum[i]);
-        for (uint16_t j = 0; j < network->hiddenLayer[0].numNeurons - 1; j++)
+        for (uint16_t j = 0; j < (network->hiddenLayer[0].numNeurons - 1); j++)
         {
             outputNeuronWeightChange[i][j] =
                 dOutputErrorToOutputSum[i] *
@@ -131,10 +131,10 @@ int embann_train(uint8_t correctOutput, float learningRate)
         }
     }
 
-    for (uint16_t i = 0; i < network->hiddenLayer[0].numNeurons - 1; i++)
+    for (uint16_t i = 0; i < (network->hiddenLayer[0].numNeurons - 1); i++)
     {
         dTotalErrorToHiddenNeuron = 0.0F;
-        for (uint16_t j = 0; j < network->outputLayer->numNeurons - 1; j++)
+        for (uint16_t j = 0; j < (network->outputLayer->numNeurons - 1); j++)
         {
             dTotalErrorToHiddenNeuron +=
                 dOutputErrorToOutputSum[j] * network->outputLayer->neuron[j]->params[i]->weight;
@@ -142,7 +142,7 @@ int embann_train(uint8_t correctOutput, float learningRate)
             network->outputLayer->neuron[j]->params[i]->weight += outputNeuronWeightChange[j][i];
             EMBANN_LOGV(TAG, "\nNew Output Weight[%d][%d]: %.3f", i, j, network->outputLayer->neuron[j]->params[i]->weight);
         }
-        for (uint16_t k = 0; k < network->inputLayer->numNeurons - 1; k++)
+        for (uint16_t k = 0; k < (network->inputLayer->numNeurons - 1); k++)
         {
             EMBANN_LOGV(TAG, "\nOld Hidden Weight[%d][%d]: %.3f", i, k, network->hiddenLayer[0].neuron[i]->params[k]->weight);
             EMBANN_ERROR_CHECK(embann_tanhDerivative(network->hiddenLayer[0].neuron[i]->activation, &tanhDerivative));

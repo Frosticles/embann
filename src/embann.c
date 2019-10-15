@@ -35,8 +35,8 @@ int embann_init(uint16_t numInputNeurons,
                  uint8_t numHiddenLayers,
                  uint16_t numOutputNeurons)
 {
-    if ((numInputNeurons == 0) || (numHiddenNeurons == 0) || 
-        (numHiddenLayers == 0) || (numOutputNeurons == 0))
+    if ((numInputNeurons == 0U) || (numHiddenNeurons == 0U) || 
+        (numHiddenLayers == 0U) || (numOutputNeurons == 0U))
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
@@ -193,27 +193,29 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
 
 int embann_inputLayer(uint16_t* networkResponse)
 {
-    embann_sumAndSquashInput(network->inputLayer->neuron, 
-                             network->hiddenLayer[0].neuron,
-                             network->inputLayer->numNeurons, 
-                             network->hiddenLayer[0].numNeurons);
+    EMBANN_ERROR_CHECK(embann_sumAndSquashInput(
+                            network->inputLayer->neuron, 
+                            network->hiddenLayer[0].neuron,
+                            network->inputLayer->numNeurons, 
+                            network->hiddenLayer[0].numNeurons));
 
     EMBANN_LOGD(TAG, "Done Input -> 1st Hidden Layer");
     for (uint8_t i = 1; i < network->properties.numHiddenLayers; i++)
     {
-        embann_sumAndSquash(network->hiddenLayer[i - 1U].neuron,
+        EMBANN_ERROR_CHECK(embann_sumAndSquash(
+                            network->hiddenLayer[i - 1U].neuron,
                             network->hiddenLayer[i].neuron,
                             network->hiddenLayer[i - 1U].numNeurons,
-                            network->hiddenLayer[i].numNeurons);
+                            network->hiddenLayer[i].numNeurons));
 
         EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1U, i);
     }
 
-    embann_sumAndSquash(
+    EMBANN_ERROR_CHECK(embann_sumAndSquash(
         network->hiddenLayer[network->properties.numHiddenLayers - 1U].neuron,
         network->outputLayer->neuron, 
         network->hiddenLayer[network->properties.numHiddenLayers - 1U].numNeurons,
-        network->outputLayer->numNeurons);
+        network->outputLayer->numNeurons));
 
     EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);
 
