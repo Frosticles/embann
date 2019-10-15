@@ -65,13 +65,13 @@ static int embann_initInputLayer(uint16_t numInputNeurons)
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
     CHECK_MALLOC(inputLayer);
 
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     // MISRA C 2012 14.4 - deliberate cast from pointer to integer
     // cppcheck-suppress misra-c2012-11.4
     EMBANN_LOGI(TAG, "inputLayer: 0x%x, size: %ld", (uint32_t) inputLayer, sizeof(inputLayer_t) + 
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 
     inputLayer->numNeurons = numInputNeurons;
     for (uint8_t i = 0; i < numInputNeurons; i++)
@@ -96,13 +96,13 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
         CHECK_MALLOC(hiddenLayer);
 
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
         // MISRA C 2012 14.4 - deliberate cast from pointer to integer
         // cppcheck-suppress misra-c2012-11.4
         EMBANN_LOGI(TAG, "hiddenlayer: 0x%x, size: %ld", (uint32_t) hiddenLayer, sizeof(hiddenLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
-        #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {    
@@ -117,15 +117,15 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
                 hiddenLayer->neuron[j]->params[k] = hiddenLayerParams;
 
-                #pragma GCC diagnostic push
-                #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
                 // MISRA C 2012 14.4 - deliberate cast from pointer to integer
                 // cppcheck-suppress misra-c2012-11.4
                 EMBANN_LOGV(TAG, "params array: 0x%x, bias 0x%x, weight 0x%x", 
                                     (uint32_t) &hiddenLayer->neuron[j]->params[k],
                                     (uint32_t) &hiddenLayer->neuron[j]->params[k]->bias,
                                     (uint32_t) &hiddenLayer->neuron[j]->params[k]->weight);
-                #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 
                 hiddenLayer->neuron[j]->params[k]->bias = RAND_WEIGHT();
                 hiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
@@ -136,12 +136,12 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
         network->hiddenLayer[i] = *hiddenLayer;
 
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
         // MISRA C 2012 14.4 - deliberate cast from pointer to integer
         // cppcheck-suppress misra-c2012-11.4
         EMBANN_LOGI(TAG, "hiddenlayer[i]: 0x%x", (uint32_t) &network->hiddenLayer[i]);
-        #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
     }
     return EOK;
 }
@@ -153,13 +153,13 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
                                                         (sizeof(wNeuron_t*) * numOutputNeurons));
     CHECK_MALLOC(outputLayer);
 
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     // MISRA C 2012 14.4 - deliberate cast from pointer to integer
     // cppcheck-suppress misra-c2012-11.4
     EMBANN_LOGI(TAG, "outputLayer: 0x%x, size: %ld", (uint32_t) outputLayer, sizeof(outputLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numOutputNeurons));
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 
     for (uint8_t i = 0; i < numOutputNeurons; i++)
     {
