@@ -3,6 +3,7 @@
 *.s
 *.i
 *.dump
+*.pdf
 .vscode
 embann
 .config*
