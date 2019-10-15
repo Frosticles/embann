@@ -36,7 +36,7 @@ GEN_COVERAGE_CFLAGS = -fprofile-arcs -ftest-coverage
 GEN_TREE_CFLAGS = -fdump-tree-optimized-graph
 GRAPH_PDF_NAME = embann-graph.pdf
 
-.PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all profile generate-coverate
+.PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all profile generate-coverate test
 
 all: $(EXE)
 
@@ -103,3 +103,6 @@ menuconfig:
 graph: CFLAGS += $(GEN_TREE_CFLAGS)
 graph: all
 	dot -Tpdf $(OBJ_DIR)/embann.c.231t.optimized.dot -o $(GRAPH_PDF_NAME)
+
+test: CFLAGS += -DTEST_BUILD
+test: all

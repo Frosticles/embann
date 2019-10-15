@@ -7,6 +7,8 @@
 #ifndef Embann_h
 #define Embann_h
 
+#define TEST_BUILD // For now I'm always doing test builds but leave this for makefile later
+
 #ifdef ARDUINO
 #include "Arduino.h"
 #else// ARDUINO

@@ -17,7 +17,8 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
 
 #define TAG "Embann Core"
 
-int WEAK_FUNCTION main(int argc, char const *argv[])
+#ifdef TEST_BUILD
+int main(int argc, char const *argv[])
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -26,6 +27,7 @@ int WEAK_FUNCTION main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_benchmark());
     EMBANN_ERROR_CHECK(embann_init(10U, 10U, 1U, 10U));
 }
+#endif
 
 
 int embann_init(uint16_t numInputNeurons,
