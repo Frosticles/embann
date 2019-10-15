@@ -121,7 +121,7 @@ typedef struct
     networkProperties_t properties;
     inputLayer_t* inputLayer;
     outputLayer_t* outputLayer;
-    hiddenLayer_t hiddenLayer[];
+    hiddenLayer_t* hiddenLayer[];
 } network_t;
 
 

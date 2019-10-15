@@ -29,7 +29,7 @@ int embann_printNetwork(void)
     while (nothingLeft == false)
     { /* TODO, Make this compatible with multiple hidden layers */
         if ((k >= embann_getNetwork()->inputLayer->numNeurons) &&
-            (k >= embann_getNetwork()->hiddenLayer[0].numNeurons) &&
+            (k >= embann_getNetwork()->hiddenLayer[0]->numNeurons) &&
             (k >= embann_getNetwork()->outputLayer->numNeurons))
         {
             nothingLeft = true;
@@ -45,17 +45,17 @@ int embann_printNetwork(void)
                 EMBANN_LOGI(TAG, "            | ");
             }
 
-            if (k < embann_getNetwork()->hiddenLayer[0].numNeurons)
+            if (k < embann_getNetwork()->hiddenLayer[0]->numNeurons)
             {
                 if (embann_getNetwork()->properties.numHiddenLayers == 1U)
                 {
-                    EMBANN_LOGI(TAG, "%-13.3f| ", embann_getNetwork()->hiddenLayer[0].neuron[k]->activation);
+                    EMBANN_LOGI(TAG, "%-13.3f| ", embann_getNetwork()->hiddenLayer[0]->neuron[k]->activation);
                 }
                 else
                 {
                     for (uint8_t l = 0; l < embann_getNetwork()->properties.numHiddenLayers; l++)
                     {
-                        EMBANN_LOGI(TAG, "%-15.3f| ", embann_getNetwork()->hiddenLayer[l].neuron[k]->activation);
+                        EMBANN_LOGI(TAG, "%-15.3f| ", embann_getNetwork()->hiddenLayer[l]->neuron[k]->activation);
                     }
                 }
             }
@@ -103,14 +103,14 @@ int embann_printOutputNeuronDetails(uint8_t neuronNum)
 
         EMBANN_LOGI(TAG, "\nOutput Neuron %d:", neuronNum);
 
-        for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[0].numNeurons; i++)
+        for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[0]->numNeurons; i++)
         {
             EMBANN_LOGI(TAG, 
                 "%.3f-*->%.3f |",
-                embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U].neuron[i]->activation,
+                embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[i]->activation,
                 embann_getNetwork()->outputLayer->neuron[neuronNum]->params[i]->weight);
 
-            if (i == floor(embann_getNetwork()->hiddenLayer[0].numNeurons / 2U))
+            if (i == floor(embann_getNetwork()->hiddenLayer[0]->numNeurons / 2U))
             {
                 EMBANN_LOGI(TAG, " = %.3f", embann_getNetwork()->outputLayer->neuron[neuronNum]->activation);
             }
@@ -128,7 +128,7 @@ int embann_printOutputNeuronDetails(uint8_t neuronNum)
 
 int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
 {
-    if (neuronNum < embann_getNetwork()->hiddenLayer[0].numNeurons)
+    if (neuronNum < embann_getNetwork()->hiddenLayer[0]->numNeurons)
     {
 
         EMBANN_LOGI(TAG, "\nHidden Neuron %d:", neuronNum);
@@ -139,12 +139,12 @@ int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
             for (uint16_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
             {
                 EMBANN_LOGI(TAG, "%.3f-*->%.3f |", embann_getNetwork()->inputLayer->neuron[i]->activation,
-                              embann_getNetwork()->hiddenLayer[0].neuron[neuronNum]->params[i]->weight);
+                              embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
 
                 if (i == floor(embann_getNetwork()->inputLayer->numNeurons / 2U))
                 {
                     EMBANN_LOGI(TAG, " = %.3f",
-                                  embann_getNetwork()->hiddenLayer[0].neuron[neuronNum]->activation);
+                                  embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->activation);
                 }
                 EMBANN_LOGI(TAG, "\n");
             }
@@ -152,16 +152,16 @@ int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
         else
         {
 
-            for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[0].numNeurons; i++)
+            for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[0]->numNeurons; i++)
             {
                 EMBANN_LOGI(TAG, 
-                    "%.3f-*->%.3f |", embann_getNetwork()->hiddenLayer[layerNum - 1U].neuron[i]->activation,
-                    embann_getNetwork()->hiddenLayer[layerNum - 1U].neuron[neuronNum]->params[i]->weight);
+                    "%.3f-*->%.3f |", embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[neuronNum]->params[i]->weight);
 
-                if (i == floor(embann_getNetwork()->hiddenLayer[0].numNeurons / 2U))
+                if (i == floor(embann_getNetwork()->hiddenLayer[0]->numNeurons / 2U))
                 {
                     EMBANN_LOGI(TAG, " = %.3f",
-                                  embann_getNetwork()->hiddenLayer[0].neuron[neuronNum]->activation);
+                                  embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->activation);
                 }
                 EMBANN_LOGI(TAG, "\n");
             }
@@ -171,7 +171,7 @@ int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
     {
         EMBANN_LOGI(TAG, 
             "\nERROR: You've asked for hidden neuron %d when only %d exist",
-            neuronNum, embann_getNetwork()->hiddenLayer[0].numNeurons);
+            neuronNum, embann_getNetwork()->hiddenLayer[0]->numNeurons);
     }
     return EOK;
 }

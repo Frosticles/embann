@@ -165,7 +165,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 
         EMBANN_LOGI(TAG, "done hidden");
 
-        network->hiddenLayer[i] = *hiddenLayer;
+        network->hiddenLayer[i] = hiddenLayer;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
@@ -229,26 +229,26 @@ int embann_inputLayer(uint16_t* networkResponse)
 {
     EMBANN_ERROR_CHECK(embann_sumAndSquashInput(
                             network->inputLayer->neuron, 
-                            network->hiddenLayer[0].neuron,
+                            network->hiddenLayer[0]->neuron,
                             network->inputLayer->numNeurons, 
-                            network->hiddenLayer[0].numNeurons));
+                            network->hiddenLayer[0]->numNeurons));
 
     EMBANN_LOGD(TAG, "Done Input -> 1st Hidden Layer");
     for (uint8_t i = 1; i < network->properties.numHiddenLayers; i++)
     {
         EMBANN_ERROR_CHECK(embann_sumAndSquash(
-                            network->hiddenLayer[i - 1U].neuron,
-                            network->hiddenLayer[i].neuron,
-                            network->hiddenLayer[i - 1U].numNeurons,
-                            network->hiddenLayer[i].numNeurons));
+                            network->hiddenLayer[i - 1U]->neuron,
+                            network->hiddenLayer[i]->neuron,
+                            network->hiddenLayer[i - 1U]->numNeurons,
+                            network->hiddenLayer[i]->numNeurons));
 
         EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1U, i);
     }
 
     EMBANN_ERROR_CHECK(embann_sumAndSquash(
-        network->hiddenLayer[network->properties.numHiddenLayers - 1U].neuron,
+        network->hiddenLayer[network->properties.numHiddenLayers - 1U]->neuron,
         network->outputLayer->neuron, 
-        network->hiddenLayer[network->properties.numHiddenLayers - 1U].numNeurons,
+        network->hiddenLayer[network->properties.numHiddenLayers - 1U]->numNeurons,
         network->outputLayer->numNeurons));
 
     EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);
