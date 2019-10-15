@@ -32,10 +32,11 @@ OPT_CFLAGS = -O3 -fno-signed-zeros -ffinite-math-only -march=native # -flto
 CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
+GEN_COVERAGE_CFLAGS = -fprofile-arcs -ftest-coverage
 GEN_TREE_CFLAGS = -fdump-tree-optimized-graph
 GRAPH_PDF_NAME = embann-graph.pdf
 
-.PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all
+.PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all profile generate-coverate
 
 all: $(EXE)
 
@@ -54,6 +55,9 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 debug: CFLAGS += -g -pg
 debug: all
 
+profile: 
+	./make-profiled.sh
+
 generate-profile: CFLAGS += $(GEN_PROFILE_CFLAGS) $(GEN_TREE_CFLAGS)
 generate-profile: all
 	
@@ -64,17 +68,27 @@ use-profile: | all graph
 
 
 
+coverage:
+	./make-coverage.sh
+
+generate-coverage: CFLAGS += $(GEN_COVERAGE_CFLAGS) 
+generate-coverage: all
+
+
+
+
+
 clean:
 	rm -f ./$(OBJ_DIR)/* ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
 	./$(SRC_DIR)/*.gcda ./$(EXE) ./$(EXE)-generate-profile \
 	./opt.log ./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* \
-	./$(OBJ_DIR)/embann.c.*
+	./$(OBJ_DIR)/embann.c.* ./*.gcov
 
 clean-keep-profile:
 	rm -f ./$(OBJ_DIR)/*.o ./*.out ./*.s ./*.i ./*.res ./$(SRC_DIR)/*.c.dump \
 	./$(EXE) ./$(EXE)-generate-profile ./opt.log \
 	./$(SRC_DIR)/$(EXE) ./embann.ltrans0* ./embann.wpa* \
-	./$(OBJ_DIR)/embann.c.*
+	./$(OBJ_DIR)/embann.c.* ./*.gcov
 
 check:
 	$(CPP_CHECK) --inline-suppr --max-configs=1 --addon=cert --addon=./cppcheck/addons/misra.json ./ -i./cppcheck -UARDUINO
