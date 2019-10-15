@@ -8,32 +8,32 @@
 
 void embann_inputRaw(float data[])
 {
-    for (uint32_t i = 0; i < network->inputLayer->numNeurons; i++)
+    for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
-        network->inputLayer->neuron[i]->activation = data[i];
+        embann_getNetwork()->inputLayer->neuron[i]->activation = data[i];
     }
 }
 
 void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max)
 {
-    for (uint32_t i = 0; i < network->inputLayer->numNeurons; i++)
+    for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
-        network->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
+        embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
     }
 }
 
 void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev)
 {
-    for (uint32_t i = 0; i < network->inputLayer->numNeurons; i++)
+    for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
-        network->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
+        embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
     }
 }
 
 int embann_getTrainingDataMean(float* mean)
 {
     uint32_t sum = 0;
-    trainingData_t* pTrainingData = trainingDataCollection.head;
+    trainingData_t* pTrainingData = embann_getDataCollection()->head;
 
     if (pTrainingData != NULL)
     {
@@ -58,7 +58,7 @@ int embann_getTrainingDataMean(float* mean)
         pTrainingData = pTrainingData->next;
     }
 
-    *mean /= trainingDataCollection.numEntries;
+    *mean /= embann_getDataCollection()->numEntries;
 
     return EOK;
 }
@@ -67,7 +67,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
 {
     float sumofSquares = 0.0F;
     float mean;
-    trainingData_t* pTrainingData = trainingDataCollection.head;
+    trainingData_t* pTrainingData = embann_getDataCollection()->head;
 
     if (pTrainingData != NULL)
     {
@@ -104,7 +104,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
 
 int embann_getTrainingDataMax(uint8_t* max)
 {
-    trainingData_t* pTrainingData = trainingDataCollection.head;
+    trainingData_t* pTrainingData = embann_getDataCollection()->head;
     if (pTrainingData != NULL)
     {
         *max = pTrainingData->data[0];
@@ -134,7 +134,7 @@ int embann_getTrainingDataMax(uint8_t* max)
 
 int embann_getTrainingDataMin(uint8_t* min)
 {
-    trainingData_t* pTrainingData = trainingDataCollection.head;
+    trainingData_t* pTrainingData = embann_getDataCollection()->head;
     if (pTrainingData != NULL)
     {
         *min = pTrainingData->data[0];
@@ -176,24 +176,24 @@ int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResp
     trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
     CHECK_MALLOC(trainingDataNode);
 
-    trainingDataNode->prev = trainingDataCollection.tail;
+    trainingDataNode->prev = embann_getDataCollection()->tail;
     trainingDataNode->next = NULL;
     trainingDataNode->length = length;
     trainingDataNode->correctResponse = correctResponse;
     trainingDataNode->data[0] = data[0];
 
-    if (trainingDataCollection.head == NULL)
+    if (embann_getDataCollection()->head == NULL)
     {
-        trainingDataCollection.head = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
+        embann_getDataCollection()->head = trainingDataNode;
+        embann_getDataCollection()->tail = trainingDataNode;
     }
     else
     {
-        trainingDataCollection.tail->next = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
+        embann_getDataCollection()->tail->next = trainingDataNode;
+        embann_getDataCollection()->tail = trainingDataNode;
     }
 
-    ++trainingDataCollection.numEntries;
+    ++embann_getDataCollection()->numEntries;
     return EOK;
 }
 
@@ -211,24 +211,24 @@ int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctRes
     trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
     CHECK_MALLOC(trainingDataNode);
 
-    trainingDataNode->prev = trainingDataCollection.tail;
+    trainingDataNode->prev = embann_getDataCollection()->tail;
     trainingDataNode->next = NULL;
     trainingDataNode->length = length;
     trainingDataNode->correctResponse = correctResponse;
     memcpy(trainingDataNode->data, data, length);
 
-    if (trainingDataCollection.head == NULL)
+    if (embann_getDataCollection()->head == NULL)
     {
-        trainingDataCollection.head = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
+        embann_getDataCollection()->head = trainingDataNode;
+        embann_getDataCollection()->tail = trainingDataNode;
     }
     else
     {
-        trainingDataCollection.tail->next = trainingDataNode;
-        trainingDataCollection.tail = trainingDataNode;
+        embann_getDataCollection()->tail->next = trainingDataNode;
+        embann_getDataCollection()->tail = trainingDataNode;
     }
 
-    ++trainingDataCollection.numEntries;
+    ++embann_getDataCollection()->numEntries;
     return EOK;
 }
 

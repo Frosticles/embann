@@ -7,15 +7,32 @@
 #include "embann.h"
 #include "embann_log.h"
 
+#define TAG "Embann Core"
+
+
+
+/* errno value specifically for internal embann errors */
+static int embann_errno = EOK;
+/* Pointer to the current network */
+static network_t* network;
+/* Structure of pointers to training data */
+static trainingDataCollection_t trainingDataCollection = {
+    .tail = NULL,
+    .head = NULL,
+    .numEntries = 0U
+};
+
+
 
 static int embann_initInputLayer(uint16_t numInputNeurons);
 static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
-                                   uint8_t numHiddenLayers,
-                                   uint16_t numInputNeurons);
+                                  uint8_t numHiddenLayers,
+                                  uint16_t numInputNeurons);
 static int embann_initOutputLayer(uint16_t numOutputNeurons,
-                                   uint16_t numHiddenNeurons);
+                                  uint16_t numHiddenNeurons);
 
-#define TAG "Embann Core"
+
+
 
 #ifdef TEST_BUILD
 int main(int argc, char const *argv[])
@@ -28,6 +45,8 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_init(10U, 10U, 1U, 10U));
 }
 #endif
+
+
 
 
 int embann_init(uint16_t numInputNeurons,
@@ -61,6 +80,11 @@ int embann_init(uint16_t numInputNeurons,
     return EOK;
 }
 
+
+
+
+
+
 static int embann_initInputLayer(uint16_t numInputNeurons)
 {
     inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
@@ -87,6 +111,11 @@ static int embann_initInputLayer(uint16_t numInputNeurons)
     EMBANN_LOGI(TAG, "done input");
     return EOK;
 }
+
+
+
+
+
 
 static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
                                    uint8_t numHiddenLayers,
@@ -147,6 +176,11 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
     }
     return EOK;
 }
+
+
+
+
+
 
 static int embann_initOutputLayer(uint16_t numOutputNeurons,
                                    uint16_t numHiddenNeurons)
@@ -232,6 +266,11 @@ int embann_inputLayer(uint16_t* networkResponse)
     return EOK;
 }
 
+
+
+
+
+
 int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs)
 {
@@ -249,6 +288,11 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInp
     return EOK;
 }
 
+
+
+
+
+
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs)
 {
@@ -265,6 +309,9 @@ int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t n
     }
     return EOK;
 }
+
+
+
 
 
 
@@ -292,6 +339,35 @@ int embann_outputLayer(uint16_t* networkResponse)
     *networkResponse = mostLikelyOutput;
     return EOK;
 }
+
+
+
+
+network_t* embann_getNetwork(void)
+{
+    return network;
+}
+
+
+
+
+int* embann_getErrno(void)
+{
+    return &embann_errno;
+}
+
+
+
+
+trainingDataCollection_t* embann_getDataCollection(void)
+{
+    return &trainingDataCollection;
+}
+
+
+
+
+
 
 int embann_benchmark(void)
 {    

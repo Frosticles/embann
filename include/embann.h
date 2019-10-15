@@ -125,23 +125,10 @@ typedef struct
 } network_t;
 
 
-
-/* errno value specifically for internal embann errors */
-static int embann_errno = EOK;
-/* Pointer to the current network */
-static network_t* network;
-/* Structure of pointers to training data */
-static trainingDataCollection_t trainingDataCollection = {
-    .tail = NULL,
-    .head = NULL,
-    .numEntries = 0U
-};
-
-
 int embann_init(uint16_t numInputNeurons,
-                 uint16_t numHiddenNeurons, 
-                 uint8_t numHiddenLayers,
-                 uint16_t numOutputNeurons);
+                uint16_t numHiddenNeurons, 
+                uint8_t numHiddenLayers,
+                uint16_t numOutputNeurons);
 int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
                            uint16_t numOutputs);
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
@@ -168,6 +155,10 @@ int embann_getTrainingDataMin(uint8_t* min);
 int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse);
 int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse);
 int embann_shuffleTrainingData(void);
+network_t* embann_getNetwork(void);
+int* embann_getErrno(void);
+trainingDataCollection_t* embann_getDataCollection(void);
+
 
 #ifndef ARDUINO
 static inline uint32_t millis(void)

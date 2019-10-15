@@ -36,7 +36,7 @@
 
 #define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag " - " format LOG_RESET_COLOR "\n"
 
-#define PRINT_CHECK(a) if ((a) < 0) embann_errno = EIO
+#define PRINT_CHECK(a) if ((a) < 0) *(embann_getErrno()) = EIO
 
 #define EMBANN_LOG_LEVEL(level, tag, format, ...) do {                     \
         if      (level==EMBANN_LOG_ERROR)     { PRINT_CHECK(printf(LOG_FORMAT(E, tag, format), ##__VA_ARGS__)); } \
