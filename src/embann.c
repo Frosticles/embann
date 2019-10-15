@@ -42,8 +42,13 @@ int main(int argc, char const *argv[])
     srandom(tv.tv_usec ^ tv.tv_sec);  /* Seed the PRNG */
     
     EMBANN_ERROR_CHECK(embann_benchmark());
-    EMBANN_ERROR_CHECK(embann_init(10U, 10U, 1U, 10U));
+    EMBANN_ERROR_CHECK(embann_init(10U, 10U, 5U, 10U));
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
+    EMBANN_ERROR_CHECK(embann_printNetwork());
+    EMBANN_ERROR_CHECK(embann_printInputNeuronDetails(0));
+    EMBANN_ERROR_CHECK(embann_printOutputNeuronDetails(0));
+    EMBANN_ERROR_CHECK(embann_printHiddenNeuronDetails(0, 0));
+    EMBANN_ERROR_CHECK(embann_errorReporting(0));
 }
 #endif
 
@@ -127,6 +132,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
         hiddenLayer_t* hiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
         CHECK_MALLOC(hiddenLayer);
+        hiddenLayer->numNeurons = numHiddenNeurons;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
@@ -172,7 +178,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
         // MISRA C 2012 14.4 - deliberate cast from pointer to integer
         // cppcheck-suppress misra-c2012-11.4
-        EMBANN_LOGI(TAG, "hiddenlayer[i]: 0x%x", (uint32_t) &network->hiddenLayer[i]);
+        EMBANN_LOGI(TAG, "hiddenlayer[%d]: 0x%x", i, (uint32_t) &network->hiddenLayer[i]);
 #pragma GCC diagnostic pop
     }
     return EOK;
