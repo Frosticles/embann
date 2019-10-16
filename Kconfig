@@ -270,4 +270,23 @@ mainmenu "Embann Configuration"
             config NUM_LAYERS_DATA_TYPE_UINT64
                 bool "Unsigned 64-bit Integer"
         endchoice
+
+
+        choice NUM_TRAINING_DATA_ENTRIES_TYPE_UINT8
+            bool "Num Training Data Entries Data Type"
+            default NUM_TRAINING_DATA_ENTRIES_TYPE_UINT32
+            help
+                Dictates how many instances of training data can
+                be added to the network based on the number of 
+                bits in the data type.
+
+            config NUM_TRAINING_DATA_ENTRIES_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config NUM_TRAINING_DATA_ENTRIES_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config NUM_TRAINING_DATA_ENTRIES_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config NUM_TRAINING_DATA_ENTRIES_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+        endchoice
     endmenu

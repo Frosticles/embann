@@ -70,7 +70,7 @@ typedef struct
 typedef struct trainingData
 {
     numOutputs_t correctResponse;
-    uint32_t length;
+    numInputs_t length;
     struct trainingData* prev;
     struct trainingData* next;
     activation_t data[];
@@ -80,7 +80,7 @@ typedef struct
 {
     trainingData_t* head;
     trainingData_t* tail;
-    uint32_t numEntries;
+    numTrainingDataEntries_t numEntries;
 } trainingDataCollection_t;
 
 typedef struct

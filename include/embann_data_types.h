@@ -209,4 +209,17 @@ typedef uint32_t numLayers_t;
 typedef uint64_t numLayers_t;
 #endif
 
+#ifdef CONFIG_NUM_TRAINING_DATA_ENTRIES_TYPE_UINT8
+typedef uint8_t numTrainingDataEntries_t;
+#endif
+#ifdef CONFIG_NUM_TRAINING_DATA_ENTRIES_TYPE_UINT16
+typedef uint16_t numTrainingDataEntries_t;
+#endif
+#ifdef CONFIG_NUM_TRAINING_DATA_ENTRIES_TYPE_UINT32
+typedef uint32_t numTrainingDataEntries_t;
+#endif
+#ifdef CONFIG_NUM_TRAINING_DATA_ENTRIES_TYPE_UINT64
+typedef uint64_t numTrainingDataEntries_t;
+#endif
+
 #endif //Embann_data_types_h
