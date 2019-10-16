@@ -7,7 +7,7 @@
 #include "embann.h"
 #include "embann_log.h"
 
-#define TAG "Embann Core"
+#define TAG "Embann Core (" STRINGIFY(__LINE__) ")"
 
 
 
@@ -44,6 +44,25 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_benchmark());
     EMBANN_ERROR_CHECK(embann_init(10U, 10U, 5U, 10U));
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
+
+    uint8_t randomData[10];
+    uint8_t retval;
+    float fretval;
+    for (uint8_t i = 0; i < NUM_ARRAY_ELEMENTS(randomData); i++)
+    {
+        randomData[i] = random();
+    }
+
+    EMBANN_ERROR_CHECK(embann_addTrainingData(randomData, NUM_ARRAY_ELEMENTS(randomData), 0));
+    EMBANN_ERROR_CHECK(embann_copyTrainingData(randomData, NUM_ARRAY_ELEMENTS(randomData), 0));
+    EMBANN_ERROR_CHECK(embann_getTrainingDataMax(&retval));
+    EMBANN_ERROR_CHECK(embann_getTrainingDataMin(&retval));
+    EMBANN_ERROR_CHECK(embann_getTrainingDataMean(&fretval));
+    EMBANN_ERROR_CHECK(embann_getTrainingDataStdDev(&fretval));
+
+    EMBANN_ERROR_CHECK(embann_trainDriverInTime(0.01, 1, false));
+    EMBANN_ERROR_CHECK(embann_trainDriverInError(0.01, 0.1, false));
+
     EMBANN_ERROR_CHECK(embann_printNetwork());
     EMBANN_ERROR_CHECK(embann_printInputNeuronDetails(0));
     EMBANN_ERROR_CHECK(embann_printOutputNeuronDetails(0));

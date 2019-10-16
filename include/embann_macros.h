@@ -19,15 +19,24 @@
 #define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
 /* Check error return value */
 #ifdef CONFIG_ERROR_CHECK_SET_ERRNO
-#define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x)
+#define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x);     \
+    if (*(embann_getErrno()) != EOK) {                        \
+        printf("ERROR: %d", *(embann_getErrno()));            \
+    }
+
 #elif defined(CONFIG_ERROR_CHECK_ABORT)
-#define EMBANN_ERROR_CHECK(x) do {                                  \
-        *(embann_getErrno()) = (x);                                         \
-        if (*(embann_getErrno()) != EOK) {                                  \
-            abort();                                                \
-        }                                                           \
+#define EMBANN_ERROR_CHECK(x) do {                            \
+        *(embann_getErrno()) = (x);                           \
+        if (*(embann_getErrno()) != EOK) {                    \
+            abort();                                          \
+        }                                                     \
     } while(0)
 #endif
+/* Macro to stringify parameters in macros */
+#define TOSTRING(x) #x
+#define STRINGIFY(x) TOSTRING(x)
+
+
 
 
 #if __GNUC__ >= 3

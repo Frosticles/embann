@@ -1,7 +1,7 @@
 #include "embann.h"
 #include "embann_log.h"
 
-#define TAG "Embann Data Management"
+#define TAG "Embann Data Management (" STRINGIFY(__LINE__) ")"
 
 
 
@@ -173,7 +173,7 @@ int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResp
         return ENOENT;
     }
 
-    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
+    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
     CHECK_MALLOC(trainingDataNode);
 
     trainingDataNode->prev = embann_getDataCollection()->tail;
