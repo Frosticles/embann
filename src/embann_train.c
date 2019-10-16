@@ -7,7 +7,7 @@
 int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose)
 {
     numOutputs_t randomOutput;
-    uint32_t randomTrainingSet;
+    numTrainingDataEntries_t randomTrainingSet;
 
     if (verbose == true)
     {
@@ -41,7 +41,7 @@ int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, boo
 int embann_trainDriverInError(activation_t learningRate, activation_t desiredCost, bool verbose)
 {
     numOutputs_t randomOutput;
-    uint32_t randomTrainingSet;
+    numTrainingDataEntries_t randomTrainingSet;
     activation_t currentCost[embann_getNetwork()->outputLayer->numNeurons];
     bool converged = false;
 
