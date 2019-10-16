@@ -11,27 +11,48 @@
 #define EOK 0 /* Provides more clarity than just writing return 0; */
 #endif// EOK
 
+
+
 /* Random float between -1 and 1 */
 #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
-/* Throw an error if malloc failed */
-#define CHECK_MALLOC(a) if (!(a)) *(embann_getErrno()) = ENOMEM
 /* Calculate number of elements in an array */
-#define NUM_ARRAY_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
-/* Check error return value */
+#define NUM_ARRAY_ELEMENTS(x) (sizeof(x) / sizeof((x)[0]))
+
+
+
+
+
 #ifdef CONFIG_ERROR_CHECK_SET_ERRNO
-#define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x);     \
-    if (*(embann_getErrno()) != EOK) {                        \
-        printf("ERROR: %d", *(embann_getErrno()));            \
-    }
+    #define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x);     \
+        if (*(embann_getErrno()) != EOK) {                        \
+            printf("ERROR: %d", *(embann_getErrno()));            \
+        }
 
 #elif defined(CONFIG_ERROR_CHECK_ABORT)
-#define EMBANN_ERROR_CHECK(x) do {                            \
-        *(embann_getErrno()) = (x);                           \
-        if (*(embann_getErrno()) != EOK) {                    \
-            abort();                                          \
-        }                                                     \
-    } while(0)
+    #define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x);     \
+            if (*(embann_getErrno()) != EOK) {                    \
+                abort();                                          \
+            }                                                     \
+
+#elif defined(CONFIG_ERROR_CHECK_RETURN)
+    #define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x); return *(embann_getErrno());
+
 #endif
+
+
+
+
+#ifdef CONFIG_MALLOC_CHECK_ABORT
+    #define EMBANN_MALLOC_CHECK(x) if (!(x)) {*(embann_getErrno()) = ENOMEM; abort();}
+
+#elif defined(CONFIG_MALLOC_CHECK_RETURN)
+    #define EMBANN_MALLOC_CHECK(x) if (!(x)) {*(embann_getErrno()) = ENOMEM; return ENOMEM;}
+
+#endif
+
+
+
+
 /* Macro to stringify parameters in macros */
 #define TOSTRING(x) #x
 #define STRINGIFY(x) TOSTRING(x)
@@ -46,5 +67,7 @@
     #define MAX_ALIGNMENT
     #define WEAK_FUNCTION
 #endif
+
+
 
 #endif // Embann_macros_h

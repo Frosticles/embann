@@ -89,7 +89,7 @@ int embann_init(uint16_t numInputNeurons,
     
     network = (network_t*) malloc(sizeof(network_t) + 
                                  (sizeof(hiddenLayer_t) * numHiddenLayers));
-    CHECK_MALLOC(network);
+    EMBANN_MALLOC_CHECK(network);
 
     EMBANN_ERROR_CHECK(embann_initInputLayer(numInputNeurons));
     EMBANN_ERROR_CHECK(embann_initHiddenLayer(numHiddenNeurons,
@@ -114,7 +114,7 @@ static int embann_initInputLayer(uint16_t numInputNeurons)
 {
     inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
-    CHECK_MALLOC(inputLayer);
+    EMBANN_MALLOC_CHECK(inputLayer);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
@@ -150,7 +150,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
     {
         hiddenLayer_t* hiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
-        CHECK_MALLOC(hiddenLayer);
+        EMBANN_MALLOC_CHECK(hiddenLayer);
         hiddenLayer->numNeurons = numHiddenNeurons;
 
 #pragma GCC diagnostic push
@@ -170,7 +170,7 @@ static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
             for (uint16_t k = 0; k < (uint16_t)((i == 0U) ? numInputNeurons : numHiddenNeurons); k++)
             {
                 neuronParams_t* hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
-                CHECK_MALLOC(hiddenLayerParams);
+                EMBANN_MALLOC_CHECK(hiddenLayerParams);
 
                 hiddenLayer->neuron[j]->params[k] = hiddenLayerParams;
 
@@ -213,7 +213,7 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
 {
     outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
                                                         (sizeof(wNeuron_t*) * numOutputNeurons));
-    CHECK_MALLOC(outputLayer);
+    EMBANN_MALLOC_CHECK(outputLayer);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
@@ -232,7 +232,7 @@ static int embann_initOutputLayer(uint16_t numOutputNeurons,
         for (uint16_t j = 0; j < numHiddenNeurons; j++)
         {
             neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
-            CHECK_MALLOC(outputNeuronParams);
+            EMBANN_MALLOC_CHECK(outputNeuronParams);
 
             outputLayer->neuron[i]->params[j] = outputNeuronParams;
             
@@ -376,7 +376,10 @@ trainingDataCollection_t* embann_getDataCollection(void)
 
 
 
-
+/*
+    TODO try column-wise & row-wise memory access for better cache hit,
+    loop interchange
+*/
 
 int embann_benchmark(void)
 {    

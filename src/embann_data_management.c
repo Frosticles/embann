@@ -174,7 +174,7 @@ int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResp
     }
 
     trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
-    CHECK_MALLOC(trainingDataNode);
+    EMBANN_MALLOC_CHECK(trainingDataNode);
 
     trainingDataNode->prev = embann_getDataCollection()->tail;
     trainingDataNode->next = NULL;
@@ -209,7 +209,7 @@ int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctRes
     }
 
     trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
-    CHECK_MALLOC(trainingDataNode);
+    EMBANN_MALLOC_CHECK(trainingDataNode);
 
     trainingDataNode->prev = embann_getDataCollection()->tail;
     trainingDataNode->next = NULL;

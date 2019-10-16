@@ -65,6 +65,22 @@ mainmenu "Embann Configuration"
                 bool "Execute abort()"
                 help
                     Executes the abort() function.
+
+    choice MALLOC_CHECK_BEHAVIOUR
+        bool "Behaviour of the EMBANN_MALLOC_CHECK macro"
+        default MALLOC_CHECK_RETURN
+        help
+            Specify what the EMBANN_MALLOC_CHECK macro does if the pointer to
+            the allocated memory is null (i.e. the allocation failed).
+
+        config MALLOC_CHECK_RETURN
+            bool "Return on error"
+            help
+                Immediately returns with the error value (these are posix error values).
+        config MALLOC_CHECK_ABORT
+            bool "Execute abort()"
+            help
+                Executes the abort() function.
     endchoice
 
 
