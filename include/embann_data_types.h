@@ -31,95 +31,125 @@
 
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT8
 typedef int8_t activation_t;
+#define ACTIVATION_IS_SIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT16
 typedef int16_t activation_t;
+#define ACTIVATION_IS_SIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT32
 typedef int32_t activation_t;
+#define ACTIVATION_IS_SIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT64
 typedef int64_t activation_t;
+#define ACTIVATION_IS_SIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT8
 typedef uint8_t activation_t;
+#define ACTIVATION_IS_UNSIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT16
 typedef uint16_t activation_t;
+#define ACTIVATION_IS_UNSIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT32
 typedef uint32_t activation_t;
+#define ACTIVATION_IS_UNSIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT64
 typedef uint64_t activation_t;
+#define ACTIVATION_IS_UNSIGNED
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_FLOAT
 typedef float activation_t;
+#define ACTIVATION_IS_FLOAT
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_DOUBLE
 typedef double activation_t;
+#define ACTIVATION_IS_FLOAT
 #endif
 
 #ifdef CONFIG_BIAS_DATA_TYPE_INT8
 typedef int8_t bias_t;
+#define BIAS_IS_SIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_INT16
 typedef int16_t bias_t;
+#define BIAS_IS_SIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_INT32
 typedef int32_t bias_t;
+#define BIAS_IS_SIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_INT64
 typedef int64_t bias_t;
+#define BIAS_IS_SIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT8
 typedef uint8_t bias_t;
+#define BIAS_IS_UNSIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT16
 typedef uint16_t bias_t;
+#define BIAS_IS_UNSIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT32
 typedef uint32_t bias_t;
+#define BIAS_IS_UNSIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT64
 typedef uint64_t bias_t;
+#define BIAS_IS_UNSIGNED
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_FLOAT
 typedef float bias_t;
+#define BIAS_IS_FLOAT
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_DOUBLE
 typedef double bias_t;
+#define BIAS_IS_FLOAT
 #endif
 
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT8
 typedef int8_t weight_t;
+#define WEIGHT_IS_SIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT16
 typedef int16_t weight_t;
+#define WEIGHT_IS_SIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT32
 typedef int32_t weight_t;
+#define WEIGHT_IS_SIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT64
 typedef int64_t weight_t;
+#define WEIGHT_IS_SIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT8
 typedef uint8_t weight_t;
+#define WEIGHT_IS_UNSIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT16
 typedef uint16_t weight_t;
+#define WEIGHT_IS_UNSIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT32
 typedef uint32_t weight_t;
+#define WEIGHT_IS_UNSIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT64
 typedef uint64_t weight_t;
+#define WEIGHT_IS_UNSIGNED
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_FLOAT
 typedef float weight_t;
+#define WEIGHT_IS_FLOAT
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_DOUBLE
 typedef double weight_t;
+#define WEIGHT_IS_FLOAT
 #endif
 
 #endif //Embann_data_types_h

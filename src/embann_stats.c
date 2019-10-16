@@ -27,7 +27,11 @@ int embann_printNetwork(void)
     {
         if (i < embann_getNetwork()->inputLayer->numNeurons)
         {
+#ifdef ACTIVATION_IS_FLOAT
             printf("%-12.3f| ", embann_getNetwork()->inputLayer->neuron[i]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+            printf("%-12d| ", embann_getNetwork()->inputLayer->neuron[i]->activation);
+#endif
         }
         else
         {
@@ -39,7 +43,11 @@ int embann_printNetwork(void)
         {
             if (i < embann_getNetwork()->hiddenLayer[j]->numNeurons)
             {
+#ifdef ACTIVATION_IS_FLOAT
                 printf("%-15.3f| ", embann_getNetwork()->hiddenLayer[j]->neuron[i]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+                printf("%-15d| ", embann_getNetwork()->hiddenLayer[j]->neuron[i]->activation);
+#endif
             }
             else
             {
@@ -49,7 +57,11 @@ int embann_printNetwork(void)
 
         if (i < embann_getNetwork()->outputLayer->numNeurons)
         {
+#ifdef ACTIVATION_IS_FLOAT
             printf("%.3f", embann_getNetwork()->outputLayer->neuron[i]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+            printf("%d", embann_getNetwork()->outputLayer->neuron[i]->activation);
+#endif
         }
         printf("\n");
     }
@@ -62,8 +74,13 @@ int embann_printInputNeuronDetails(uint8_t neuronNum)
 {
     if (neuronNum < embann_getNetwork()->inputLayer->numNeurons)
     {
+#ifdef ACTIVATION_IS_FLOAT
         printf("\nInput Neuron %d: %.3f\n", neuronNum,
                       embann_getNetwork()->inputLayer->neuron[neuronNum]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+        printf("\nInput Neuron %d: %d\n", neuronNum,
+                      embann_getNetwork()->inputLayer->neuron[neuronNum]->activation);
+#endif
     }
     else
     {
@@ -82,14 +99,34 @@ int embann_printOutputNeuronDetails(uint8_t neuronNum)
 
         for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[0]->numNeurons; i++)
         {
-            printf(
-                "%.3f-*->%.3f |",
+#ifdef ACTIVATION_IS_FLOAT
+#ifdef WEIGHT_IS_FLOAT
+            printf("%.3f-*->%.3f |",
                 embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[i]->activation,
                 embann_getNetwork()->outputLayer->neuron[neuronNum]->params[i]->weight);
-
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+            printf("%.3f-*->%d |",
+                embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[i]->activation,
+                embann_getNetwork()->outputLayer->neuron[neuronNum]->params[i]->weight);
+#endif //WEIGHT_IS_FLOAT
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+#ifdef WEIGHT_IS_FLOAT
+            printf("%d-*->%.3f |",
+                embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[i]->activation,
+                embann_getNetwork()->outputLayer->neuron[neuronNum]->params[i]->weight);
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+            printf("%d-*->%d |",
+                embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[i]->activation,
+                embann_getNetwork()->outputLayer->neuron[neuronNum]->params[i]->weight);
+#endif //WEIGHT_IS_FLOAT
+#endif
             if (i == floor(embann_getNetwork()->hiddenLayer[0]->numNeurons / 2U))
             {
+#ifdef ACTIVATION_IS_FLOAT
                 printf(" = %.3f", embann_getNetwork()->outputLayer->neuron[neuronNum]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+                printf(" = %d", embann_getNetwork()->outputLayer->neuron[neuronNum]->activation);
+#endif
             }
             printf("\n");
         }
@@ -113,13 +150,34 @@ int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
         {
             for (uint16_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
             {
-                printf("%.3f-*->%.3f |", embann_getNetwork()->inputLayer->neuron[i]->activation,
-                              embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
-
+#ifdef ACTIVATION_IS_FLOAT
+#ifdef WEIGHT_IS_FLOAT
+                printf("%.3f-*->%.3f |", 
+                        embann_getNetwork()->inputLayer->neuron[i]->activation,
+                        embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+                printf("%.3f-*->%d |", 
+                        embann_getNetwork()->inputLayer->neuron[i]->activation,
+                        embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
+#endif //WEIGHT_IS_FLOAT
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+#ifdef WEIGHT_IS_FLOAT
+                printf("%d-*->%.3f |", 
+                        embann_getNetwork()->inputLayer->neuron[i]->activation,
+                        embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+                printf("%d-*->%d |", 
+                        embann_getNetwork()->inputLayer->neuron[i]->activation,
+                        embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
+#endif //WEIGHT_IS_FLOAT
+#endif
                 if (i == floor(embann_getNetwork()->inputLayer->numNeurons / 2U))
-                {
-                    printf(" = %.3f",
-                                  embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->activation);
+                {       
+#ifdef ACTIVATION_IS_FLOAT
+                    printf(" = %.3f", embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+                    printf(" = %d", embann_getNetwork()->hiddenLayer[0]->neuron[neuronNum]->activation);
+#endif
                 }
                 printf("\n");
             }
@@ -128,14 +186,35 @@ int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
         {
             for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[layerNum]->numNeurons; i++)
             {
-                printf(
-                    "%.3f-*->%.3f |", embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
+#ifdef ACTIVATION_IS_FLOAT
+#ifdef WEIGHT_IS_FLOAT
+                printf("%.3f-*->%.3f |", 
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
                     embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[neuronNum]->params[i]->weight);
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+                printf("%.3f-*->%d |", 
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[neuronNum]->params[i]->weight);
+#endif //WEIGHT_IS_FLOAT
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+#ifdef WEIGHT_IS_FLOAT
+                printf("%d-*->%.3f |", 
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[neuronNum]->params[i]->weight);
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+                printf("%d-*->%d |", 
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
+                    embann_getNetwork()->hiddenLayer[layerNum - 1U]->neuron[neuronNum]->params[i]->weight);
+#endif //WEIGHT_IS_FLOAT
+#endif
 
                 if (i == floor(embann_getNetwork()->hiddenLayer[layerNum]->numNeurons / 2U))
                 {
-                    printf(" = %.3f",
-                                  embann_getNetwork()->hiddenLayer[layerNum]->neuron[neuronNum]->activation);
+#ifdef ACTIVATION_IS_FLOAT
+                    printf(" = %.3f", embann_getNetwork()->hiddenLayer[layerNum]->neuron[neuronNum]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+                    printf(" = %df", embann_getNetwork()->hiddenLayer[layerNum]->neuron[neuronNum]->activation);
+#endif
                 }
                 printf("\n");
             }
@@ -156,23 +235,37 @@ int embann_errorReporting(uint8_t correctResponse)
     {
         if (i == correctResponse)
         {
-            printf("%-7.3f | ",
-                          (1 - embann_getNetwork()->outputLayer->neuron[correctResponse]->activation));
+#ifdef ACTIVATION_IS_FLOAT
+            printf("%-7.3f | ", (1 - embann_getNetwork()->outputLayer->neuron[correctResponse]->activation));
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+            printf("%-7d | ", (1 - embann_getNetwork()->outputLayer->neuron[correctResponse]->activation));
+#endif
         }
         else
         {
+#ifdef ACTIVATION_IS_FLOAT
             printf("%-7.3f | ", -embann_getNetwork()->outputLayer->neuron[i]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+            printf("%-7d | ", -embann_getNetwork()->outputLayer->neuron[i]->activation);
+#endif
         }
     }
 
     if (embann_getNetwork()->outputLayer->numNeurons == correctResponse)
     {
-        printf("%-7.3f\n",
-                        (1 - embann_getNetwork()->outputLayer->neuron[correctResponse]->activation));
+#ifdef ACTIVATION_IS_FLOAT
+        printf("%-7.3f\n", (1 - embann_getNetwork()->outputLayer->neuron[correctResponse]->activation));
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+        printf("%-7d\n", (1 - embann_getNetwork()->outputLayer->neuron[correctResponse]->activation));
+#endif
     }
     else
     {
+#ifdef ACTIVATION_IS_FLOAT
         printf("%-7.3f\n", -embann_getNetwork()->outputLayer->neuron[embann_getNetwork()->outputLayer->numNeurons - 1U]->activation);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+        printf("%-7d\n", -embann_getNetwork()->outputLayer->neuron[embann_getNetwork()->outputLayer->numNeurons - 1U]->activation);
+#endif
     }
     return EOK;
 }
