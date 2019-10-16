@@ -60,8 +60,13 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_getTrainingDataMean(&fretval));
     EMBANN_ERROR_CHECK(embann_getTrainingDataStdDev(&fretval));
 
-    EMBANN_ERROR_CHECK(embann_trainDriverInTime(0.01, 1, false));
-    EMBANN_ERROR_CHECK(embann_trainDriverInError(0.01, 0.1, false));
+#ifdef ACTIVATION_IS_FLOAT
+    EMBANN_ERROR_CHECK(embann_trainDriverInTime(0.01, 1, true));
+    EMBANN_ERROR_CHECK(embann_trainDriverInError(0.01, 0.1, true));
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+    EMBANN_ERROR_CHECK(embann_trainDriverInTime(1, 1, true));
+    EMBANN_ERROR_CHECK(embann_trainDriverInError(1, 1, true));
+#endif
 
     EMBANN_ERROR_CHECK(embann_printNetwork());
     EMBANN_ERROR_CHECK(embann_printInputNeuronDetails(0));
@@ -74,10 +79,10 @@ int main(int argc, char const *argv[])
 
 
 
-int embann_init(uint16_t numInputNeurons,
-                 uint16_t numHiddenNeurons, 
-                 uint8_t numHiddenLayers,
-                 uint16_t numOutputNeurons)
+int embann_init(numInputs_t numInputNeurons,
+                numHiddenNeurons_t numHiddenNeurons, 
+                numLayers_t numHiddenLayers,
+                numOutputs_t numOutputNeurons)
 {
     if ((numInputNeurons == 0U) || (numHiddenNeurons == 0U) || 
         (numHiddenLayers == 0U) || (numOutputNeurons == 0U))
@@ -287,8 +292,8 @@ int embann_forwardPropagate(void)
 
 
 
-int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
-                           uint16_t numOutputs)
+int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
+                            numOutputs_t numOutputs)
 {
     for (uint16_t i = 0; i < numOutputs; i++)
     {
@@ -309,8 +314,8 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInp
 
 
 
-int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
-                           uint16_t numOutputs)
+int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
+                                numOutputs_t numOutputs)
 {
     for (uint16_t i = 0; i < numOutputs; i++)
     {

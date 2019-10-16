@@ -152,4 +152,61 @@ typedef double weight_t;
 #define WEIGHT_IS_FLOAT
 #endif
 
+
+
+#ifdef CONFIG_NUM_OUTPUTS_DATA_TYPE_UINT8
+typedef uint8_t numOutputs_t;
+#endif
+#ifdef CONFIG_NUM_OUTPUTS_DATA_TYPE_UINT16
+typedef uint16_t numOutputs_t;
+#endif
+#ifdef CONFIG_NUM_OUTPUTS_DATA_TYPE_UINT32
+typedef uint32_t numOutputs_t;
+#endif
+#ifdef CONFIG_NUM_OUTPUTS_DATA_TYPE_UINT64
+typedef uint64_t numOutputs_t;
+#endif
+
+
+#ifdef CONFIG_NUM_INPUTS_DATA_TYPE_UINT8
+typedef uint8_t numInputs_t;
+#endif
+#ifdef CONFIG_NUM_INPUTS_DATA_TYPE_UINT16
+typedef uint16_t numInputs_t;
+#endif
+#ifdef CONFIG_NUM_INPUTS_DATA_TYPE_UINT32
+typedef uint32_t numInputs_t;
+#endif
+#ifdef CONFIG_NUM_INPUTS_DATA_TYPE_UINT64
+typedef uint64_t numInputs_t;
+#endif
+
+
+#ifdef CONFIG_NUM_HIDDEN_NEURONS_DATA_TYPE_UINT8
+typedef uint8_t numHiddenNeurons_t;
+#endif
+#ifdef CONFIG_NUM_HIDDEN_NEURONS_DATA_TYPE_UINT16
+typedef uint16_t numHiddenNeurons_t;
+#endif
+#ifdef CONFIG_NUM_HIDDEN_NEURONS_DATA_TYPE_UINT32
+typedef uint32_t numHiddenNeurons_t;
+#endif
+#ifdef CONFIG_NUM_HIDDEN_NEURONS_DATA_TYPE_UINT64
+typedef uint64_t numHiddenNeurons_t;
+#endif
+
+
+#ifdef CONFIG_NUM_LAYERS_DATA_TYPE_UINT8
+typedef uint8_t numLayers_t;
+#endif
+#ifdef CONFIG_NUM_LAYERS_DATA_TYPE_UINT16
+typedef uint16_t numLayers_t;
+#endif
+#ifdef CONFIG_NUM_LAYERS_DATA_TYPE_UINT32
+typedef uint32_t numLayers_t;
+#endif
+#ifdef CONFIG_NUM_LAYERS_DATA_TYPE_UINT64
+typedef uint64_t numLayers_t;
+#endif
+
 #endif //Embann_data_types_h

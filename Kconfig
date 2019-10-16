@@ -199,4 +199,75 @@ mainmenu "Embann Configuration"
             config WEIGHT_DATA_TYPE_DOUBLE
                 bool "Double-Precision Floating Point"
         endchoice
+
+
+        choice NUM_INPUTS_DATA_TYPE
+            bool "Num Inputs Data Type"
+            default NUM_INPUTS_DATA_TYPE_UINT16
+            help
+                Dictates how many input neurons can be generated
+                based on the number of bits in the data type.
+
+            config NUM_INPUTS_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config NUM_INPUTS_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config NUM_INPUTS_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config NUM_INPUTS_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+        endchoice
+
+        choice NUM_HIDDEN_NEURONS_DATA_TYPE
+            bool "Num Hidden Neurons Data Type"
+            default NUM_HIDDEN_NEURONS_DATA_TYPE_UINT16
+            help
+                Dictates how many hidden neurons can be generated
+                based on the number of bits in the data type.
+
+            config NUM_HIDDEN_NEURONS_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config NUM_HIDDEN_NEURONS_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config NUM_HIDDEN_NEURONS_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config NUM_HIDDEN_NEURONS_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+        endchoice
+
+
+        choice NUM_OUTPUTS_DATA_TYPE
+            bool "Num Outputs Data Type"
+            default NUM_OUTPUTS_DATA_TYPE_UINT16
+            help
+                Dictates how many output neurons can be generated
+                based on the number of bits in the data type.
+
+            config NUM_OUTPUTS_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config NUM_OUTPUTS_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config NUM_OUTPUTS_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config NUM_OUTPUTS_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+        endchoice
+
+
+        choice NUM_LAYERS_DATA_TYPE
+            bool "Num Layers Data Type"
+            default NUM_LAYERS_DATA_TYPE_UINT8
+            help
+                Dictates how many layers can be generated
+                based on the number of bits in the data type.
+
+            config NUM_LAYERS_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config NUM_LAYERS_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config NUM_LAYERS_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config NUM_LAYERS_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+        endchoice
     endmenu

@@ -70,7 +70,7 @@ int embann_printNetwork(void)
     return EOK;
 }
 
-int embann_printInputNeuronDetails(uint8_t neuronNum)
+int embann_printInputNeuronDetails(numInputs_t neuronNum)
 {
     if (neuronNum < embann_getNetwork()->inputLayer->numNeurons)
     {
@@ -90,7 +90,7 @@ int embann_printInputNeuronDetails(uint8_t neuronNum)
     return EOK;
 }
 
-int embann_printOutputNeuronDetails(uint8_t neuronNum)
+int embann_printOutputNeuronDetails(numOutputs_t neuronNum)
 {
     if (neuronNum < embann_getNetwork()->outputLayer->numNeurons)
     {
@@ -140,7 +140,7 @@ int embann_printOutputNeuronDetails(uint8_t neuronNum)
     return EOK;
 }
 
-int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
+int embann_printHiddenNeuronDetails(numLayers_t layerNum, numHiddenNeurons_t neuronNum)
 {
     if (neuronNum < embann_getNetwork()->hiddenLayer[layerNum]->numNeurons)
     {
@@ -228,7 +228,7 @@ int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum)
     return EOK;
 }
 
-int embann_errorReporting(uint8_t correctResponse)
+int embann_errorReporting(numOutputs_t correctResponse)
 {
     printf("\nErrors: ");
     for (uint8_t i = 0; i <= embann_getNetwork()->outputLayer->numNeurons - 1; i++)

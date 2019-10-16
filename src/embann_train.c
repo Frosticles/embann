@@ -4,9 +4,9 @@
 #define TAG "Embann Train"
 
 
-int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbose)
+int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose)
 {
-    uint16_t randomOutput;
+    numOutputs_t randomOutput;
     uint32_t randomTrainingSet;
 
     if (verbose == true)
@@ -38,11 +38,11 @@ int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbo
     return EOK;
 }
 
-int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose)
+int embann_trainDriverInError(activation_t learningRate, activation_t desiredCost, bool verbose)
 {
-    uint16_t randomOutput;
-    uint16_t randomTrainingSet;
-    float currentCost[embann_getNetwork()->outputLayer->numNeurons];
+    numOutputs_t randomOutput;
+    uint32_t randomTrainingSet;
+    activation_t currentCost[embann_getNetwork()->outputLayer->numNeurons];
     bool converged = false;
 
     if (verbose == true)
@@ -87,8 +87,11 @@ int embann_trainDriverInError(float learningRate, float desiredCost, bool verbos
         {
             if (verbose == true)
             {
-                printf("%.3f", currentCost[i]);
-                printf(", ");
+#ifdef ACTIVATION_IS_FLOAT
+                printf("%.3f, ", currentCost[i]);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+                printf("%d, ", currentCost[i]);
+#endif
             }
             if (currentCost[i] > desiredCost)
             {
@@ -97,20 +100,24 @@ int embann_trainDriverInError(float learningRate, float desiredCost, bool verbos
         }
         if (verbose == true)
         {
-            printf("%.3f\n", desiredCost);
+#ifdef ACTIVATION_IS_FLOAT
+            printf("%.3f\n ", desiredCost);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+            printf("%d\n ", desiredCost);
+#endif
         }
     }
     return EOK;
 }
 
-int embann_train(uint8_t correctOutput, float learningRate)
+int embann_train(numOutputs_t correctOutput, activation_t learningRate)
 {
-    float dOutputErrorToOutputSum[embann_getNetwork()->outputLayer->numNeurons];
-    float dTotalErrorToHiddenNeuron = 0.0F;
+    activation_t dOutputErrorToOutputSum[embann_getNetwork()->outputLayer->numNeurons];
+    weight_t dTotalErrorToHiddenNeuron = 0.0F;
     /* TODO, add support for multiple hidden layers */
-    float outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons]
+    weight_t outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons]
                                   [embann_getNetwork()->hiddenLayer[0]->numNeurons];
-    float tanhDerivative;
+    weight_t tanhDerivative = 0;
 
     for (uint16_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
     {
@@ -131,14 +138,22 @@ int embann_train(uint8_t correctOutput, float learningRate)
                                             tanhDerivative;
         }
         
+#ifdef ACTIVATION_IS_FLOAT
         EMBANN_LOGV(TAG, "dOutputErrorToOutputSum[%d]: %.3f", i, dOutputErrorToOutputSum[i]);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+        EMBANN_LOGV(TAG, "dOutputErrorToOutputSum[%d]: %d", i, dOutputErrorToOutputSum[i]);
+#endif
         
         for (uint16_t j = 0; j < embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->numNeurons; j++)
         {
             outputNeuronWeightChange[i][j] = dOutputErrorToOutputSum[i] *
                                                 embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[j]->activation *
                                                 learningRate;
+#ifdef ACTIVATION_IS_FLOAT
             EMBANN_LOGV(TAG, "outputNeuronWeightChange[%d][%d]: %.3f", i, j, outputNeuronWeightChange[i][j]);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+            EMBANN_LOGV(TAG, "outputNeuronWeightChange[%d][%d]: %d", i, j, outputNeuronWeightChange[i][j]);
+#endif
         }
     }
 
@@ -191,8 +206,12 @@ int embann_train(uint8_t correctOutput, float learningRate)
     return EOK;
 }
 
-int embann_tanhDerivative(float inputValue, float* outputValue)
+int embann_tanhDerivative(activation_t inputValue, weight_t* outputValue)
 {
+#ifdef ACTIVATION_IS_FLOAT
     *outputValue = 1.0F - powf(tanh(inputValue * PI), 2.0F);
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+    // TODO, scaled linear approximation
+#endif   
     return EOK;
 }

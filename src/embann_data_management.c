@@ -6,28 +6,31 @@
 
 
 
-void embann_inputRaw(float data[])
+int embann_inputRaw(activation_t data[])
 {
     for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
         embann_getNetwork()->inputLayer->neuron[i]->activation = data[i];
     }
+    return EOK;
 }
 
-void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max)
+int embann_inputMinMaxScale(activation_t data[], activation_t min, activation_t max)
 {
     for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
         embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
     }
+    return EOK;
 }
 
-void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev)
+int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
 {
     for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
         embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
     }
+    return EOK;
 }
 
 int embann_getTrainingDataMean(float* mean)
@@ -102,7 +105,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
     return EOK;
 }
 
-int embann_getTrainingDataMax(uint8_t* max)
+int embann_getTrainingDataMax(activation_t* max)
 {
     trainingData_t* pTrainingData = embann_getDataCollection()->head;
     if (pTrainingData != NULL)
@@ -132,7 +135,7 @@ int embann_getTrainingDataMax(uint8_t* max)
     return EOK;
 }
 
-int embann_getTrainingDataMin(uint8_t* min)
+int embann_getTrainingDataMin(activation_t* min)
 {
     trainingData_t* pTrainingData = embann_getDataCollection()->head;
     if (pTrainingData != NULL)
@@ -162,7 +165,7 @@ int embann_getTrainingDataMin(uint8_t* min)
 }
 
 
-int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
+int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse)
 {
     trainingData_t* trainingDataNode;
 
@@ -197,7 +200,7 @@ int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResp
     return EOK;
 }
 
-int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse)
+int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse)
 {
     trainingData_t* trainingDataNode;
 

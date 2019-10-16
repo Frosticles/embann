@@ -55,7 +55,7 @@ typedef struct
 
 typedef struct
 {
-    float activation;
+    activation_t activation;
 } uNeuron_t;
 
 typedef struct
@@ -64,16 +64,16 @@ typedef struct
     wNeuron_t* inputGate;
     wNeuron_t* outputGate;
     wNeuron_t* cell;
-    float activation;
+    activation_t activation;
 } lstmCell_t;
 
 typedef struct trainingData
 {
-    uint16_t correctResponse;
+    numOutputs_t correctResponse;
     uint32_t length;
     struct trainingData* prev;
     struct trainingData* next;
-    uint8_t data[];
+    activation_t data[];
 } trainingData_t;
 
 typedef struct 
@@ -85,35 +85,35 @@ typedef struct
 
 typedef struct
 {
-    uint16_t numRawInputs;
-    uint16_t maxInput;
-    uint16_t* rawInputs;
-    uint16_t* groupThresholds;
-    uint16_t* groupTotal;
+    numInputs_t numRawInputs;
+    activation_t maxInput;
+    activation_t* rawInputs;
+    activation_t* groupThresholds;
+    activation_t* groupTotal;
 } downscaler_t;
 typedef struct
 {
-    uint16_t numNeurons;
+    numInputs_t numNeurons;
     uNeuron_t* neuron[];
 } inputLayer_t;
 
 typedef struct
 {
-    uint16_t numNeurons;
+    numHiddenNeurons_t numNeurons;
     wNeuron_t* neuron[];
 } hiddenLayer_t;
 
 typedef struct
 {
-    uint16_t numNeurons;
+    numOutputs_t numNeurons;
     wNeuron_t* neuron[];
 } outputLayer_t;
 
 typedef struct
 {
-    uint8_t numLayers;
-    uint8_t numHiddenLayers;
-    uint16_t networkResponse;
+    numLayers_t numLayers;
+    numLayers_t numHiddenLayers;
+    numOutputs_t networkResponse;
 } networkProperties_t;
 
 typedef struct
@@ -125,35 +125,35 @@ typedef struct
 } network_t;
 
 
-int embann_init(uint16_t numInputNeurons,
-                uint16_t numHiddenNeurons, 
-                uint8_t numHiddenLayers,
-                uint16_t numOutputNeurons);
-int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
-                           uint16_t numOutputs);
-int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], uint16_t numInputs,
-                           uint16_t numOutputs);
+int embann_init(numInputs_t numInputNeurons,
+                numHiddenNeurons_t numHiddenNeurons, 
+                numLayers_t numHiddenLayers,
+                numOutputs_t numOutputNeurons);
+int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
+                           numOutputs_t numOutputs);
+int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
+                           numOutputs_t numOutputs);
 int embann_calculateNetworkResponse(void);
 int embann_forwardPropagate(void);
 int embann_printNetwork(void);
-int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbose);
-int embann_trainDriverInError(float learningRate, float desiredCost, bool verbose);
-int embann_train(uint8_t correctOutput, float learningRate);
-int embann_tanhDerivative(float inputValue, float* outputValue);
-int embann_errorReporting(uint8_t correctResponse);
-int embann_printInputNeuronDetails(uint8_t neuronNum);
-int embann_printOutputNeuronDetails(uint8_t neuronNum);
-int embann_printHiddenNeuronDetails(uint8_t layerNum, uint8_t neuronNum);
+int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose);
+int embann_trainDriverInError(activation_t learningRate, activation_t desiredCost, bool verbose);
+int embann_train(numOutputs_t correctOutput, activation_t learningRate);
+int embann_tanhDerivative(activation_t inputValue, weight_t* outputValue);
+int embann_errorReporting(numOutputs_t correctResponse);
+int embann_printInputNeuronDetails(numInputs_t neuronNum);
+int embann_printOutputNeuronDetails(numOutputs_t neuronNum);
+int embann_printHiddenNeuronDetails(numLayers_t layerNum, numHiddenNeurons_t neuronNum);
 int embann_benchmark(void);
-void embann_inputRaw(float data[]);
-void embann_inputMinMaxScale(uint8_t data[], uint8_t min, uint8_t max);
-void embann_inputStandardizeScale(uint8_t data[], float mean, float stdDev);
+int embann_inputRaw(activation_t data[]);
+int embann_inputMinMaxScale(activation_t data[], activation_t min, activation_t max);
+int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev);
 int embann_getTrainingDataMean(float* mean);
 int embann_getTrainingDataStdDev(float* stdDev);
-int embann_getTrainingDataMax(uint8_t* max);
-int embann_getTrainingDataMin(uint8_t* min);
-int embann_addTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse);
-int embann_copyTrainingData(uint8_t data[], uint32_t length, uint16_t correctResponse);
+int embann_getTrainingDataMax(activation_t* max);
+int embann_getTrainingDataMin(activation_t* min);
+int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
+int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
 int embann_shuffleTrainingData(void);
 network_t* embann_getNetwork(void);
 int* embann_getErrno(void);
@@ -161,12 +161,21 @@ trainingDataCollection_t* embann_getDataCollection(void);
 
 
 #ifndef ARDUINO
+#ifdef _LARGE_TIME_API
+static inline uint64_t millis(void)
+{
+    struct timeval64 time;
+    gettimeofday(&time, NULL);
+    return (uint64_t) round(time.tv_usec / 1000);
+}
+#else
 static inline uint32_t millis(void)
 {
     struct timeval time;
     gettimeofday(&time, NULL);
     return (uint32_t) roundf(time.tv_usec / 1000);
 }
-#endif
+#endif // _LARGE_TIME_API
+#endif // ARDUINO
 
 #endif // Embann_h
