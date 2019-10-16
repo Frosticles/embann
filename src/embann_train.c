@@ -1,7 +1,7 @@
 #include "embann.h"
 #include "embann_log.h"
 
-#define TAG "Embann Train (" STRINGIFY(__LINE__) ")"
+#define TAG "Embann Train"
 
 
 int embann_trainDriverInTime(float learningRate, uint32_t numSeconds, bool verbose)

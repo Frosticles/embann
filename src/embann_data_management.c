@@ -1,7 +1,7 @@
 #include "embann.h"
 #include "embann_log.h"
 
-#define TAG "Embann Data Management (" STRINGIFY(__LINE__) ")"
+#define TAG "Embann Data Management"
 
 
 

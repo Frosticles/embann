@@ -7,7 +7,7 @@
 #include "embann.h"
 #include "embann_log.h"
 
-#define TAG "Embann Core (" STRINGIFY(__LINE__) ")"
+#define TAG "Embann Core"
 
 
 

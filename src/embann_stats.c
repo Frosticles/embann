@@ -1,7 +1,7 @@
 #include "embann.h"
 #include "embann_log.h"
 
-#define TAG "Embann Stats (" STRINGIFY(__LINE__) ")"
+#define TAG "Embann Stats"
 
 
 int embann_printNetwork(void)

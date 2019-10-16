@@ -7,6 +7,8 @@
 #ifndef Embann_log_h
 #define Embann_log_h
 
+#include "embann_macros.h"
+
 #ifdef CONFIG_LOG_COLORS
 #define LOG_COLOR_BLACK   "30"
 #define LOG_COLOR_RED     "31"
@@ -34,7 +36,7 @@
 #define LOG_RESET_COLOR
 #endif //CONFIG_LOG_COLORS
 
-#define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag " - " format LOG_RESET_COLOR "\n"
+#define LOG_FORMAT(letter, tag, format)  LOG_COLOR_ ## letter #letter ": " tag  " (" STRINGIFY(__LINE__) ") - " format LOG_RESET_COLOR "\n"
 
 #define PRINT_CHECK(a) if ((a) < 0) *(embann_getErrno()) = EIO
 
