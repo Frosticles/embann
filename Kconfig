@@ -51,20 +51,25 @@ mainmenu "Embann Configuration"
     endmenu
 
     choice ERROR_CHECK_BEHAVIOUR
-            bool "Behaviour of the EMBANN_ERROR_CHECK macro"
-            default ERROR_CHECK_SET_ERRNO
-            help
-                Specify what the EMBANN_ERROR_CHECK macro does if a function returns
-                something other than EOK.
+        bool "Behaviour of the EMBANN_ERROR_CHECK macro"
+        default ERROR_CHECK_SET_ERRNO
+        help
+            Specify what the EMBANN_ERROR_CHECK macro does if a function returns
+            something other than EOK.
 
-            config ERROR_CHECK_SET_ERRNO
-                bool "Set embann_errno"
-                help
-                    Set the value of embann_errno variable to the error value.
-            config ERROR_CHECK_ABORT
-                bool "Execute abort()"
-                help
-                    Executes the abort() function.
+        config ERROR_CHECK_SET_ERRNO
+            bool "Set embann_errno"
+            help
+                Set the value of embann_errno variable to the error value.
+        config ERROR_CHECK_RETURN
+            bool "Return on error"
+            help
+                Immediately returns with the error value (these are posix error values).
+        config ERROR_CHECK_ABORT
+            bool "Execute abort()"
+            help
+                Executes the abort() function.
+    endchoice
 
     choice MALLOC_CHECK_BEHAVIOUR
         bool "Behaviour of the EMBANN_MALLOC_CHECK macro"
