@@ -108,7 +108,7 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
     weight_t dTotalErrorToHiddenNeuron = 0.0F;
     /* TODO, add support for multiple hidden layers */
     numLayers_t lastHiddenLayer = embann_getNetwork()->properties.numHiddenLayers;
-    weight_t outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons][lastHiddenLayer - 1U];
+    weight_t outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons][embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->numNeurons];
     weight_t tanhDerivative = 0;
 
     for (uint16_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
