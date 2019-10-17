@@ -19,7 +19,23 @@
 #define NUM_ARRAY_ELEMENTS(x) (sizeof(x) / sizeof((x)[0]))
 
 
+#ifdef WEIGHT_IS_FLOAT
+    #define WEIGHT_PRINT STRINGIFY(.3f)
+#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
+    #define WEIGHT_PRINT STRINGIFY(d)
+#endif
 
+#ifdef ACTIVATION_IS_FLOAT
+    #define ACTIVATION_PRINT STRINGIFY(.3f)
+#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
+    #define ACTIVATION_PRINT STRINGIFY(d)
+#endif
+
+#ifdef BIAS_IS_FLOAT
+    #define BIAS_PRINT STRINGIFY(.3f)
+#elif defined(BIAS_IS_SIGNED) || defined(BIAS_IS_UNSIGNED)
+    #define BIAS_PRINT STRINGIFY(d)
+#endif
 
 
 #ifdef CONFIG_ERROR_CHECK_SET_ERRNO

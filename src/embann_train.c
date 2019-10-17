@@ -87,11 +87,7 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
         {
             if (verbose == true)
             {
-#ifdef ACTIVATION_IS_FLOAT
-                printf("%.3f, ", currentCost[i]);
-#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-                printf("%d, ", currentCost[i]);
-#endif
+                printf("%" ACTIVATION_PRINT ", ", currentCost[i]);
             }
             if (currentCost[i] > desiredCost)
             {
@@ -100,11 +96,7 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
         }
         if (verbose == true)
         {
-#ifdef ACTIVATION_IS_FLOAT
-            printf("%.3f\n ", desiredCost);
-#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-            printf("%d\n ", desiredCost);
-#endif
+            printf("%" ACTIVATION_PRINT "\n ", desiredCost);
         }
     }
     return EOK;
@@ -138,22 +130,15 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
                                             tanhDerivative;
         }
         
-#ifdef ACTIVATION_IS_FLOAT
-        EMBANN_LOGV(TAG, "dOutputErrorToOutputSum[%d]: %.3f", i, dOutputErrorToOutputSum[i]);
-#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-        EMBANN_LOGV(TAG, "dOutputErrorToOutputSum[%d]: %d", i, dOutputErrorToOutputSum[i]);
-#endif
+        EMBANN_LOGV(TAG, "dOutputErrorToOutputSum[%d]: %" ACTIVATION_PRINT, i, dOutputErrorToOutputSum[i]);
         
-        for (uint16_t j = 0; j < embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->numNeurons; j++)
+        for (uint16_t j = 0; j < embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->numNeurons; j++)
         {
             outputNeuronWeightChange[i][j] = dOutputErrorToOutputSum[i] *
-                                                embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron[j]->activation *
+                                                embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->neuron[j]->activation *
                                                 learningRate;
-#ifdef ACTIVATION_IS_FLOAT
-            EMBANN_LOGV(TAG, "outputNeuronWeightChange[%d][%d]: %.3f", i, j, outputNeuronWeightChange[i][j]);
-#elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-            EMBANN_LOGV(TAG, "outputNeuronWeightChange[%d][%d]: %d", i, j, outputNeuronWeightChange[i][j]);
-#endif
+
+            EMBANN_LOGV(TAG, "outputNeuronWeightChange[%d][%d]: %" WEIGHT_PRINT, i, j, outputNeuronWeightChange[i][j]);
         }
     }
 
@@ -165,27 +150,15 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
             dTotalErrorToHiddenNeuron += dOutputErrorToOutputSum[j] * 
                                             embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight;
 
-#ifdef WEIGHT_IS_FLOAT
-            EMBANN_LOGV(TAG, "Old Output Weight[%d][%d]: %.3f", i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
-#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
-            EMBANN_LOGV(TAG, "Old Output Weight[%d][%d]: %d", i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
-#endif
+            EMBANN_LOGV(TAG, "Old Output Weight[%d][%d]: %" WEIGHT_PRINT, i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
             
             embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight += outputNeuronWeightChange[j][i];
 
-#ifdef WEIGHT_IS_FLOAT
-            EMBANN_LOGV(TAG, "New Output Weight[%d][%d]: %.3f", i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
-#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
-            EMBANN_LOGV(TAG, "New Output Weight[%d][%d]: %d", i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
-#endif
+            EMBANN_LOGV(TAG, "New Output Weight[%d][%d]: %" WEIGHT_PRINT, i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
         }
         for (uint16_t k = 0; k < embann_getNetwork()->inputLayer->numNeurons; k++)
         {
-#ifdef WEIGHT_IS_FLOAT
-            EMBANN_LOGV(TAG, "Old Hidden Weight[%d][%d]: %.3f", i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
-#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
-            EMBANN_LOGV(TAG, "Old Hidden Weight[%d][%d]: %d", i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
-#endif   
+            EMBANN_LOGV(TAG, "Old Hidden Weight[%d][%d]: %" WEIGHT_PRINT, i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
             
             EMBANN_ERROR_CHECK(embann_tanhDerivative(embann_getNetwork()->hiddenLayer[0]->neuron[i]->activation, 
                                                         &tanhDerivative));
@@ -195,12 +168,7 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
                                                                                     embann_getNetwork()->inputLayer->neuron[k]->activation * 
                                                                                     learningRate;
 
-#ifdef WEIGHT_IS_FLOAT
-            EMBANN_LOGV(TAG, "New Hidden Weight[%d][%d]: %.3f", i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
-#elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
-            EMBANN_LOGV(TAG, "New Hidden Weight[%d][%d]: %d", i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
-#endif   
-        
+            EMBANN_LOGV(TAG, "New Hidden Weight[%d][%d]: %" WEIGHT_PRINT, i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
         }
     }
     return EOK;
