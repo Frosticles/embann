@@ -107,8 +107,8 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
     activation_t dOutputErrorToOutputSum[embann_getNetwork()->outputLayer->numNeurons];
     weight_t dTotalErrorToHiddenNeuron = 0.0F;
     /* TODO, add support for multiple hidden layers */
-    weight_t outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons]
-                                  [embann_getNetwork()->hiddenLayer[0]->numNeurons];
+    numLayers_t lastHiddenLayer = embann_getNetwork()->properties.numHiddenLayers;
+    weight_t outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons][lastHiddenLayer - 1U];
     weight_t tanhDerivative = 0;
 
     for (uint16_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
@@ -142,7 +142,7 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
         }
     }
 
-    for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[0]->numNeurons; i++)
+    for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->numNeurons; i++)
     {
         dTotalErrorToHiddenNeuron = 0.0F;
         for (uint16_t j = 0; j < embann_getNetwork()->outputLayer->numNeurons; j++)
@@ -163,7 +163,7 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
             EMBANN_ERROR_CHECK(embann_tanhDerivative(embann_getNetwork()->hiddenLayer[0]->neuron[i]->activation, 
                                                         &tanhDerivative));
             
-            embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight += dTotalErrorToHiddenNeuron * 
+            embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->neuron[i]->params[k]->weight += dTotalErrorToHiddenNeuron * 
                                                                                     tanhDerivative *
                                                                                     embann_getNetwork()->inputLayer->neuron[k]->activation * 
                                                                                     learningRate;
