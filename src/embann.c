@@ -304,7 +304,7 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t num
         }
         Output[i]->activation = tanhf(Output[i]->activation * PI);
 
-        EMBANN_LOGV(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
+        EMBANN_LOGV(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, Output[i]->activation);
     }
     return EOK;
 }
@@ -326,7 +326,7 @@ int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_
         }
         Output[i]->activation = tanhf(Output[i]->activation * PI);
 
-        EMBANN_LOGV(TAG, "i:%d This is the embann_SumAndSquash Output %.2f", i, Output[i]);
+        EMBANN_LOGV(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, Output[i]->activation);
     }
     return EOK;
 }
@@ -338,7 +338,7 @@ int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_
 
 int embann_calculateNetworkResponse(void)
 {
-    uint8_t mostLikelyOutput = 0;
+    numOutputs_t mostLikelyOutput = 0;
 
     for (uint16_t i = 0; i < network->outputLayer->numNeurons; i++)
     {
@@ -347,7 +347,7 @@ int embann_calculateNetworkResponse(void)
         {
             mostLikelyOutput = i;
         }
-        EMBANN_LOGV(TAG, "i: %d neuron: %-3f likely: %d", i, network->outputLayer->neuron[i]->activation, mostLikelyOutput);
+        EMBANN_LOGV(TAG, "neuron[%d]: %" ACTIVATION_PRINT "likely: %d", i, network->outputLayer->neuron[i]->activation, mostLikelyOutput);
     }
     
     network->properties.networkResponse = mostLikelyOutput;
