@@ -147,17 +147,16 @@ int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
             _printHiddenNeuronParams(pHiddenLayer, j, k);
         }
     }
-    
+
 #ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
     embann_getNetwork()->hiddenLayer[0] = pHiddenLayer;
 #endif
-    _printConnectedHiddenLayer(0);
-
     for (uint16_t k = 0; k < numHiddenNeurons; k++)
     {
         EMBANN_LOGI(TAG, "act [%d] = %d", k, embann_getNetwork()->hiddenLayer[0]->neuron[k]->activation);
     }
 
+    _printConnectedHiddenLayer(0);
     EMBANN_LOGI(TAG, "done hidden");
     return EOK;
 }
