@@ -13,7 +13,17 @@ static void _printHiddenNeuronParams(hiddenLayer_t* pHiddenLayer, numHiddenNeuro
 static void _printConnectedHiddenLayer(numLayers_t layerNum);
 static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutputNeurons);
 
-
+static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numInputs_t numInputNeurons);
+static int embann_initInputLayer(numInputs_t numInputNeurons);
+static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeurons_t numHiddenNeurons);
+#if (CONFIG_NUM_HIDDEN_LAYERS > 1)
+static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numLayers_t numHiddenLayers);
+#endif
+static int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
+#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
+                                    numLayers_t numHiddenLayers,
+#endif
+                                    numInputs_t numInputNeurons);
 
 
 
@@ -48,7 +58,9 @@ int embann_init(numInputs_t numInputNeurons,
 
     EMBANN_ERROR_CHECK(embann_initInputLayer(numInputNeurons));
     EMBANN_ERROR_CHECK(embann_initHiddenLayer(numHiddenNeurons,
+#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
                                                 numHiddenLayers,
+#endif
                                                 numInputNeurons));
     EMBANN_ERROR_CHECK(embann_initOutputLayer(numOutputNeurons,
                                                 numHiddenNeurons));
@@ -64,7 +76,7 @@ int embann_init(numInputs_t numInputNeurons,
 
 
 
-int embann_initInputLayer(numInputs_t numInputNeurons)
+static int embann_initInputLayer(numInputs_t numInputNeurons)
 {
     inputLayer_t* pInputLayer;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
@@ -108,7 +120,7 @@ int embann_initInputLayer(numInputs_t numInputNeurons)
 
 
 
-int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
+static int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
 #if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
                             numLayers_t numHiddenLayers,
 #endif
@@ -130,8 +142,7 @@ int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
 
 
 
-int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
-                                    numInputs_t numInputNeurons)
+static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numInputs_t numInputNeurons)
 {
     hiddenLayer_t* pHiddenLayer;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
@@ -191,8 +202,7 @@ int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
 
 
 #if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
-int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
-                                    numLayers_t numHiddenLayers)
+static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numLayers_t numHiddenLayers)
 {
     hiddenLayer_t* pHiddenLayer;
     wNeuron_t* pNeuron;
@@ -258,8 +268,7 @@ int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
 
 
 
-int embann_initOutputLayer(numOutputs_t numOutputNeurons,
-                            numHiddenNeurons_t numHiddenNeurons)
+static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeurons_t numHiddenNeurons)
 {
     outputLayer_t* pOutputLayer;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC

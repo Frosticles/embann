@@ -37,14 +37,6 @@ int embann_init(numInputs_t numInputNeurons,
                 numHiddenNeurons_t numHiddenNeurons, 
                 numLayers_t numHiddenLayers,
                 numOutputs_t numOutputNeurons);
-int embann_initInputLayer(numInputs_t numInputNeurons);
-int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
-#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
-                            numLayers_t numHiddenLayers,
-#endif
-                            numInputs_t numInputNeurons);
-int embann_initOutputLayer(numOutputs_t numOutputNeurons,
-                            numHiddenNeurons_t numHiddenNeurons);
 int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
                            numOutputs_t numOutputs);
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
