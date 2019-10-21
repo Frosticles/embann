@@ -109,7 +109,9 @@ int embann_initInputLayer(numInputs_t numInputNeurons)
 
 
 int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
+#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
                             numLayers_t numHiddenLayers,
+#endif
                             numInputs_t numInputNeurons)
 {
     EMBANN_ERROR_CHECK(embann_initInputToHiddenLayer(numHiddenNeurons, numInputNeurons));
