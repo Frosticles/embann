@@ -4,6 +4,8 @@
 #define TAG "Embann Stats"
 
 
+
+
 int embann_printNetwork(void)
 {
     printf("\nInput Layer | Hidden Layer 1 ");
@@ -34,7 +36,6 @@ int embann_printNetwork(void)
             printf("            | ");
         }
 
-        //printf("%d", embann_getNetwork()->hiddenLayer[0]->numNeurons);
         for (uint8_t j = 0; j < embann_getNetwork()->properties.numHiddenLayers; j++)
         {
             if (i < embann_getNetwork()->hiddenLayer[j]->numNeurons)
@@ -58,6 +59,11 @@ int embann_printNetwork(void)
     return EOK;
 }
 
+
+
+
+
+
 int embann_printInputNeuronDetails(numInputs_t neuronNum)
 {
     if (neuronNum < embann_getNetwork()->inputLayer->numNeurons)
@@ -72,6 +78,11 @@ int embann_printInputNeuronDetails(numInputs_t neuronNum)
     }
     return EOK;
 }
+
+
+
+
+
 
 int embann_printOutputNeuronDetails(numOutputs_t neuronNum)
 {
@@ -101,6 +112,11 @@ int embann_printOutputNeuronDetails(numOutputs_t neuronNum)
     }
     return EOK;
 }
+
+
+
+
+
 
 int embann_printHiddenNeuronDetails(numLayers_t layerNum, numHiddenNeurons_t neuronNum)
 {
@@ -147,6 +163,11 @@ int embann_printHiddenNeuronDetails(numLayers_t layerNum, numHiddenNeurons_t neu
     }
     return EOK;
 }
+
+
+
+
+
 
 int embann_errorReporting(numOutputs_t correctResponse)
 {

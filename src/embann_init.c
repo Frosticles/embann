@@ -1,5 +1,8 @@
 #include "embann.h"
 #include "embann_log.h"
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+#include "embann_static.h"
+#endif
 
 #define TAG "Embann Init"
 
@@ -11,9 +14,7 @@ static void _printConnectedHiddenLayer(numLayers_t layerNum);
 static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutputNeurons);
 
 
-#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
-#include "embann_static.h"
-#endif
+
 
 
 
@@ -26,6 +27,7 @@ int embann_init(numInputs_t numInputNeurons,
                 numLayers_t numHiddenLayers,
                 numOutputs_t numOutputNeurons)
 {
+    network_t* pNetwork;
     if ((numInputNeurons == 0U) || (numHiddenNeurons == 0U) || 
         (numHiddenLayers == 0U) || (numOutputNeurons == 0U))
     {
@@ -34,7 +36,6 @@ int embann_init(numInputs_t numInputNeurons,
         return EINVAL;
     }
 
-    network_t* pNetwork;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
     pNetwork = &staticNetwork;
 #else
@@ -47,10 +48,10 @@ int embann_init(numInputs_t numInputNeurons,
 
     EMBANN_ERROR_CHECK(embann_initInputLayer(numInputNeurons));
     EMBANN_ERROR_CHECK(embann_initHiddenLayer(numHiddenNeurons,
-                           numHiddenLayers,
-                           numInputNeurons));
+                                                numHiddenLayers,
+                                                numInputNeurons));
     EMBANN_ERROR_CHECK(embann_initOutputLayer(numOutputNeurons,
-                           numHiddenNeurons));
+                                                numHiddenNeurons));
 
     embann_getNetwork()->properties.numLayers = numHiddenLayers + 2U;
     embann_getNetwork()->properties.numHiddenLayers = numHiddenLayers;
@@ -99,6 +100,26 @@ int embann_initInputLayer(numInputs_t numInputNeurons)
     }
 
     EMBANN_LOGI(TAG, "done input");
+    return EOK;
+}
+
+
+
+
+
+
+int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
+                            numLayers_t numHiddenLayers,
+                            numInputs_t numInputNeurons)
+{
+    EMBANN_ERROR_CHECK(embann_initInputToHiddenLayer(numHiddenNeurons, numInputNeurons));
+
+#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
+    if (numHiddenLayers > 1U)
+    {
+        EMBANN_ERROR_CHECK(embann_initHiddenToHiddenLayer(numHiddenNeurons, numHiddenLayers));
+    }
+#endif
     return EOK;
 }
 
@@ -162,23 +183,6 @@ int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
 }
 
 
-
-
-
-int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
-                            numLayers_t numHiddenLayers,
-                            numInputs_t numInputNeurons)
-{
-    EMBANN_ERROR_CHECK(embann_initInputToHiddenLayer(numHiddenNeurons, numInputNeurons));
-
-#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
-    if (numHiddenLayers > 1U)
-    {
-        EMBANN_ERROR_CHECK(embann_initHiddenToHiddenLayer(numHiddenNeurons, numHiddenLayers));
-    }
-#endif
-    return EOK;
-}
 
 
 
@@ -307,6 +311,8 @@ int embann_initOutputLayer(numOutputs_t numOutputNeurons,
 
 
 
+
+
 static void _printInputLayer(inputLayer_t* pInputLayer, numInputs_t numInputNeurons)
 {
 #pragma GCC diagnostic push
@@ -317,6 +323,7 @@ static void _printInputLayer(inputLayer_t* pInputLayer, numInputs_t numInputNeur
                                                 (sizeof(uNeuron_t*) * numInputNeurons));
 #pragma GCC diagnostic pop
 }
+
 
 
 
@@ -334,6 +341,8 @@ static void _printHiddenLayer(hiddenLayer_t* pHiddenLayer, numHiddenNeurons_t nu
 
 
 
+
+
 static void _printHiddenNeuronParams(hiddenLayer_t* pHiddenLayer, numHiddenNeurons_t j, numHiddenNeurons_t k)
 {
 #pragma GCC diagnostic push
@@ -346,6 +355,8 @@ static void _printHiddenNeuronParams(hiddenLayer_t* pHiddenLayer, numHiddenNeuro
                         (uint32_t) &pHiddenLayer->neuron[j]->params[k]->weight);
 #pragma GCC diagnostic pop
 }
+
+
 
 
 static void _printConnectedHiddenLayer(numLayers_t layerNum)
@@ -371,4 +382,3 @@ static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutpu
                                                 (sizeof(wNeuron_t*) * numOutputNeurons));
 #pragma GCC diagnostic pop
 }
-
