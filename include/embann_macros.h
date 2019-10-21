@@ -13,28 +13,35 @@
 
 
 
-/* Random float between -1 and 1 */
-#define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 /* Calculate number of elements in an array */
 #define NUM_ARRAY_ELEMENTS(x) (sizeof(x) / sizeof((x)[0]))
 
 
 #ifdef WEIGHT_IS_FLOAT
     #define WEIGHT_PRINT STRINGIFY(.3f)
+    /* Random float between -1 and 1 */
+    #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
     #define WEIGHT_PRINT STRINGIFY(d)
+    #define RAND_WEIGHT() (random() % INT8_MAX) // TODO this but for each type
 #endif
 
 #ifdef ACTIVATION_IS_FLOAT
     #define ACTIVATION_PRINT STRINGIFY(.3f)
+    /* Random float between -1 and 1 */
+    #define RAND_ACTIVATION() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
     #define ACTIVATION_PRINT STRINGIFY(d)
+    #define RAND_ACTIVATION() (random() % INT8_MAX) // TODO this but for each type
 #endif
 
 #ifdef BIAS_IS_FLOAT
     #define BIAS_PRINT STRINGIFY(.3f)
+    /* Random float between -1 and 1 */
+    #define RAND_BIAS() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(BIAS_IS_SIGNED) || defined(BIAS_IS_UNSIGNED)
     #define BIAS_PRINT STRINGIFY(d)
+    #define RAND_BIAS() (random() % INT8_MAX) // TODO this but for each type
 #endif
 
 
