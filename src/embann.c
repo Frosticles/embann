@@ -14,7 +14,7 @@
 /* errno value specifically for internal embann errors */
 static int embann_errno = EOK;
 /* Pointer to the current network */
-static network_t* network;
+static network_t* pNetwork;
 /* Structure of pointers to training data */
 static trainingDataCollection_t trainingDataCollection = {
     .tail = NULL,
@@ -23,13 +23,6 @@ static trainingDataCollection_t trainingDataCollection = {
 };
 
 
-
-static int embann_initInputLayer(uint16_t numInputNeurons);
-static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
-                                  uint8_t numHiddenLayers,
-                                  uint16_t numInputNeurons);
-static int embann_initOutputLayer(uint16_t numOutputNeurons,
-                                  uint16_t numHiddenNeurons);
 
 
 
@@ -42,7 +35,14 @@ int main(int argc, char const *argv[])
     srandom(tv.tv_usec ^ tv.tv_sec);  /* Seed the PRNG */
     
     EMBANN_ERROR_CHECK(embann_benchmark());
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    EMBANN_ERROR_CHECK(embann_init(CONFIG_NUM_INPUT_NEURONS, 
+                                    CONFIG_NUM_HIDDEN_NEURONS, 
+                                    CONFIG_NUM_HIDDEN_LAYERS, 
+                                    CONFIG_NUM_OUTPUT_NEURONS));
+#else
     EMBANN_ERROR_CHECK(embann_init(10U, 10U, 5U, 10U));
+#endif
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
     uint8_t randomData[10];
@@ -79,210 +79,33 @@ int main(int argc, char const *argv[])
 
 
 
-int embann_init(numInputs_t numInputNeurons,
-                numHiddenNeurons_t numHiddenNeurons, 
-                numLayers_t numHiddenLayers,
-                numOutputs_t numOutputNeurons)
-{
-    if ((numInputNeurons == 0U) || (numHiddenNeurons == 0U) || 
-        (numHiddenLayers == 0U) || (numOutputNeurons == 0U))
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return EINVAL;
-    }
-    
-    network = (network_t*) malloc(sizeof(network_t) + 
-                                 (sizeof(hiddenLayer_t) * numHiddenLayers));
-    EMBANN_MALLOC_CHECK(network);
-
-    EMBANN_ERROR_CHECK(embann_initInputLayer(numInputNeurons));
-    EMBANN_ERROR_CHECK(embann_initHiddenLayer(numHiddenNeurons,
-                           numHiddenLayers,
-                           numInputNeurons));
-    EMBANN_ERROR_CHECK(embann_initOutputLayer(numOutputNeurons,
-                           numHiddenNeurons));
-
-    network->properties.numLayers = numHiddenLayers + 2U;
-    network->properties.numHiddenLayers = numHiddenLayers;
-    network->properties.networkResponse = 0U;
-
-    return EOK;
-}
-
-
-
-
-
-
-static int embann_initInputLayer(uint16_t numInputNeurons)
-{
-    inputLayer_t* inputLayer = (inputLayer_t*) malloc(sizeof(inputLayer_t) + 
-                                                (sizeof(uNeuron_t*) * numInputNeurons));
-    EMBANN_MALLOC_CHECK(inputLayer);
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-    // MISRA C 2012 14.4 - deliberate cast from pointer to integer
-    // cppcheck-suppress misra-c2012-11.4
-    EMBANN_LOGI(TAG, "inputLayer: 0x%x, size: %ld", (uint32_t) inputLayer, sizeof(inputLayer_t) + 
-                                                (sizeof(uNeuron_t*) * numInputNeurons));
-#pragma GCC diagnostic pop
-
-    inputLayer->numNeurons = numInputNeurons;
-    for (uint8_t i = 0; i < numInputNeurons; i++)
-    {
-        uNeuron_t* pNeuron = (uNeuron_t*) malloc(sizeof(uNeuron_t));
-        inputLayer->neuron[i] = pNeuron;
-        inputLayer->neuron[i]->activation = 0.0F;
-    }
-    network->inputLayer = inputLayer;
-
-    EMBANN_LOGI(TAG, "done input");
-    return EOK;
-}
-
-
-
-
-
-
-static int embann_initHiddenLayer(uint16_t numHiddenNeurons,
-                                   uint8_t numHiddenLayers,
-                                   uint16_t numInputNeurons)
-{
-    for (uint8_t i = 0; i < numHiddenLayers; i++)
-    {
-        hiddenLayer_t* hiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
-                                                (sizeof(wNeuron_t*) * numHiddenNeurons));
-        EMBANN_MALLOC_CHECK(hiddenLayer);
-        hiddenLayer->numNeurons = numHiddenNeurons;
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-        // MISRA C 2012 14.4 - deliberate cast from pointer to integer
-        // cppcheck-suppress misra-c2012-11.4
-        EMBANN_LOGI(TAG, "hiddenlayer: 0x%x, size: %ld", (uint32_t) hiddenLayer, sizeof(hiddenLayer_t) + 
-                                                (sizeof(wNeuron_t*) * numHiddenNeurons));
-#pragma GCC diagnostic pop
-
-        for (uint16_t j = 0; j < numHiddenNeurons; j++)
-        {    
-            wNeuron_t* pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * (uint16_t)((i == 0U) ? numInputNeurons : numHiddenNeurons)));
-            hiddenLayer->neuron[j] = pNeuron;
-            hiddenLayer->neuron[j]->activation = 0.0F;
-
-            for (uint16_t k = 0; k < (uint16_t)((i == 0U) ? numInputNeurons : numHiddenNeurons); k++)
-            {
-                neuronParams_t* hiddenLayerParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
-                EMBANN_MALLOC_CHECK(hiddenLayerParams);
-
-                hiddenLayer->neuron[j]->params[k] = hiddenLayerParams;
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-                // MISRA C 2012 14.4 - deliberate cast from pointer to integer
-                // cppcheck-suppress misra-c2012-11.4
-                EMBANN_LOGV(TAG, "params array: 0x%x, bias 0x%x, weight 0x%x", 
-                                    (uint32_t) &hiddenLayer->neuron[j]->params[k],
-                                    (uint32_t) &hiddenLayer->neuron[j]->params[k]->bias,
-                                    (uint32_t) &hiddenLayer->neuron[j]->params[k]->weight);
-#pragma GCC diagnostic pop
-
-                hiddenLayer->neuron[j]->params[k]->bias = RAND_WEIGHT();
-                hiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
-            }
-        }
-
-        EMBANN_LOGI(TAG, "done hidden");
-
-        network->hiddenLayer[i] = hiddenLayer;
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-        // MISRA C 2012 14.4 - deliberate cast from pointer to integer
-        // cppcheck-suppress misra-c2012-11.4
-        EMBANN_LOGI(TAG, "hiddenlayer[%d]: 0x%x", i, (uint32_t) &network->hiddenLayer[i]);
-#pragma GCC diagnostic pop
-    }
-    return EOK;
-}
-
-
-
-
-
-
-static int embann_initOutputLayer(uint16_t numOutputNeurons,
-                                   uint16_t numHiddenNeurons)
-{
-    outputLayer_t* outputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
-                                                        (sizeof(wNeuron_t*) * numOutputNeurons));
-    EMBANN_MALLOC_CHECK(outputLayer);
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
-    // MISRA C 2012 14.4 - deliberate cast from pointer to integer
-    // cppcheck-suppress misra-c2012-11.4
-    EMBANN_LOGI(TAG, "outputLayer: 0x%x, size: %ld", (uint32_t) outputLayer, sizeof(outputLayer_t) + 
-                                                (sizeof(wNeuron_t*) * numOutputNeurons));
-#pragma GCC diagnostic pop
-
-    for (uint8_t i = 0; i < numOutputNeurons; i++)
-    {
-        wNeuron_t* pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * numHiddenNeurons));
-        outputLayer->neuron[i] = pNeuron;
-        outputLayer->neuron[i]->activation = 0.0F;
-        
-        for (uint16_t j = 0; j < numHiddenNeurons; j++)
-        {
-            neuronParams_t* outputNeuronParams = (neuronParams_t*) malloc(sizeof(neuronParams_t));
-            EMBANN_MALLOC_CHECK(outputNeuronParams);
-
-            outputLayer->neuron[i]->params[j] = outputNeuronParams;
-            
-            outputLayer->neuron[i]->params[j]->bias = RAND_WEIGHT();
-            outputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
-        }
-    }
-    outputLayer->numNeurons = numOutputNeurons;
-    network->outputLayer = outputLayer;
-
-    EMBANN_LOGI(TAG, "done output");
-    return EOK;
-}
-
-
-
-
-
 int embann_forwardPropagate(void)
 {
     EMBANN_ERROR_CHECK(embann_sumAndSquashInput(
-                            network->inputLayer->neuron, 
-                            network->hiddenLayer[0]->neuron,
-                            network->inputLayer->numNeurons, 
-                            network->hiddenLayer[0]->numNeurons));
+                            embann_getNetwork()->inputLayer->neuron, 
+                            embann_getNetwork()->hiddenLayer[0]->neuron,
+                            embann_getNetwork()->inputLayer->numNeurons, 
+                            embann_getNetwork()->hiddenLayer[0]->numNeurons));
 
     EMBANN_LOGD(TAG, "Done Input -> 1st Hidden Layer");
-    for (uint8_t i = 1; i < network->properties.numHiddenLayers; i++)
+    for (uint8_t i = 1; i < embann_getNetwork()->properties.numHiddenLayers; i++)
     {
         EMBANN_ERROR_CHECK(embann_sumAndSquash(
-                            network->hiddenLayer[i - 1U]->neuron,
-                            network->hiddenLayer[i]->neuron,
-                            network->hiddenLayer[i - 1U]->numNeurons,
-                            network->hiddenLayer[i]->numNeurons));
+                            embann_getNetwork()->hiddenLayer[i - 1U]->neuron,
+                            embann_getNetwork()->hiddenLayer[i]->neuron,
+                            embann_getNetwork()->hiddenLayer[i - 1U]->numNeurons,
+                            embann_getNetwork()->hiddenLayer[i]->numNeurons));
 
         EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1U, i);
     }
 
     EMBANN_ERROR_CHECK(embann_sumAndSquash(
-        network->hiddenLayer[network->properties.numHiddenLayers - 1U]->neuron,
-        network->outputLayer->neuron, 
-        network->hiddenLayer[network->properties.numHiddenLayers - 1U]->numNeurons,
-        network->outputLayer->numNeurons));
+        embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron,
+        embann_getNetwork()->outputLayer->neuron, 
+        embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->numNeurons,
+        embann_getNetwork()->outputLayer->numNeurons));
 
-    EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", network->properties.numHiddenLayers);
+    EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", embann_getNetwork()->properties.numHiddenLayers);
 
     return EOK;
 }
@@ -295,10 +118,12 @@ int embann_forwardPropagate(void)
 int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
                             numOutputs_t numOutputs)
 {
-    for (uint16_t i = 0; i < numOutputs; i++)
+    
+    // TODO, could overflow if numhidden >> numoutputs
+    for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
         Output[i]->activation = 0.0F; // Bias[i];
-        for (uint16_t j = 0; j < numInputs; j++)
+        for (numHiddenNeurons_t j = 0; j < numInputs; j++)
         {
             Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
         }
@@ -317,10 +142,11 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t num
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
                                 numOutputs_t numOutputs)
 {
-    for (uint16_t i = 0; i < numOutputs; i++)
+    for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
         Output[i]->activation = 0; // Bias[i];
-        for (uint16_t j = 0; j < numInputs; j++)
+        
+        for (numInputs_t j = 0; j < numInputs; j++)
         {
             Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
         }
@@ -340,26 +166,33 @@ int embann_calculateNetworkResponse(void)
 {
     numOutputs_t mostLikelyOutput = 0;
 
-    for (uint16_t i = 0; i < network->outputLayer->numNeurons; i++)
+    for (numOutputs_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
     {
-        if (network->outputLayer->neuron[i] >
-            network->outputLayer->neuron[mostLikelyOutput])
+        if (embann_getNetwork()->outputLayer->neuron[i]->activation >
+            embann_getNetwork()->outputLayer->neuron[mostLikelyOutput]->activation)
         {
             mostLikelyOutput = i;
         }
-        EMBANN_LOGV(TAG, "neuron[%d]: %" ACTIVATION_PRINT "likely: %d", i, network->outputLayer->neuron[i]->activation, mostLikelyOutput);
+        EMBANN_LOGV(TAG, "neuron[%d]: %" ACTIVATION_PRINT "likely: %d", i, embann_getNetwork()->outputLayer->neuron[i]->activation, mostLikelyOutput);
     }
     
-    network->properties.networkResponse = mostLikelyOutput;
+    embann_getNetwork()->properties.networkResponse = mostLikelyOutput;
     return EOK;
 }
 
 
 
-
 network_t* embann_getNetwork(void)
 {
-    return network;
+    return pNetwork;
+}
+
+
+
+int embann_setNetwork(network_t* newNetwork)
+{
+    pNetwork = newNetwork;
+    return EOK;
 }
 
 

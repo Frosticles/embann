@@ -19,6 +19,7 @@ int embann_inputMinMaxScale(activation_t data[], activation_t min, activation_t 
 {
     for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
+        // TODO configurable types
         embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
     }
     return EOK;
@@ -28,6 +29,7 @@ int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
 {
     for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
     {
+        // TODO configurable types
         embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
     }
     return EOK;

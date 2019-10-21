@@ -50,43 +50,45 @@ mainmenu "Embann Configuration"
 
     endmenu
 
-    choice ERROR_CHECK_BEHAVIOUR
-        bool "Behaviour of the EMBANN_ERROR_CHECK macro"
-        default ERROR_CHECK_SET_ERRNO
-        help
-            Specify what the EMBANN_ERROR_CHECK macro does if a function returns
-            something other than EOK.
+    menu "Error Behaviour"
+        choice ERROR_CHECK_BEHAVIOUR
+            bool "Behaviour of the EMBANN_ERROR_CHECK macro"
+            default ERROR_CHECK_SET_ERRNO
+            help
+                Specify what the EMBANN_ERROR_CHECK macro does if a function returns
+                something other than EOK.
 
-        config ERROR_CHECK_SET_ERRNO
-            bool "Set embann_errno"
-            help
-                Set the value of embann_errno variable to the error value.
-        config ERROR_CHECK_RETURN
-            bool "Return on error"
-            help
-                Immediately returns with the error value (these are posix error values).
-        config ERROR_CHECK_ABORT
-            bool "Execute abort()"
-            help
-                Executes the abort() function.
-    endchoice
+            config ERROR_CHECK_SET_ERRNO
+                bool "Set embann_errno"
+                help
+                    Set the value of embann_errno variable to the error value.
+            config ERROR_CHECK_RETURN
+                bool "Return on error"
+                help
+                    Immediately returns with the error value (these are posix error values).
+            config ERROR_CHECK_ABORT
+                bool "Execute abort()"
+                help
+                    Executes the abort() function.
+        endchoice
 
-    choice MALLOC_CHECK_BEHAVIOUR
-        bool "Behaviour of the EMBANN_MALLOC_CHECK macro"
-        default MALLOC_CHECK_RETURN
-        help
-            Specify what the EMBANN_MALLOC_CHECK macro does if the pointer to
-            the allocated memory is null (i.e. the allocation failed).
+        choice MALLOC_CHECK_BEHAVIOUR
+            bool "Behaviour of the EMBANN_MALLOC_CHECK macro"
+            default MALLOC_CHECK_RETURN
+            help
+                Specify what the EMBANN_MALLOC_CHECK macro does if the pointer to
+                the allocated memory is null (i.e. the allocation failed).
 
-        config MALLOC_CHECK_RETURN
-            bool "Return on error"
-            help
-                Immediately returns with the error value (these are posix error values).
-        config MALLOC_CHECK_ABORT
-            bool "Execute abort()"
-            help
-                Executes the abort() function.
-    endchoice
+            config MALLOC_CHECK_RETURN
+                bool "Return on error"
+                help
+                    Immediately returns with the error value (these are posix error values).
+            config MALLOC_CHECK_ABORT
+                bool "Execute abort()"
+                help
+                    Executes the abort() function.
+        endchoice
+    endmenu
 
 
     menu "Data Types"
@@ -272,7 +274,7 @@ mainmenu "Embann Configuration"
         endchoice
 
 
-        choice NUM_TRAINING_DATA_ENTRIES_TYPE_UINT8
+        choice NUM_TRAINING_DATA_ENTRIES_TYPE
             bool "Num Training Data Entries Data Type"
             default NUM_TRAINING_DATA_ENTRIES_TYPE_UINT32
             help
@@ -289,4 +291,44 @@ mainmenu "Embann Configuration"
             config NUM_TRAINING_DATA_ENTRIES_TYPE_UINT64
                 bool "Unsigned 64-bit Integer"
         endchoice
+    endmenu
+
+
+    menu "Memory Allocation Strategy"
+        choice MEMORY_ALLOCATION_STRATEGY
+            bool "Static / Dynamic Allocation"
+            default MEMORY_ALLOCATION_DYNAMIC
+            help
+                Choose whether to statically or dynamically allocate
+                memory for the neural network. Static allocation could
+                be beneficial in embedded projecets which only have very
+                simple heap management.
+
+                Static allocation must be allocated at compile time, so
+                network dimensions are chosen with another Kconfig menu.
+
+                Static allocation is also neccessary for MISRA C compliance.
+
+            config MEMORY_ALLOCATION_DYNAMIC
+                bool "Dynamic Memory Allocation"
+            config MEMORY_ALLOCATION_STATIC
+                bool "Static Memory Allocation"
+        endchoice
+    endmenu
+
+    menu "Network Dimensions"
+        depends on MEMORY_ALLOCATION_STATIC
+
+        config NUM_INPUT_NEURONS
+            int "Number of Input Neurons"
+            default 10
+        config NUM_HIDDEN_NEURONS
+            int "Number of Hidden Neurons"
+            default 10
+        config NUM_HIDDEN_LAYERS
+            int "Number of Hidden Layers"
+            default 5
+        config NUM_OUTPUT_NEURONS
+            int "Number of Output Neurons"
+            default 3
     endmenu

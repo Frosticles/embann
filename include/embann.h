@@ -33,102 +33,16 @@
 
 
 
-
-// TODO, could put in a linear approximation for these
-typedef enum {
-    LINEAR_ACTIVATION,
-    TAN_H_ACTIVATION,
-    LOGISTIC_ACTIVATION,
-    RELU_ACTIVATION
-} activationFunction_t;
-
-typedef struct  {
-    weight_t weight;
-    bias_t bias;
-} neuronParams_t;
-
-typedef struct
-{
-    activation_t activation;
-    neuronParams_t* params[];
-} wNeuron_t;
-
-typedef struct
-{
-    activation_t activation;
-} uNeuron_t;
-
-typedef struct
-{
-    wNeuron_t* forgetGate;
-    wNeuron_t* inputGate;
-    wNeuron_t* outputGate;
-    wNeuron_t* cell;
-    activation_t activation;
-} lstmCell_t;
-
-typedef struct trainingData
-{
-    numOutputs_t correctResponse;
-    numInputs_t length;
-    struct trainingData* prev;
-    struct trainingData* next;
-    activation_t data[];
-} trainingData_t;
-
-typedef struct 
-{
-    trainingData_t* head;
-    trainingData_t* tail;
-    numTrainingDataEntries_t numEntries;
-} trainingDataCollection_t;
-
-typedef struct
-{
-    numInputs_t numRawInputs;
-    activation_t maxInput;
-    activation_t* rawInputs;
-    activation_t* groupThresholds;
-    activation_t* groupTotal;
-} downscaler_t;
-typedef struct
-{
-    numInputs_t numNeurons;
-    uNeuron_t* neuron[];
-} inputLayer_t;
-
-typedef struct
-{
-    numHiddenNeurons_t numNeurons;
-    wNeuron_t* neuron[];
-} hiddenLayer_t;
-
-typedef struct
-{
-    numOutputs_t numNeurons;
-    wNeuron_t* neuron[];
-} outputLayer_t;
-
-typedef struct
-{
-    numLayers_t numLayers;
-    numLayers_t numHiddenLayers;
-    numOutputs_t networkResponse;
-} networkProperties_t;
-
-typedef struct
-{
-    networkProperties_t properties;
-    inputLayer_t* inputLayer;
-    outputLayer_t* outputLayer;
-    hiddenLayer_t* hiddenLayer[];
-} network_t;
-
-
 int embann_init(numInputs_t numInputNeurons,
                 numHiddenNeurons_t numHiddenNeurons, 
                 numLayers_t numHiddenLayers,
                 numOutputs_t numOutputNeurons);
+int embann_initInputLayer(numInputs_t numInputNeurons);
+int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
+                            numLayers_t numHiddenLayers,
+                            numInputs_t numInputNeurons);
+int embann_initOutputLayer(numOutputs_t numOutputNeurons,
+                            numHiddenNeurons_t numHiddenNeurons);
 int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
                            numOutputs_t numOutputs);
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
@@ -156,6 +70,7 @@ int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t co
 int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
 int embann_shuffleTrainingData(void);
 network_t* embann_getNetwork(void);
+int embann_setNetwork(network_t* newNetwork);
 int* embann_getErrno(void);
 trainingDataCollection_t* embann_getDataCollection(void);
 
