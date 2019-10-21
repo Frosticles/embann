@@ -29,7 +29,7 @@ OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 LIBS = -lm
 
 OPT_CFLAGS = -O3 -fno-signed-zeros -ffinite-math-only -march=native # -flto
-CFLAGS = $(OPT_CFLAGS) -std=gnu99 -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns
+CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns -std=gnu99
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
 GEN_COVERAGE_CFLAGS = -fprofile-arcs -ftest-coverage
@@ -43,7 +43,7 @@ all: $(EXE)
 
 
 $(EXE): $(OBJ)
-	$(CC) $^ $(INC_DIRS) $(LIBS) $(CFLAGS) -o $(EXE)
+	$(CC) $^ $(INC_DIRS) $(LIBS) $(CFLAGS) -rdynamic -o $(EXE)
 	$(info ### executable is located at ${EXE})
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
