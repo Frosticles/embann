@@ -99,7 +99,7 @@ static int embann_initInputLayer(numInputs_t numInputNeurons)
         pInputLayer->neuron[i] = pNeuron;
 #endif
         pInputLayer->neuron[i]->activation = RAND_ACTIVATION();
-        EMBANN_LOGI(TAG, "act [%d] = %d", i, pInputLayer->neuron[i]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pInputLayer->neuron[i]->activation);
     }
 
 #ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
@@ -108,7 +108,7 @@ static int embann_initInputLayer(numInputs_t numInputNeurons)
 
     for (numInputs_t k = 0; k < numInputNeurons; k++)
     {
-        EMBANN_LOGI(TAG, "act [%d] = %d", k, embann_getNetwork()->inputLayer->neuron[k]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, embann_getNetwork()->inputLayer->neuron[k]->activation);
     }
 
     EMBANN_LOGI(TAG, "done input");
@@ -166,7 +166,7 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
 #endif
         pHiddenLayer->neuron[j]->activation = RAND_ACTIVATION();
 
-        EMBANN_LOGI(TAG, "act [%d] = %d", j, pHiddenLayer->neuron[j]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->neuron[j]->activation);
 
         for (numInputs_t k = 0; k < numInputNeurons; k++)
         {
@@ -187,7 +187,7 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
 #endif
     for (uint16_t k = 0; k < numHiddenNeurons; k++)
     {
-        EMBANN_LOGI(TAG, "act [%d] = %d", k, embann_getNetwork()->hiddenLayer[0]->neuron[k]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, embann_getNetwork()->hiddenLayer[0]->neuron[k]->activation);
     }
 
     _printConnectedHiddenLayer(0);
@@ -232,7 +232,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
 #endif
             pHiddenLayer->neuron[j]->activation = RAND_ACTIVATION();
 
-            EMBANN_LOGI(TAG, "act [%d] = %d", j, pHiddenLayer->neuron[j]->activation);
+            EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->neuron[j]->activation);
 
             for (numHiddenNeurons_t k = 0; k < numHiddenNeurons; k++)
             {
@@ -245,7 +245,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
 
                 pHiddenLayer->neuron[j]->params[k]->bias = RAND_BIAS();
                 pHiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
-                EMBANN_LOGI(TAG, "act [%d] = %d", j, pHiddenLayer->neuron[j]->activation);
+                EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->neuron[j]->activation);
             }
         }
 
@@ -257,7 +257,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
 
         for (uint16_t k = 0; k < (numHiddenNeurons - 1U); k++)
         {
-            EMBANN_LOGI(TAG, "act [%d] = %d", k, embann_getNetwork()->hiddenLayer[i]->neuron[k]->activation);
+            EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, embann_getNetwork()->hiddenLayer[i]->neuron[k]->activation);
         }
     }
     return EOK;
@@ -295,7 +295,7 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
 #endif
 
         pOutputLayer->neuron[i]->activation = RAND_ACTIVATION();
-        EMBANN_LOGI(TAG, "act [%d] = %d", i, pOutputLayer->neuron[i]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pOutputLayer->neuron[i]->activation);
         
         for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
         {
@@ -315,7 +315,7 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
 
     for (uint16_t k = 0; k < numOutputNeurons; k++)
     {
-        EMBANN_LOGI(TAG, "act [%d] = %d", k, embann_getNetwork()->outputLayer->neuron[k]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, embann_getNetwork()->outputLayer->neuron[k]->activation);
     }
 
     EMBANN_LOGI(TAG, "done output");
