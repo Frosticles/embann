@@ -7,7 +7,7 @@ if [ $(uname -s | grep -c "Linux") -eq 1 ]; then
         sudo apt install graphviz
     fi
 elif [ $(uname -s | grep -c "Darwin") -eq 1 ]; then
-    brew list graphviz || brew install graphviz
+    brew list graphviz 1>/dev/null || brew install graphviz
 fi
 
 
