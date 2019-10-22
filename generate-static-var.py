@@ -79,7 +79,7 @@ for i in range(numHiddenLayers):
         else:
             for k in range(numHiddenNeurons - 1):
                 outputFile.write("        &hiddenLayer_%d_%d_%d,\n" % (i, j, k))
-            outputFile.write("        &hiddenLayer_%d_%d_%d\n" % (i, j, numInputNeurons - 1))
+            outputFile.write("        &hiddenLayer_%d_%d_%d\n" % (i, j, numHiddenNeurons - 1))
 
         outputFile.write("    }\n")
         outputFile.write("};\n")
@@ -111,9 +111,9 @@ for i in range(numOutputNeurons):
     outputFile.write("    .activation = 0,\n")
     outputFile.write("    .params = {\n")
 
-    for j in range(numOutputNeurons - 1):
+    for j in range(numHiddenNeurons - 1):
         outputFile.write("        &outputLayer_%d_%d,\n" % (i, j))
-    outputFile.write("        &outputLayer_%d_%d\n" % (i, numInputNeurons - 1))
+    outputFile.write("        &outputLayer_%d_%d\n" % (i, numHiddenNeurons - 1))
 
     outputFile.write("    }\n")
     outputFile.write("};\n")
