@@ -18,6 +18,9 @@ else
 	endif
 endif
 
+# Run the script to (check if we need to) generate the static variable file
+FOO := $(shell python ./generate-static-var.py)
+
 EXE = embann
 
 SRC_DIR = src
