@@ -28,8 +28,8 @@ SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 LIBS = -lm
 
-OPT_CFLAGS = -O3 -fno-signed-zeros -ffinite-math-only -march=native # -flto
-CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -ffast-math -fdump-final-insns -std=gnu99
+OPT_CFLAGS = -O3 -ffast-math -march=native # -flto
+CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -fopenmp -fverbose-asm -fopt-info-all-optall=opt.log --save-temps #-masm=intel -fopt-info-vec-missed -fdump-final-insns -std=gnu99
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
 GEN_COVERAGE_CFLAGS = -fprofile-arcs -ftest-coverage
