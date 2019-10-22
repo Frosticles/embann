@@ -27,7 +27,7 @@ static wNeuron_t hiddenLayer_0_2 = {
     .activation = 0,
     .params = {&hiddenLayer_0_2_0, &hiddenLayer_0_2_1}
 };
-static hiddenLayer_t hiddenLayer_0 = {
+static hiddenLayer_t staticHiddenLayer_0 = {
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
     .neuron = {&hiddenLayer_0_1, &hiddenLayer_0_2}
 };
@@ -45,7 +45,7 @@ static wNeuron_t hiddenLayer_1_2 = {
     .activation = 0,
     .params = {&hiddenLayer_1_2_0, &hiddenLayer_1_2_1}
 };
-static hiddenLayer_t hiddenLayer_1 = {
+static hiddenLayer_t staticHiddenLayer_1 = {
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
     .neuron = {&hiddenLayer_1_1, &hiddenLayer_1_2}
 };
@@ -76,8 +76,8 @@ static outputLayer_t staticOutputLayer = {
 static network_t staticNetwork = {
     .inputLayer = &staticInputLayer,
     .hiddenLayer = {
-        &hiddenLayer_0,
-        &hiddenLayer_1
+        &staticHiddenLayer_0,
+        &staticHiddenLayer_1
     },
     .outputLayer = &staticOutputLayer
 };
