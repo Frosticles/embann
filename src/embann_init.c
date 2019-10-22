@@ -205,13 +205,15 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
 static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numLayers_t numHiddenLayers)
 {
     hiddenLayer_t* pHiddenLayer;
+#ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
     wNeuron_t* pNeuron;
     neuronParams_t* pHiddenLayerParams;
+#endif
     
     for (numLayers_t i = 1; i < (numHiddenLayers - 1U); i++)
     {
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
-        pHiddenLayer = (hiddenLayer_t*) &staticHiddenLayer[i];
+        pHiddenLayer = staticNetwork.hiddenLayer[i];
 #else
         pHiddenLayer = (hiddenLayer_t*) malloc(sizeof(hiddenLayer_t) + 
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
