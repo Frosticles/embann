@@ -1,2 +1,2 @@
-*.c             text diff=c
-*.h             text diff=c
+*.c     linguist-language=c
+*.h     linguist-language=c
