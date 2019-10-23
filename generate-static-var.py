@@ -38,7 +38,6 @@ for line in configFile:
 #
 # Input layer
 #
-
 outputFile.write("/*\n")
 outputFile.write(" * Input Layer\n")
 outputFile.write(" */\n")

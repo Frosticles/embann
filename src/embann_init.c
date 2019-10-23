@@ -16,7 +16,7 @@ static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutpu
 static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numInputs_t numInputNeurons);
 static int embann_initInputLayer(numInputs_t numInputNeurons);
 static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeurons_t numHiddenNeurons);
-#if (CONFIG_NUM_HIDDEN_LAYERS > 1)
+#if (defined(CONFIG_MEMORY_ALLOCATION_STATIC) && (CONFIG_NUM_HIDDEN_LAYERS > 1)) || defined(CONFIG_MEMORY_ALLOCATION_DYNAMIC)
 static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numLayers_t numHiddenLayers);
 #endif
 static int embann_initHiddenLayer(numHiddenNeurons_t numHiddenNeurons,
@@ -210,7 +210,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
     neuronParams_t* pHiddenLayerParams;
 #endif
     
-    for (numLayers_t i = 1; i < (numHiddenLayers - 1U); i++)
+    for (numLayers_t i = 1; i < numHiddenLayers; i++)
     {
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
         pHiddenLayer = staticNetwork.hiddenLayer[i];
@@ -225,8 +225,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
         for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
         {    
 #ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
-            pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * 
-                                            (uint16_t)((i == 0U) ? numInputNeurons : numHiddenNeurons)));
+            pNeuron = (wNeuron_t*) malloc(sizeof(wNeuron_t) + (sizeof(neuronParams_t*) * numHiddenNeurons));
             EMBANN_MALLOC_CHECK(pNeuron);
             pHiddenLayer->neuron[j] = pNeuron;
 #endif
@@ -281,8 +280,9 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
     pOutputLayer = (outputLayer_t*) malloc(sizeof(outputLayer_t) + 
                                                         (sizeof(wNeuron_t*) * numOutputNeurons));
     EMBANN_MALLOC_CHECK(pOutputLayer);
-    pOutputLayer->numNeurons = numOutputNeurons;
 #endif
+
+    pOutputLayer->numNeurons = numOutputNeurons;
 
     _printOutputLayer(pOutputLayer, numOutputNeurons);
 

@@ -41,7 +41,7 @@ int main(int argc, char const *argv[])
                                     CONFIG_NUM_HIDDEN_LAYERS, 
                                     CONFIG_NUM_OUTPUT_NEURONS));
 #else
-    EMBANN_ERROR_CHECK(embann_init(10U, 10U, 5U, 10U));
+    EMBANN_ERROR_CHECK(embann_init(15U, 10U, 5U, 3U));
 #endif
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
@@ -99,6 +99,8 @@ int embann_forwardPropagate(void)
         EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1U, i);
     }
 
+    
+
     EMBANN_ERROR_CHECK(embann_sumAndSquash(
         embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron,
         embann_getNetwork()->outputLayer->neuron, 
@@ -122,14 +124,17 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t num
     // TODO, could overflow if numhidden >> numoutputs
     for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
+        EMBANN_LOGV(TAG, "[%d] Input = 0x%x, Output = 0x%x", i, Input[0], Output[0]);
         Output[i]->activation = 0.0F; // Bias[i];
         for (numHiddenNeurons_t j = 0; j < numInputs; j++)
         {
+            EMBANN_LOGV(TAG, "[%d] [%d] In activation = %" ACTIVATION_PRINT " Out weight = %" WEIGHT_PRINT,
+                                i, j, Input[j]->activation, Output[i]->params[j]->weight);
             Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
         }
         Output[i]->activation = tanhf(Output[i]->activation * PI);
 
-        EMBANN_LOGV(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, Output[i]->activation);
+        EMBANN_LOGD(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, Output[i]->activation);
     }
     return EOK;
 }
