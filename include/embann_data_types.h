@@ -321,10 +321,10 @@ typedef uint64_t numTrainingDataEntries_t;
 
 // TODO, could put in a linear approximation for these
 typedef enum {
-    LINEAR_ACTIVATION,
-    TAN_H_ACTIVATION,
-    LOGISTIC_ACTIVATION,
-    RELU_ACTIVATION
+    LINEAR, // Straight line from minimum to maximum
+    TANH,
+    RELU,
+    LEAKY_RELU
 } activationFunction_t;
 
 typedef struct  {
