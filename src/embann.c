@@ -14,7 +14,7 @@
 /* errno value specifically for internal embann errors */
 static int embann_errno = EOK;
 /* Pointer to the current network */
-static network_t* pNetwork;
+network_t* pNetworkGlobal;
 /* Structure of pointers to training data */
 static trainingDataCollection_t trainingDataCollection = {
     .tail = NULL,
@@ -82,19 +82,19 @@ int main(int argc, char const *argv[])
 int embann_forwardPropagate(void)
 {
     EMBANN_ERROR_CHECK(embann_sumAndSquashInput(
-                            embann_getNetwork()->inputLayer->neuron, 
-                            embann_getNetwork()->hiddenLayer[0]->neuron,
-                            embann_getNetwork()->inputLayer->numNeurons, 
-                            embann_getNetwork()->hiddenLayer[0]->numNeurons));
+                            pNetworkGlobal->inputLayer->neuron, 
+                            pNetworkGlobal->hiddenLayer[0]->neuron,
+                            pNetworkGlobal->inputLayer->numNeurons, 
+                            pNetworkGlobal->hiddenLayer[0]->numNeurons));
 
     EMBANN_LOGD(TAG, "Done Input -> 1st Hidden Layer");
-    for (uint8_t i = 1; i < embann_getNetwork()->properties.numHiddenLayers; i++)
+    for (uint8_t i = 1; i < pNetworkGlobal->properties.numHiddenLayers; i++)
     {
         EMBANN_ERROR_CHECK(embann_sumAndSquash(
-                            embann_getNetwork()->hiddenLayer[i - 1U]->neuron,
-                            embann_getNetwork()->hiddenLayer[i]->neuron,
-                            embann_getNetwork()->hiddenLayer[i - 1U]->numNeurons,
-                            embann_getNetwork()->hiddenLayer[i]->numNeurons));
+                            pNetworkGlobal->hiddenLayer[i - 1U]->neuron,
+                            pNetworkGlobal->hiddenLayer[i]->neuron,
+                            pNetworkGlobal->hiddenLayer[i - 1U]->numNeurons,
+                            pNetworkGlobal->hiddenLayer[i]->numNeurons));
 
         EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Hidden Layer %d", i - 1U, i);
     }
@@ -102,12 +102,12 @@ int embann_forwardPropagate(void)
     
 
     EMBANN_ERROR_CHECK(embann_sumAndSquash(
-        embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->neuron,
-        embann_getNetwork()->outputLayer->neuron, 
-        embann_getNetwork()->hiddenLayer[embann_getNetwork()->properties.numHiddenLayers - 1U]->numNeurons,
-        embann_getNetwork()->outputLayer->numNeurons));
+        pNetworkGlobal->hiddenLayer[pNetworkGlobal->properties.numHiddenLayers - 1U]->neuron,
+        pNetworkGlobal->outputLayer->neuron, 
+        pNetworkGlobal->hiddenLayer[pNetworkGlobal->properties.numHiddenLayers - 1U]->numNeurons,
+        pNetworkGlobal->outputLayer->numNeurons));
 
-    EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", embann_getNetwork()->properties.numHiddenLayers);
+    EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", pNetworkGlobal->properties.numHiddenLayers);
 
     return EOK;
 }
@@ -196,35 +196,19 @@ int embann_calculateNetworkResponse(void)
 {
     numOutputs_t mostLikelyOutput = 0;
 
-    for (numOutputs_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
+    for (numOutputs_t i = 0; i < pNetworkGlobal->outputLayer->numNeurons; i++)
     {
-        if (embann_getNetwork()->outputLayer->neuron[i]->activation >
-            embann_getNetwork()->outputLayer->neuron[mostLikelyOutput]->activation)
+        if (pNetworkGlobal->outputLayer->neuron[i]->activation >
+            pNetworkGlobal->outputLayer->neuron[mostLikelyOutput]->activation)
         {
             mostLikelyOutput = i;
         }
-        EMBANN_LOGV(TAG, "neuron[%d]: %" ACTIVATION_PRINT "likely: %d", i, embann_getNetwork()->outputLayer->neuron[i]->activation, mostLikelyOutput);
+        EMBANN_LOGV(TAG, "neuron[%d]: %" ACTIVATION_PRINT "likely: %d", i, pNetworkGlobal->outputLayer->neuron[i]->activation, mostLikelyOutput);
     }
     
-    embann_getNetwork()->properties.networkResponse = mostLikelyOutput;
+    pNetworkGlobal->properties.networkResponse = mostLikelyOutput;
     return EOK;
 }
-
-
-
-network_t* embann_getNetwork(void)
-{
-    return pNetwork;
-}
-
-
-
-int embann_setNetwork(network_t* newNetwork)
-{
-    pNetwork = newNetwork;
-    return EOK;
-}
-
 
 
 

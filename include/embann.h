@@ -63,8 +63,6 @@ int embann_getTrainingDataMin(activation_t* min);
 int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
 int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
 int embann_shuffleTrainingData(void);
-network_t* embann_getNetwork(void);
-int embann_setNetwork(network_t* newNetwork);
 int* embann_getErrno(void);
 trainingDataCollection_t* embann_getDataCollection(void);
 

@@ -3,34 +3,39 @@
 
 #define TAG "Embann Data Management"
 
+extern network_t* pNetworkGlobal;
+
 
 
 
 int embann_inputRaw(activation_t data[])
 {
-    for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
+    for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
-        embann_getNetwork()->inputLayer->neuron[i]->activation = data[i];
+        pNetworkGlobal->inputLayer->neuron[i]->activation = data[i];
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->neuron[i]->activation);
     }
     return EOK;
 }
 
 int embann_inputMinMaxScale(activation_t data[], activation_t min, activation_t max)
 {
-    for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
+    for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
         // TODO configurable types
-        embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
+        pNetworkGlobal->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->neuron[i]->activation);
     }
     return EOK;
 }
 
 int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
 {
-    for (uint32_t i = 0; i < embann_getNetwork()->inputLayer->numNeurons; i++)
+    for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
         // TODO configurable types
-        embann_getNetwork()->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
+        pNetworkGlobal->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->neuron[i]->activation);
     }
     return EOK;
 }

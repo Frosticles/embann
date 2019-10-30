@@ -3,6 +3,9 @@
 
 #define TAG "Embann Train"
 
+extern network_t* pNetworkGlobal;
+
+
 
 int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose)
 {
@@ -18,7 +21,7 @@ int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, boo
 
     while ((millis() - startTime) < (numSeconds * 1000UL))
     {
-        randomOutput = random() % embann_getNetwork()->outputLayer->numNeurons;
+        randomOutput = random() % pNetworkGlobal->outputLayer->numNeurons;
         randomTrainingSet = random() % embann_getDataCollection()->numEntries;
 
         /*
@@ -42,7 +45,7 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
 {
     numOutputs_t randomOutput;
     numTrainingDataEntries_t randomTrainingSet;
-    activation_t currentCost[embann_getNetwork()->outputLayer->numNeurons];
+    activation_t currentCost[pNetworkGlobal->outputLayer->numNeurons];
     bool converged = false;
 
     if (verbose == true)
@@ -52,7 +55,7 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
 
     while (!converged)
     {
-        randomOutput = random() % embann_getNetwork()->outputLayer->numNeurons;
+        randomOutput = random() % pNetworkGlobal->outputLayer->numNeurons;
         randomTrainingSet = random() % embann_getDataCollection()->numEntries;
         currentCost[randomOutput] = 0.0;
 
@@ -69,21 +72,21 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
         }
 
         EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate));
-        for (uint8_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
+        for (numOutputs_t i = 0; i < pNetworkGlobal->outputLayer->numNeurons; i++)
         {
             if (i == randomOutput)
             {
-                currentCost[randomOutput] += pow(1 - embann_getNetwork()->outputLayer->neuron[i]->activation, 2.0F);
+                currentCost[randomOutput] += (1 - pNetworkGlobal->outputLayer->neuron[i]->activation);
             }
             else
             {
-                currentCost[randomOutput] += pow(embann_getNetwork()->outputLayer->neuron[i]->activation, 2.0F);
+                currentCost[randomOutput] += pNetworkGlobal->outputLayer->neuron[i]->activation;
             }
         }
-        currentCost[randomOutput] /= embann_getNetwork()->outputLayer->numNeurons;
+        currentCost[randomOutput] /= pNetworkGlobal->outputLayer->numNeurons;
 
         converged = true;
-        for (uint8_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
+        for (numOutputs_t i = 0; i < pNetworkGlobal->outputLayer->numNeurons; i++)
         {
             if (verbose == true)
             {
