@@ -29,157 +29,189 @@
         s32Accum += ((s16Act * s16Wei) + u32Bias
 */
 
+// TODO, add fast types to get rid of all the movzbl instructions
+
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT8
 typedef int8_t activation_t;
 #define ACTIVATION_IS_SIGNED
-#define MAX_ACTIVATION __INT8_MAX__
+#define MAX_ACTIVATION INT8_MAX
+#define MIN_ACTIVATION INT8_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT16
 typedef int16_t activation_t;
 #define ACTIVATION_IS_SIGNED
-#define MAX_ACTIVATION __INT16_MAX__
+#define MAX_ACTIVATION INT16_MAX
+#define MIN_ACTIVATION INT16_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT32
 typedef int32_t activation_t;
 #define ACTIVATION_IS_SIGNED
-#define MAX_ACTIVATION __INT32_MAX__
+#define MAX_ACTIVATION INT32_MAX
+#define MIN_ACTIVATION INT32_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT64
 typedef int64_t activation_t;
 #define ACTIVATION_IS_SIGNED
-#define MAX_ACTIVATION __INT64_MAX__
+#define MAX_ACTIVATION INT64_MAX
+#define MIN_ACTIVATION INT64_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT8
 typedef uint8_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
-#define MAX_ACTIVATION __UINT8_MAX__
+#define MAX_ACTIVATION UINT8_MAX
+#define MIN_ACTIVATION UINT8_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT16
 typedef uint16_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
-#define MAX_ACTIVATION __UINT16_MAX__
+#define MAX_ACTIVATION UINT16_MAX
+#define MIN_ACTIVATION UINT16_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT32
 typedef uint32_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
-#define MAX_ACTIVATION __UINT32_MAX__
+#define MAX_ACTIVATION UINT32_MAX
+#define MIN_ACTIVATION UINT32_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT64
 typedef uint64_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
-#define MAX_ACTIVATION __UINT64_MAX__
+#define MAX_ACTIVATION UINT64_MAX
+#define MIN_ACTIVATION UINT64_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_FLOAT
 typedef float activation_t;
 #define ACTIVATION_IS_FLOAT
-#define MAX_ACTIVATION __FLT_MAX__
+#define MAX_ACTIVATION FLT_MAX
+#define MIN_ACTIVATION FLT_MIN
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_DOUBLE
 typedef double activation_t;
 #define ACTIVATION_IS_FLOAT
-#define MAX_ACTIVATION __DBL_MAX__
+#define MAX_ACTIVATION DBL_MAX
+#define MIN_ACTIVATION DBL_MIN
 #endif
 
 #ifdef CONFIG_BIAS_DATA_TYPE_INT8
 typedef int8_t bias_t;
 #define BIAS_IS_SIGNED
-#define MAX_BIAS __INT8_MAX__
+#define MAX_BIAS INT8_MAX
+#define MIN_BIAS INT8_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_INT16
 typedef int16_t bias_t;
 #define BIAS_IS_SIGNED
-#define MAX_BIAS __INT16_MAX__
+#define MAX_BIAS INT16_MAX
+#define MIN_BIAS INT16_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_INT32
 typedef int32_t bias_t;
 #define BIAS_IS_SIGNED
-#define MAX_BIAS __INT32_MAX__
+#define MAX_BIAS INT32_MAX
+#define MIN_BIAS INT32_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_INT64
 typedef int64_t bias_t;
 #define BIAS_IS_SIGNED
-#define MAX_BIAS __INT64_MAX__
+#define MAX_BIAS INT64_MAX
+#define MIN_BIAS INT64_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT8
 typedef uint8_t bias_t;
 #define BIAS_IS_UNSIGNED
-#define MAX_BIAS __UINT8_MAX__
+#define MAX_BIAS UINT8_MAX
+#define MIN_BIAS UINT8_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT16
 typedef uint16_t bias_t;
 #define BIAS_IS_UNSIGNED
-#define MAX_BIAS __UINT16_MAX__
+#define MAX_BIAS UINT16_MAX
+#define MIN_BIAS UINT16_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT32
 typedef uint32_t bias_t;
 #define BIAS_IS_UNSIGNED
-#define MAX_BIAS __UINT32_MAX__
+#define MAX_BIAS UINT32_MAX
+#define MIN_BIAS UINT32_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT64
 typedef uint64_t bias_t;
 #define BIAS_IS_UNSIGNED
-#define MAX_BIAS __UINT64_MAX__
+#define MAX_BIAS UINT64_MAX
+#define MIN_BIAS UINT64_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_FLOAT
 typedef float bias_t;
 #define BIAS_IS_FLOAT
-#define MAX_BIAS __FLT_MAX__
+#define MAX_BIAS FLT_MAX
+#define MIN_BIAS FLT_MIN
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_DOUBLE
 typedef double bias_t;
 #define BIAS_IS_FLOAT
-#define MAX_BIAS __DBL_MAX__
+#define MAX_BIAS DBL_MAX
+#define MIN_BIAS DBL_MIN
 #endif
 
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT8
 typedef int8_t weight_t;
 #define WEIGHT_IS_SIGNED
-#define MAX_WEIGHT __INT8_MAX__
+#define MAX_WEIGHT INT8_MAX
+#define MIN_WEIGHT INT8_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT16
 typedef int16_t weight_t;
 #define WEIGHT_IS_SIGNED
-#define MAX_WEIGHT __INT16_MAX__
+#define MAX_WEIGHT INT16_MAX
+#define MIN_WEIGHT INT16_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT32
 typedef int32_t weight_t;
 #define WEIGHT_IS_SIGNED
-#define MAX_WEIGHT __INT32_MAX__
+#define MAX_WEIGHT INT32_MAX
+#define MIN_WEIGHT INT32_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_INT64
 typedef int64_t weight_t;
 #define WEIGHT_IS_SIGNED
-#define MAX_WEIGHT __INT64_MAX__
+#define MAX_WEIGHT INT64_MAX
+#define MIN_WEIGHT INT64_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT8
 typedef uint8_t weight_t;
 #define WEIGHT_IS_UNSIGNED
-#define MAX_WEIGHT __UINT8_MAX__
+#define MAX_WEIGHT UINT8_MAX
+#define MIN_WEIGHT UINT8_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT16
 typedef uint16_t weight_t;
 #define WEIGHT_IS_UNSIGNED
-#define MAX_WEIGHT __UINT16_MAX__
+#define MAX_WEIGHT UINT16_MAX
+#define MIN_WEIGHT UINT16_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT32
 typedef uint32_t weight_t;
 #define WEIGHT_IS_UNSIGNED
-#define MAX_WEIGHT __UINT32_MAX__
+#define MAX_WEIGHT UINT32_MAX
+#define MIN_WEIGHT UINT32_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT64
 typedef uint64_t weight_t;
 #define WEIGHT_IS_UNSIGNED
-#define MAX_WEIGHT __UINT64_MAX__
+#define MAX_WEIGHT UINT64_MAX
+#define MIN_WEIGHT UINT64_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_FLOAT
 typedef float weight_t;
 #define WEIGHT_IS_FLOAT
-#define MAX_WEIGHT __FLT_MAX__
+#define MAX_WEIGHT FLT_MAX
+#define MIN_WEIGHT FLT_MIN
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_DOUBLE
 typedef double weight_t;
 #define WEIGHT_IS_FLOAT
-#define MAX_WEIGHT __DBL_MAX__
+#define MAX_WEIGHT DBL_MAX
+#define MIN_WEIGHT DBL_MIN
 #endif
 
 

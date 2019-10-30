@@ -23,7 +23,7 @@
     #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
     #define WEIGHT_PRINT STRINGIFY(d)
-    #define RAND_WEIGHT() (random() % INT8_MAX) // TODO this but for each type
+    #define RAND_WEIGHT() ((random() % MAX_WEIGHT) - MIN_WEIGHT) // TODO this but for each type
 #endif
 
 #ifdef ACTIVATION_IS_FLOAT
