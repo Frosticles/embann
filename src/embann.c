@@ -43,7 +43,9 @@ int main(int argc, char const *argv[])
 #else
     EMBANN_ERROR_CHECK(embann_init(15U, 10U, 5U, 3U));
 #endif
+    EMBANN_ERROR_CHECK(embann_printNetwork());
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
+    EMBANN_ERROR_CHECK(embann_printNetwork());
 
     uint8_t randomData[10];
     uint8_t retval;
