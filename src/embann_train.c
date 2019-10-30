@@ -27,7 +27,7 @@ int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, boo
         /*
             TODO, these are not 'right' but they will let the program run
         */
-        embann_inputMinMaxScale(embann_getDataCollection()->head->data, 0U, UINT8_MAX);
+        embann_inputRaw(embann_getDataCollection()->head->data);
         EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
         if (verbose == true)
@@ -57,12 +57,12 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
     {
         randomOutput = random() % pNetworkGlobal->outputLayer->numNeurons;
         randomTrainingSet = random() % embann_getDataCollection()->numEntries;
-        currentCost[randomOutput] = 0.0;
+        currentCost[randomOutput] = 0;
 
         /*
             TODO, these are not 'right' but they will let the program run
         */
-        embann_inputMinMaxScale(embann_getDataCollection()->head->data, 0U, UINT8_MAX);
+        embann_inputRaw(embann_getDataCollection()->head->data);
         EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
         if (verbose == true)
