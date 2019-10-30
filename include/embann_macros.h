@@ -55,10 +55,13 @@
     #define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x);     \
             if (*(embann_getErrno()) != EOK) {                    \
                 abort();                                          \
-            }                                                     \
+            }
 
 #elif defined(CONFIG_ERROR_CHECK_RETURN)
     #define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x); return *(embann_getErrno());
+
+#elif defined(CONFIG_ERROR_CHECK_LOG)
+    #define EMBANN_ERROR_CHECK(x) *(embann_getErrno()) = (x); EMBANN_LOGI(TAG, "Returned: %d", *(embann_getErrno())); 
 
 #endif
 

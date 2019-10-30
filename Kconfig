@@ -70,6 +70,10 @@ mainmenu "Embann Configuration"
                 bool "Execute abort()"
                 help
                     Executes the abort() function.
+            config ERROR_CHECK_LOG
+                bool "Log all error return values"
+                help
+                    Prints the return code to console, even if the return is 0 (EOK).
         endchoice
 
         choice MALLOC_CHECK_BEHAVIOUR
