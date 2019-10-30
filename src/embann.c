@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
     EMBANN_ERROR_CHECK(embann_printNetwork());
 
-    uint8_t randomData[10];
+    uint8_t randomData[pNetworkGlobal->inputLayer->numNeurons];
     uint8_t retval;
     float fretval;
     for (uint8_t i = 0; i < NUM_ARRAY_ELEMENTS(randomData); i++)
