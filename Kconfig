@@ -203,6 +203,44 @@ mainmenu "Embann Configuration"
         endchoice
 
 
+        choice ACCUMULATOR_DATA_TYPE
+            bool "Accumulator Data Type"
+            default ACCUMULATOR_DATA_TYPE_INT32
+            help
+                Select the data type use for the accumulator variable when
+                doing the weighed sum of all neurons in the previous layer.
+
+                This will significantly impact performance depending on
+                what instructions / extensions are available.
+
+                Changing neuron data types to different essential types
+                (i.e. mixing unsigned and signed, or integer and float) will
+                cause MISRA C non-compliances, although this may be necassary
+                to take advantage of specific assembly instructions (e.g. VPDPBUSD).
+
+            config ACCUMULATOR_DATA_TYPE_INT8
+                bool "Signed 8-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_INT16
+                bool "Signed 16-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_INT32
+                bool "Signed 32-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_INT64
+                bool "Signed 64-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+            config ACCUMULATOR_DATA_TYPE_FLOAT
+                bool "Single-Precision Floating Point"
+            config ACCUMULATOR_DATA_TYPE_DOUBLE
+                bool "Double-Precision Floating Point"
+        endchoice
+
+
         choice NUM_INPUTS_DATA_TYPE
             bool "Num Inputs Data Type"
             default NUM_INPUTS_DATA_TYPE_UINT16

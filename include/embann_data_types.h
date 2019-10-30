@@ -184,6 +184,71 @@ typedef double weight_t;
 
 
 
+
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT8
+typedef int8_t accumulator_t;
+#define WEIGHT_IS_SIGNED
+#define MAX_ACCUMULATOR INT8_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT16
+typedef int16_t accumulator_t;
+#define WEIGHT_IS_SIGNED
+#define MAX_ACCUMULATOR INT16_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT32
+typedef int32_t accumulator_t;
+#define WEIGHT_IS_SIGNED
+#define MAX_ACCUMULATOR INT32_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT64
+typedef int64_t accumulator_t;
+#define WEIGHT_IS_SIGNED
+#define MAX_ACCUMULATOR INT64_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT8
+typedef uint8_t accumulator_t;
+#define WEIGHT_IS_UNSIGNED
+#define MAX_ACCUMULATOR UINT8_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT16
+typedef uint16_t accumulator_t;
+#define WEIGHT_IS_UNSIGNED
+#define MAX_ACCUMULATOR UINT16_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT32
+typedef uint32_t accumulator_t;
+#define WEIGHT_IS_UNSIGNED
+#define MAX_ACCUMULATOR UINT32_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT64
+typedef uint64_t accumulator_t;
+#define WEIGHT_IS_UNSIGNED
+#define MAX_ACCUMULATOR UINT64_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_FLOAT
+typedef float accumulator_t;
+#define WEIGHT_IS_FLOAT
+#define MAX_ACCUMULATOR FLT_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+#ifdef CONFIG_ACCUMULATOR_DATA_TYPE_DOUBLE
+typedef double accumulator_t;
+#define WEIGHT_IS_FLOAT
+#define MAX_ACCUMULATOR DBL_MAX
+#define MIN_ACCUMULATOR INT8_MIN
+#endif
+
+
+
+
 #ifdef CONFIG_NUM_OUTPUTS_DATA_TYPE_UINT8
 typedef uint8_t numOutputs_t;
 #endif

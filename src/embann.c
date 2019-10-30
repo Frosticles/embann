@@ -122,18 +122,30 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t num
 {
     
     // TODO, could overflow if numhidden >> numoutputs
+    // TODO, add biasing
+    accumulator_t accum = 0;
     for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
-        EMBANN_LOGV(TAG, "[%d] Input = 0x%x, Output = 0x%x", i, Input[0], Output[0]);
-        Output[i]->activation = 0.0F; // Bias[i];
+        accum = 0;
+
         for (numHiddenNeurons_t j = 0; j < numInputs; j++)
         {
+            EMBANN_LOGV(TAG, "[%d] Input = 0x%x, Output = 0x%x", i, Input[j], Output[i]);
             EMBANN_LOGV(TAG, "[%d] [%d] In activation = %" ACTIVATION_PRINT " Out weight = %" WEIGHT_PRINT,
-                                i, j, Input[j]->activation, Output[i]->params[j]->weight);
-            Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
-        }
-        Output[i]->activation = tanhf(Output[i]->activation * PI);
+                                                    i, j, Input[j]->activation, Output[i]->params[j]->weight);
 
+            accum += Input[j]->activation * Output[i]->params[j]->weight;
+        }
+    }
+
+    for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
+    {
+    #ifdef ACTIVATION_IS_FLOAT
+        Output[i]->activation = tanhf(accum * PI);
+#else
+        accum = (accum > MAX_ACTIVATION) ? MAX_ACTIVATION : accum;
+        Output[i]->activation = (accum < 0) ? 0 : accum;
+#endif
         EMBANN_LOGD(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, Output[i]->activation);
     }
     return EOK;
@@ -147,17 +159,30 @@ int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t num
 int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
                                 numOutputs_t numOutputs)
 {
+    accumulator_t accum = 0;
+    
     for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
-        Output[i]->activation = 0; // Bias[i];
-        
+         accum = 0;
+
         for (numInputs_t j = 0; j < numInputs; j++)
         {
-            Output[i]->activation += Input[j]->activation * Output[i]->params[j]->weight;
-        }
-        Output[i]->activation = tanhf(Output[i]->activation * PI);
+            EMBANN_LOGV(TAG, "[%d] Input = 0x%x, Output = 0x%x", i, Input[j], Output[i]);
+            EMBANN_LOGV(TAG, "[%d] [%d] In activation = %" ACTIVATION_PRINT " Out weight = %" WEIGHT_PRINT,
+                                                    i, j, Input[j]->activation, Output[i]->params[j]->weight);
 
-        EMBANN_LOGV(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, Output[i]->activation);
+            accum += Input[j]->activation * Output[i]->params[j]->weight;
+        }
+    }
+
+    for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
+    {
+#ifdef ACTIVATION_IS_FLOAT
+        Output[i]->activation = tanhf(accum * PI);
+#else
+        accum = (accum > MAX_ACTIVATION) ? MAX_ACTIVATION : accum;
+        Output[i]->activation = (accum < 0) ? 0 : accum;
+#endif
     }
     return EOK;
 }
