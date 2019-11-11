@@ -65,19 +65,19 @@ typedef uint8_t activation_t;
 typedef uint16_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
 #define MAX_ACTIVATION UINT16_MAX
-#define MIN_ACTIVATION UINT16_MIN
+#define MIN_ACTIVATION 0
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT32
 typedef uint32_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
 #define MAX_ACTIVATION UINT32_MAX
-#define MIN_ACTIVATION UINT32_MIN
+#define MIN_ACTIVATION 0
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT64
 typedef uint64_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
 #define MAX_ACTIVATION UINT64_MAX
-#define MIN_ACTIVATION UINT64_MIN
+#define MIN_ACTIVATION 0
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_FLOAT
 typedef float activation_t;
@@ -126,19 +126,19 @@ typedef uint8_t bias_t;
 typedef uint16_t bias_t;
 #define BIAS_IS_UNSIGNED
 #define MAX_BIAS UINT16_MAX
-#define MIN_BIAS UINT16_MIN
+#define MIN_BIAS 0
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT32
 typedef uint32_t bias_t;
 #define BIAS_IS_UNSIGNED
 #define MAX_BIAS UINT32_MAX
-#define MIN_BIAS UINT32_MIN
+#define MIN_BIAS 0
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT64
 typedef uint64_t bias_t;
 #define BIAS_IS_UNSIGNED
 #define MAX_BIAS UINT64_MAX
-#define MIN_BIAS UINT64_MIN
+#define MIN_BIAS 0
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_FLOAT
 typedef float bias_t;
@@ -187,19 +187,19 @@ typedef uint8_t weight_t;
 typedef uint16_t weight_t;
 #define WEIGHT_IS_UNSIGNED
 #define MAX_WEIGHT UINT16_MAX
-#define MIN_WEIGHT UINT16_MIN
+#define MIN_WEIGHT 0
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT32
 typedef uint32_t weight_t;
 #define WEIGHT_IS_UNSIGNED
 #define MAX_WEIGHT UINT32_MAX
-#define MIN_WEIGHT UINT32_MIN
+#define MIN_WEIGHT 0
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT64
 typedef uint64_t weight_t;
 #define WEIGHT_IS_UNSIGNED
 #define MAX_WEIGHT UINT64_MAX
-#define MIN_WEIGHT UINT64_MIN
+#define MIN_WEIGHT 0
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_FLOAT
 typedef float weight_t;
