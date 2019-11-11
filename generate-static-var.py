@@ -41,21 +41,11 @@ for line in configFile:
 outputFile.write("/*\n")
 outputFile.write(" * Input Layer\n")
 outputFile.write(" */\n")
-
-for i in range(numInputNeurons):
-    outputFile.write("static uNeuron_t inputLayer_%d;\n" % i)
-
+outputFile.write("static activation_t inputNeurons[CONFIG_NUM_INPUT_NEURONS];\n")
 outputFile.write("static inputLayer_t staticInputLayer = {\n")
 outputFile.write("    .numNeurons = CONFIG_NUM_INPUT_NEURONS,\n")
-outputFile.write("    .neuron = {\n")
-
-for i in range(numInputNeurons - 1):
-    outputFile.write("        &inputLayer_%d,\n" % i)
-
-outputFile.write("        &inputLayer_%d\n" % (numInputNeurons - 1))
-outputFile.write("    }\n")
-outputFile.write("};\n\n\n\n")
-
+outputFile.write("    .activation = inputNeurons\n")
+outputFile.write("};\n\n\n\n\n")
 
 
 
@@ -66,50 +56,34 @@ for i in range(numHiddenLayers):
     outputFile.write("/*\n")
     outputFile.write(" * Hidden Layer %d\n" % i)
     outputFile.write(" */\n")
+    outputFile.write("static activation_t hiddenNeuronsActivations_%d[CONFIG_NUM_HIDDEN_NEURONS];\n" % i)
+    outputFile.write("static bias_t hiddenNeuronBias_%d[CONFIG_NUM_HIDDEN_NEURONS];\n\n" % i)
 
     for j in range(numHiddenNeurons):
         if (i == 0):
-            for k in range(numInputNeurons):
-                outputFile.write("static neuronParams_t hiddenLayer_%d_%d_%d;\n" % (i, j, k))
+            outputFile.write("static weight_t hiddenNeuronWeights_%d_%d[CONFIG_NUM_INPUT_NEURONS];\n" % (i, j))
         else:
-            for k in range(numHiddenNeurons):
-                outputFile.write("static neuronParams_t hiddenLayer_%d_%d_%d;\n" % (i, j, k))
-
-for i in range(numHiddenLayers):
-    outputFile.write("\n\n/*\n")
-    outputFile.write(" * Hidden Layer %d\n" % i)
-    outputFile.write(" */\n")
-
-    for j in range(numHiddenNeurons):
-        outputFile.write("static wNeuron_t hiddenLayer_%d_%d = {\n" % (i, j))
-        outputFile.write("    .activation = 0,\n")
-        outputFile.write("    .params = {\n")
-
-        if (i == 0):
-            for k in range(numInputNeurons - 1):
-                outputFile.write("        &hiddenLayer_%d_%d_%d,\n" % (i, j, k))
-            outputFile.write("        &hiddenLayer_%d_%d_%d\n" % (i, j, numInputNeurons - 1))
-        else:
-            for k in range(numHiddenNeurons - 1):
-                outputFile.write("        &hiddenLayer_%d_%d_%d,\n" % (i, j, k))
-            outputFile.write("        &hiddenLayer_%d_%d_%d\n" % (i, j, numHiddenNeurons - 1))
-
-        outputFile.write("    }\n")
-        outputFile.write("};\n")
-
-
-    outputFile.write("static hiddenLayer_t staticHiddenLayer_%d = {\n" % i)
-    outputFile.write("    .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,\n")
-    outputFile.write("    .neuron = {\n")
+            outputFile.write("static weight_t hiddenNeuronWeights_%d_%d[CONFIG_NUM_HIDDEN_NEURONS];\n" % (i, j))
+    
+    outputFile.write("static weight_t* hiddenNeuronWeights_%d[CONFIG_NUM_HIDDEN_NEURONS] =\n{\n" % i)
 
     for j in range(numHiddenNeurons - 1):
-        outputFile.write("        &hiddenLayer_%d_%d,\n" % (i, j))
+        outputFile.write("    hiddenNeuronWeights_%d_%d,\n" % (i, j))
+    outputFile.write("    hiddenNeuronWeights_%d_%d\n" % (i, (numHiddenNeurons - 1)))
+    outputFile.write("};\n\n")
 
-    outputFile.write("        &hiddenLayer_%d_%d\n" % (i, (numHiddenNeurons - 1)))
-    outputFile.write("    }\n")
-    outputFile.write("};\n\n\n\n")
+    outputFile.write("static hiddenLayer_t staticHiddenLayer_%d =\n{\n" % i)
+    outputFile.write("    .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,\n")
+    outputFile.write("    .activation = hiddenNeuronsActivations_%d,\n" % i)
+    outputFile.write("    .bias = hiddenNeuronBias_%d,\n" % i)
+    outputFile.write("    .weight = hiddenNeuronWeights_%d,\n" % i)
+    outputFile.write("};\n\n\n")
 
-
+outputFile.write("static hiddenLayer_t* staticHiddenLayers[CONFIG_NUM_HIDDEN_LAYERS] =\n{\n")
+for i in range(numHiddenLayers - 1):
+    outputFile.write("    &staticHiddenLayer_%d,\n" % i)
+outputFile.write("    &staticHiddenLayer_%d\n" % (numHiddenLayers - 1))
+outputFile.write("};\n\n\n\n\n")
 
 
 #
@@ -118,34 +92,25 @@ for i in range(numHiddenLayers):
 outputFile.write("/*\n")
 outputFile.write(" * Output Layer\n")
 outputFile.write(" */\n")
+outputFile.write("static activation_t outputNeuronsActivations[CONFIG_NUM_OUTPUT_NEURONS];\n")
+outputFile.write("static bias_t outputNeuronBias[CONFIG_NUM_OUTPUT_NEURONS];\n\n")
 
 for i in range(numOutputNeurons):
-    for j in range(numHiddenNeurons):
-        outputFile.write("static neuronParams_t outputLayer_%d_%d;\n" % (i, j))
+    outputFile.write("static weight_t outputNeuronWeights_%d[CONFIG_NUM_HIDDEN_NEURONS];\n" % i)
 
-for i in range(numOutputNeurons):
-    outputFile.write("static wNeuron_t outputLayer_%d = {\n" % i)
-    outputFile.write("    .activation = 0,\n")
-    outputFile.write("    .params = {\n")
-
-    for j in range(numHiddenNeurons - 1):
-        outputFile.write("        &outputLayer_%d_%d,\n" % (i, j))
-    outputFile.write("        &outputLayer_%d_%d\n" % (i, numHiddenNeurons - 1))
-
-    outputFile.write("    }\n")
-    outputFile.write("};\n")
-
-
-outputFile.write("static outputLayer_t staticOutputLayer = {\n")
-outputFile.write("    .numNeurons = CONFIG_NUM_OUTPUT_NEURONS,\n")
-outputFile.write("    .neuron = {\n")
+outputFile.write("static weight_t* outputNeuronWeights[CONFIG_NUM_OUTPUT_NEURONS] =\n{\n")
 
 for i in range(numOutputNeurons - 1):
-    outputFile.write("        &outputLayer_%d,\n" % (i))
+    outputFile.write("    outputNeuronWeights_%d,\n" % i)
+outputFile.write("    outputNeuronWeights_%d\n" % (numOutputNeurons - 1))
+outputFile.write("};\n\n")
 
-outputFile.write("        &outputLayer_%d\n" % (numOutputNeurons - 1))
-outputFile.write("    }\n")
-outputFile.write("};\n\n\n\n")
+outputFile.write("static outputLayer_t staticOutputLayer =\n{\n")
+outputFile.write("    .numNeurons = CONFIG_NUM_OUTPUT_NEURONS,\n")
+outputFile.write("    .activation = outputNeuronsActivations,\n")
+outputFile.write("    .bias = outputNeuronBias,\n")
+outputFile.write("    .weight = outputNeuronWeights\n")
+outputFile.write("};\n\n\n\n\n")
 
 
 
@@ -154,12 +119,6 @@ outputFile.write("};\n\n\n\n")
 #
 outputFile.write("static network_t staticNetwork = {\n")
 outputFile.write("    .inputLayer = &staticInputLayer,\n")
-outputFile.write("    .hiddenLayer = {\n")
-
-for i in range(numHiddenLayers - 1):
-    outputFile.write("        &staticHiddenLayer_%d,\n" % i)
-outputFile.write("        &staticHiddenLayer_%d\n" % (numHiddenLayers - 1))
-outputFile.write("    },\n")
-
+outputFile.write("    .hiddenLayer = staticHiddenLayers,\n")
 outputFile.write("    .outputLayer = &staticOutputLayer\n")
 outputFile.write("};\n")

@@ -30,7 +30,7 @@ int embann_printNetwork(void)
     {
         if (i < pNetworkGlobal->inputLayer->numNeurons)
         {
-            printf("%-12" ACTIVATION_PRINT "| ", pNetworkGlobal->inputLayer->neuron[i]->activation);
+            printf("%-12" ACTIVATION_PRINT "| ", pNetworkGlobal->inputLayer->activation[i]);
         }
         else
         {
@@ -41,7 +41,7 @@ int embann_printNetwork(void)
         {
             if (i < pNetworkGlobal->hiddenLayer[j]->numNeurons)
             {
-                printf("%-15" ACTIVATION_PRINT "| ", pNetworkGlobal->hiddenLayer[j]->neuron[i]->activation);
+                printf("%-15" ACTIVATION_PRINT "| ", pNetworkGlobal->hiddenLayer[j]->activation[i]);
             }
             else
             {
@@ -51,7 +51,7 @@ int embann_printNetwork(void)
 
         if (i < pNetworkGlobal->outputLayer->numNeurons)
         {
-            printf("%" ACTIVATION_PRINT, pNetworkGlobal->outputLayer->neuron[i]->activation);
+            printf("%" ACTIVATION_PRINT, pNetworkGlobal->outputLayer->activation[i]);
         }
         printf("\n");
     }
@@ -70,7 +70,7 @@ int embann_printInputNeuronDetails(numInputs_t neuronNum)
     if (neuronNum < pNetworkGlobal->inputLayer->numNeurons)
     {
         printf("\nInput Neuron %d: %" ACTIVATION_PRINT "\n", neuronNum,
-                      pNetworkGlobal->inputLayer->neuron[neuronNum]->activation);
+                      pNetworkGlobal->inputLayer->activation[neuronNum]);
     }
     else
     {
@@ -95,12 +95,12 @@ int embann_printOutputNeuronDetails(numOutputs_t neuronNum)
         for (uint16_t i = 0; i < pNetworkGlobal->hiddenLayer[0]->numNeurons; i++)
         {
             printf("%" ACTIVATION_PRINT "-*->%" WEIGHT_PRINT " |", 
-                pNetworkGlobal->hiddenLayer[pNetworkGlobal->properties.numHiddenLayers - 1U]->neuron[i]->activation,
-                pNetworkGlobal->outputLayer->neuron[neuronNum]->params[i]->weight);
+                pNetworkGlobal->hiddenLayer[pNetworkGlobal->properties.numHiddenLayers - 1U]->activation[i],
+                pNetworkGlobal->outputLayer->weight[neuronNum][i]);
 
             if (i == floor(pNetworkGlobal->hiddenLayer[0]->numNeurons / 2U))
             {
-                printf(" = %" ACTIVATION_PRINT, pNetworkGlobal->outputLayer->neuron[neuronNum]->activation);
+                printf(" = %" ACTIVATION_PRINT, pNetworkGlobal->outputLayer->activation[neuronNum]);
             }
             printf("\n");
         }
@@ -130,12 +130,12 @@ int embann_printHiddenNeuronDetails(numLayers_t layerNum, numHiddenNeurons_t neu
             for (uint16_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
             {
                 printf("%" ACTIVATION_PRINT "-*->%" WEIGHT_PRINT " |", 
-                        pNetworkGlobal->inputLayer->neuron[i]->activation,
-                        pNetworkGlobal->hiddenLayer[0]->neuron[neuronNum]->params[i]->weight);
+                        pNetworkGlobal->inputLayer->activation[i],
+                        pNetworkGlobal->hiddenLayer[0]->weight[neuronNum][i]);
 
                 if (i == floor(pNetworkGlobal->inputLayer->numNeurons / 2U))
                 {       
-                    printf(" = %" ACTIVATION_PRINT, pNetworkGlobal->hiddenLayer[0]->neuron[neuronNum]->activation);
+                    printf(" = %" ACTIVATION_PRINT, pNetworkGlobal->hiddenLayer[0]->activation[neuronNum]);
                 }
                 printf("\n");
             }
@@ -145,13 +145,13 @@ int embann_printHiddenNeuronDetails(numLayers_t layerNum, numHiddenNeurons_t neu
             for (uint16_t i = 0; i < pNetworkGlobal->hiddenLayer[layerNum]->numNeurons; i++)
             {
                 printf("%" ACTIVATION_PRINT "-*->%" WEIGHT_PRINT " |", 
-                    pNetworkGlobal->hiddenLayer[layerNum - 1U]->neuron[i]->activation,
-                    pNetworkGlobal->hiddenLayer[layerNum - 1U]->neuron[neuronNum]->params[i]->weight);
+                    pNetworkGlobal->hiddenLayer[layerNum - 1U]->activation[i],
+                    pNetworkGlobal->hiddenLayer[layerNum - 1U]->weight[neuronNum][i]);
 
 
                 if (i == floor(pNetworkGlobal->hiddenLayer[layerNum]->numNeurons / 2U))
                 {
-                    printf(" = %" ACTIVATION_PRINT, pNetworkGlobal->hiddenLayer[layerNum]->neuron[neuronNum]->activation);
+                    printf(" = %" ACTIVATION_PRINT, pNetworkGlobal->hiddenLayer[layerNum]->activation[neuronNum]);
                 }
                 printf("\n");
             }
@@ -177,21 +177,21 @@ int embann_errorReporting(numOutputs_t correctResponse)
     {
         if (i == correctResponse)
         {
-            printf("%-7" ACTIVATION_PRINT " | ", (1 - pNetworkGlobal->outputLayer->neuron[correctResponse]->activation));
+            printf("%-7" ACTIVATION_PRINT " | ", (1 - pNetworkGlobal->outputLayer->activation[correctResponse]));
         }
         else
         {
-            printf("%-7" ACTIVATION_PRINT " | ", -pNetworkGlobal->outputLayer->neuron[i]->activation);
+            printf("%-7" ACTIVATION_PRINT " | ", -pNetworkGlobal->outputLayer->activation[i]);
         }
     }
 
     if (pNetworkGlobal->outputLayer->numNeurons == correctResponse)
     {
-        printf("%-7" ACTIVATION_PRINT "\n", (1 - pNetworkGlobal->outputLayer->neuron[correctResponse]->activation));
+        printf("%-7" ACTIVATION_PRINT "\n", (1 - pNetworkGlobal->outputLayer->activation[correctResponse]));
     }
     else
     {
-        printf("%-7" ACTIVATION_PRINT "\n", -pNetworkGlobal->outputLayer->neuron[pNetworkGlobal->outputLayer->numNeurons - 1U]->activation);
+        printf("%-7" ACTIVATION_PRINT "\n", -pNetworkGlobal->outputLayer->activation[pNetworkGlobal->outputLayer->numNeurons - 1U]);
     }
     return EOK;
 }

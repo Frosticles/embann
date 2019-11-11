@@ -351,37 +351,22 @@ typedef uint64_t numTrainingDataEntries_t;
 
 
 
-// TODO, could put in a linear approximation for these
-typedef enum {
-    LINEAR, // Straight line from minimum to maximum
+typedef enum 
+{
+    LINEAR, // TODO, Straight line from minimum to maximum
     TANH,
     RELU,
     LEAKY_RELU
 } activationFunction_t;
 
-typedef struct  {
-    weight_t weight;
-    bias_t bias;
-} neuronParams_t;
-
 typedef struct
 {
-    activation_t activation;
-    neuronParams_t* params[];
-} wNeuron_t;
-
-typedef struct
-{
-    activation_t activation;
-} uNeuron_t;
-
-typedef struct
-{
-    wNeuron_t* forgetGate;
-    wNeuron_t* inputGate;
-    wNeuron_t* outputGate;
-    wNeuron_t* cell;
-    activation_t activation;
+    // TODO
+    //neuronParams_t* forgetGate;
+    //neuronParams_t* inputGate;
+    //neuronParams_t* outputGate;
+    //neuronParams_t* cell;
+    //activation_t activation;
 } lstmCell_t;
 
 typedef struct trainingData
@@ -390,7 +375,7 @@ typedef struct trainingData
     numInputs_t length;
     struct trainingData* prev;
     struct trainingData* next;
-    activation_t data[];
+    activation_t* data;
 } trainingData_t;
 
 typedef struct 
@@ -412,19 +397,23 @@ typedef struct
 typedef struct
 {
     numInputs_t numNeurons;
-    uNeuron_t* neuron[];
+    activation_t* activation;
 } inputLayer_t;
 
 typedef struct
 {
     numHiddenNeurons_t numNeurons;
-    wNeuron_t* neuron[];
+    activation_t* activation;
+    bias_t* bias;
+    weight_t** weight;
 } hiddenLayer_t;
 
 typedef struct
 {
     numOutputs_t numNeurons;
-    wNeuron_t* neuron[];
+    activation_t* activation;
+    bias_t* bias;
+    weight_t** weight;
 } outputLayer_t;
 
 typedef struct
@@ -439,7 +428,7 @@ typedef struct
     networkProperties_t properties;
     inputLayer_t* inputLayer;
     outputLayer_t* outputLayer;
-    hiddenLayer_t* hiddenLayer[];
+    hiddenLayer_t** hiddenLayer;
 } network_t;
 
 

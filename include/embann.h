@@ -37,10 +37,6 @@ int embann_init(numInputs_t numInputNeurons,
                 numHiddenNeurons_t numHiddenNeurons, 
                 numLayers_t numHiddenLayers,
                 numOutputs_t numOutputNeurons);
-int embann_sumAndSquash(wNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
-                           numOutputs_t numOutputs);
-int embann_sumAndSquashInput(uNeuron_t* Input[], wNeuron_t* Output[], numInputs_t numInputs,
-                           numOutputs_t numOutputs);
 int embann_calculateNetworkResponse(void);
 int embann_forwardPropagate(void);
 int embann_printNetwork(void);

@@ -12,8 +12,8 @@ int embann_inputRaw(activation_t data[])
 {
     for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
-        pNetworkGlobal->inputLayer->neuron[i]->activation = data[i];
-        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->neuron[i]->activation);
+        pNetworkGlobal->inputLayer->activation[i] = data[i];
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->activation[i]);
     }
     return EOK;
 }
@@ -23,8 +23,8 @@ int embann_inputMinMaxScale(activation_t data[], activation_t min, activation_t 
     for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
         // TODO configurable types
-        pNetworkGlobal->inputLayer->neuron[i]->activation = ((float)data[i] - min) / (max - min);
-        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->neuron[i]->activation);
+        pNetworkGlobal->inputLayer->activation[i] = ((float)data[i] - min) / (max - min);
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->activation[i]);
     }
     return EOK;
 }
@@ -34,8 +34,8 @@ int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
     for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
         // TODO configurable types
-        pNetworkGlobal->inputLayer->neuron[i]->activation = ((float)data[i] - mean) / stdDev;
-        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->neuron[i]->activation);
+        pNetworkGlobal->inputLayer->activation[i] = ((float)data[i] - mean) / stdDev;
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->activation[i]);
     }
     return EOK;
 }
@@ -172,7 +172,7 @@ int embann_getTrainingDataMin(activation_t* min)
 }
 
 
-int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse)
+int embann_addTrainingData(activation_t* data, uint32_t length, numOutputs_t correctResponse)
 {
     trainingData_t* trainingDataNode;
 
@@ -190,7 +190,7 @@ int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t co
     trainingDataNode->next = NULL;
     trainingDataNode->length = length;
     trainingDataNode->correctResponse = correctResponse;
-    trainingDataNode->data[0] = data[0];
+    trainingDataNode->data = data;
 
     if (embann_getDataCollection()->head == NULL)
     {
@@ -218,13 +218,14 @@ int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t c
         return ENOENT;
     }
 
-    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t) + length);
+    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
     EMBANN_MALLOC_CHECK(trainingDataNode);
 
     trainingDataNode->prev = embann_getDataCollection()->tail;
     trainingDataNode->next = NULL;
     trainingDataNode->length = length;
     trainingDataNode->correctResponse = correctResponse;
+    trainingDataNode->data = (activation_t*) malloc(length);
     memcpy(trainingDataNode->data, data, length);
 
     if (embann_getDataCollection()->head == NULL)
@@ -238,7 +239,7 @@ int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t c
         embann_getDataCollection()->tail = trainingDataNode;
     }
 
-    ++embann_getDataCollection()->numEntries;
+    embann_getDataCollection()->numEntries++;
     return EOK;
 }
 

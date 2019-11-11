@@ -98,8 +98,8 @@ static int embann_initInputLayer(numInputs_t numInputNeurons)
         EMBANN_MALLOC_CHECK(pNeuron);
         pInputLayer->neuron[i] = pNeuron;
 #endif
-        pInputLayer->neuron[i]->activation = RAND_ACTIVATION();
-        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pInputLayer->neuron[i]->activation);
+        pInputLayer->activation[i] = RAND_ACTIVATION();
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pInputLayer->activation[i]);
     }
 
 #ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
@@ -108,7 +108,7 @@ static int embann_initInputLayer(numInputs_t numInputNeurons)
 
     for (numInputs_t k = 0; k < numInputNeurons; k++)
     {
-        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->inputLayer->neuron[k]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->inputLayer->activation[k]);
     }
 
     EMBANN_LOGI(TAG, "done input");
@@ -164,9 +164,9 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
         EMBANN_MALLOC_CHECK(pNeuron);
         pHiddenLayer->neuron[j] = pNeuron;
 #endif
-        pHiddenLayer->neuron[j]->activation = RAND_ACTIVATION();
+        pHiddenLayer->activation[j] = RAND_ACTIVATION();
 
-        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->neuron[j]->activation);
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->activation[j]);
 
         for (numInputs_t k = 0; k < numInputNeurons; k++)
         {
@@ -175,8 +175,8 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
             EMBANN_MALLOC_CHECK(pHiddenLayerParams);
             pHiddenLayer->neuron[j]->params[k] = pHiddenLayerParams;
 #endif
-            pHiddenLayer->neuron[j]->params[k]->bias = RAND_BIAS();
-            pHiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
+            pHiddenLayer->bias[j] = RAND_BIAS();
+            pHiddenLayer->weight[j][k] = RAND_WEIGHT();
 
             _printHiddenNeuronParams(pHiddenLayer, j, k);
         }
@@ -187,7 +187,7 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
 #endif
     for (uint16_t k = 0; k < numHiddenNeurons; k++)
     {
-        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->hiddenLayer[0]->neuron[k]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->hiddenLayer[0]->activation[k]);
     }
 
     _printConnectedHiddenLayer(0);
@@ -229,9 +229,9 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
             EMBANN_MALLOC_CHECK(pNeuron);
             pHiddenLayer->neuron[j] = pNeuron;
 #endif
-            pHiddenLayer->neuron[j]->activation = RAND_ACTIVATION();
+            pHiddenLayer->activation[j] = RAND_ACTIVATION();
 
-            EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->neuron[j]->activation);
+            EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->activation[j]);
 
             for (numHiddenNeurons_t k = 0; k < numHiddenNeurons; k++)
             {
@@ -242,9 +242,9 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
 #endif
                 _printHiddenNeuronParams(pHiddenLayer, j, k);
 
-                pHiddenLayer->neuron[j]->params[k]->bias = RAND_BIAS();
-                pHiddenLayer->neuron[j]->params[k]->weight = RAND_WEIGHT();
-                EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->neuron[j]->activation);
+                pHiddenLayer->bias[j] = RAND_BIAS();
+                pHiddenLayer->weight[j][k] = RAND_WEIGHT();
+                EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, j, pHiddenLayer->activation[j]);
             }
         }
 
@@ -256,7 +256,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
 
         for (uint16_t k = 0; k < (numHiddenNeurons - 1U); k++)
         {
-            EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->hiddenLayer[i]->neuron[k]->activation);
+            EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->hiddenLayer[i]->activation[k]);
         }
     }
     return EOK;
@@ -294,8 +294,8 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
         pOutputLayer->neuron[i] = pNeuron;
 #endif
 
-        pOutputLayer->neuron[i]->activation = RAND_ACTIVATION();
-        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pOutputLayer->neuron[i]->activation);
+        pOutputLayer->activation[i] = RAND_ACTIVATION();
+        EMBANN_LOGD(TAG, "act [%d] = %" ACTIVATION_PRINT, i, pOutputLayer->activation[i]);
         
         for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
         {
@@ -304,8 +304,8 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
             EMBANN_MALLOC_CHECK(pOutputLayerParams);
             pOutputLayer->neuron[i]->params[j] = pOutputLayerParams;
 #endif
-            pOutputLayer->neuron[i]->params[j]->bias = RAND_BIAS();
-            pOutputLayer->neuron[i]->params[j]->weight = RAND_WEIGHT();
+            pOutputLayer->bias[i] = RAND_BIAS();
+            pOutputLayer->weight[i][j] = RAND_WEIGHT();
         }
     }
     
@@ -315,7 +315,7 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
 
     for (uint16_t k = 0; k < numOutputNeurons; k++)
     {
-        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->outputLayer->neuron[k]->activation);
+        EMBANN_LOGI(TAG, "act [%d] = %" ACTIVATION_PRINT, k, pNetworkGlobal->outputLayer->activation[k]);
     }
 
     EMBANN_LOGI(TAG, "done output");
@@ -332,8 +332,7 @@ static void _printInputLayer(inputLayer_t* pInputLayer, numInputs_t numInputNeur
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     // MISRA C 2012 11.4 - deliberate cast from pointer to integer
     // cppcheck-suppress misra-c2012-11.4
-    EMBANN_LOGI(TAG, "pInputLayer: 0x%x, size: %ld", (uint32_t) pInputLayer, sizeof(inputLayer_t) + 
-                                                (sizeof(uNeuron_t*) * numInputNeurons));
+    EMBANN_LOGI(TAG, "pInputLayer: 0x%x", (uint32_t) pInputLayer);
 #pragma GCC diagnostic pop
 }
 
@@ -347,8 +346,7 @@ static void _printHiddenLayer(hiddenLayer_t* pHiddenLayer, numHiddenNeurons_t nu
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     // MISRA C 2012 11.4 - deliberate cast from pointer to integer
     // cppcheck-suppress misra-c2012-11.4
-    EMBANN_LOGI(TAG, "hiddenlayer: 0x%x, size: %ld", (uint32_t) pHiddenLayer, sizeof(hiddenLayer_t) + 
-                                            (sizeof(wNeuron_t*) * numHiddenNeurons));
+    EMBANN_LOGI(TAG, "hiddenlayer: 0x%x", (uint32_t) pHiddenLayer);
 #pragma GCC diagnostic pop
 }
 
@@ -362,10 +360,9 @@ static void _printHiddenNeuronParams(hiddenLayer_t* pHiddenLayer, numHiddenNeuro
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     // MISRA C 2012 11.4 - deliberate cast from pointer to integer
     // cppcheck-suppress misra-c2012-11.4
-    EMBANN_LOGV(TAG, "params array: 0x%x, bias 0x%x, weight 0x%x", 
-                        (uint32_t) &pHiddenLayer->neuron[j]->params[k],
-                        (uint32_t) &pHiddenLayer->neuron[j]->params[k]->bias,
-                        (uint32_t) &pHiddenLayer->neuron[j]->params[k]->weight);
+    EMBANN_LOGV(TAG, "params bias 0x%x, weight 0x%x", 
+                        (uint32_t) &pHiddenLayer->bias[j],
+                        (uint32_t) &pHiddenLayer->weight[j][k]);
 #pragma GCC diagnostic pop
 }
 
@@ -391,7 +388,6 @@ static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutpu
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     // MISRA C 2012 11.4 - deliberate cast from pointer to integer
     // cppcheck-suppress misra-c2012-11.4
-    EMBANN_LOGI(TAG, "pOutputLayer: 0x%x, size: %ld", (uint32_t) pOutputLayer, sizeof(outputLayer_t) + 
-                                                (sizeof(wNeuron_t*) * numOutputNeurons));
+    EMBANN_LOGI(TAG, "pOutputLayer: 0x%x", (uint32_t) pOutputLayer);
 #pragma GCC diagnostic pop
 }

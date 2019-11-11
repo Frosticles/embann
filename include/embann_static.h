@@ -5,1621 +5,251 @@
 /*
  * Input Layer
  */
-static uNeuron_t inputLayer_0;
-static uNeuron_t inputLayer_1;
-static uNeuron_t inputLayer_2;
-static uNeuron_t inputLayer_3;
-static uNeuron_t inputLayer_4;
-static uNeuron_t inputLayer_5;
-static uNeuron_t inputLayer_6;
-static uNeuron_t inputLayer_7;
-static uNeuron_t inputLayer_8;
-static uNeuron_t inputLayer_9;
-static uNeuron_t inputLayer_10;
-static uNeuron_t inputLayer_11;
-static uNeuron_t inputLayer_12;
-static uNeuron_t inputLayer_13;
-static uNeuron_t inputLayer_14;
+static activation_t inputNeurons[CONFIG_NUM_INPUT_NEURONS];
 static inputLayer_t staticInputLayer = {
     .numNeurons = CONFIG_NUM_INPUT_NEURONS,
-    .neuron = {
-        &inputLayer_0,
-        &inputLayer_1,
-        &inputLayer_2,
-        &inputLayer_3,
-        &inputLayer_4,
-        &inputLayer_5,
-        &inputLayer_6,
-        &inputLayer_7,
-        &inputLayer_8,
-        &inputLayer_9,
-        &inputLayer_10,
-        &inputLayer_11,
-        &inputLayer_12,
-        &inputLayer_13,
-        &inputLayer_14
-    }
+    .activation = inputNeurons
 };
+
 
 
 
 /*
  * Hidden Layer 0
  */
-static neuronParams_t hiddenLayer_0_0_0;
-static neuronParams_t hiddenLayer_0_0_1;
-static neuronParams_t hiddenLayer_0_0_2;
-static neuronParams_t hiddenLayer_0_0_3;
-static neuronParams_t hiddenLayer_0_0_4;
-static neuronParams_t hiddenLayer_0_0_5;
-static neuronParams_t hiddenLayer_0_0_6;
-static neuronParams_t hiddenLayer_0_0_7;
-static neuronParams_t hiddenLayer_0_0_8;
-static neuronParams_t hiddenLayer_0_0_9;
-static neuronParams_t hiddenLayer_0_0_10;
-static neuronParams_t hiddenLayer_0_0_11;
-static neuronParams_t hiddenLayer_0_0_12;
-static neuronParams_t hiddenLayer_0_0_13;
-static neuronParams_t hiddenLayer_0_0_14;
-static neuronParams_t hiddenLayer_0_1_0;
-static neuronParams_t hiddenLayer_0_1_1;
-static neuronParams_t hiddenLayer_0_1_2;
-static neuronParams_t hiddenLayer_0_1_3;
-static neuronParams_t hiddenLayer_0_1_4;
-static neuronParams_t hiddenLayer_0_1_5;
-static neuronParams_t hiddenLayer_0_1_6;
-static neuronParams_t hiddenLayer_0_1_7;
-static neuronParams_t hiddenLayer_0_1_8;
-static neuronParams_t hiddenLayer_0_1_9;
-static neuronParams_t hiddenLayer_0_1_10;
-static neuronParams_t hiddenLayer_0_1_11;
-static neuronParams_t hiddenLayer_0_1_12;
-static neuronParams_t hiddenLayer_0_1_13;
-static neuronParams_t hiddenLayer_0_1_14;
-static neuronParams_t hiddenLayer_0_2_0;
-static neuronParams_t hiddenLayer_0_2_1;
-static neuronParams_t hiddenLayer_0_2_2;
-static neuronParams_t hiddenLayer_0_2_3;
-static neuronParams_t hiddenLayer_0_2_4;
-static neuronParams_t hiddenLayer_0_2_5;
-static neuronParams_t hiddenLayer_0_2_6;
-static neuronParams_t hiddenLayer_0_2_7;
-static neuronParams_t hiddenLayer_0_2_8;
-static neuronParams_t hiddenLayer_0_2_9;
-static neuronParams_t hiddenLayer_0_2_10;
-static neuronParams_t hiddenLayer_0_2_11;
-static neuronParams_t hiddenLayer_0_2_12;
-static neuronParams_t hiddenLayer_0_2_13;
-static neuronParams_t hiddenLayer_0_2_14;
-static neuronParams_t hiddenLayer_0_3_0;
-static neuronParams_t hiddenLayer_0_3_1;
-static neuronParams_t hiddenLayer_0_3_2;
-static neuronParams_t hiddenLayer_0_3_3;
-static neuronParams_t hiddenLayer_0_3_4;
-static neuronParams_t hiddenLayer_0_3_5;
-static neuronParams_t hiddenLayer_0_3_6;
-static neuronParams_t hiddenLayer_0_3_7;
-static neuronParams_t hiddenLayer_0_3_8;
-static neuronParams_t hiddenLayer_0_3_9;
-static neuronParams_t hiddenLayer_0_3_10;
-static neuronParams_t hiddenLayer_0_3_11;
-static neuronParams_t hiddenLayer_0_3_12;
-static neuronParams_t hiddenLayer_0_3_13;
-static neuronParams_t hiddenLayer_0_3_14;
-static neuronParams_t hiddenLayer_0_4_0;
-static neuronParams_t hiddenLayer_0_4_1;
-static neuronParams_t hiddenLayer_0_4_2;
-static neuronParams_t hiddenLayer_0_4_3;
-static neuronParams_t hiddenLayer_0_4_4;
-static neuronParams_t hiddenLayer_0_4_5;
-static neuronParams_t hiddenLayer_0_4_6;
-static neuronParams_t hiddenLayer_0_4_7;
-static neuronParams_t hiddenLayer_0_4_8;
-static neuronParams_t hiddenLayer_0_4_9;
-static neuronParams_t hiddenLayer_0_4_10;
-static neuronParams_t hiddenLayer_0_4_11;
-static neuronParams_t hiddenLayer_0_4_12;
-static neuronParams_t hiddenLayer_0_4_13;
-static neuronParams_t hiddenLayer_0_4_14;
-static neuronParams_t hiddenLayer_0_5_0;
-static neuronParams_t hiddenLayer_0_5_1;
-static neuronParams_t hiddenLayer_0_5_2;
-static neuronParams_t hiddenLayer_0_5_3;
-static neuronParams_t hiddenLayer_0_5_4;
-static neuronParams_t hiddenLayer_0_5_5;
-static neuronParams_t hiddenLayer_0_5_6;
-static neuronParams_t hiddenLayer_0_5_7;
-static neuronParams_t hiddenLayer_0_5_8;
-static neuronParams_t hiddenLayer_0_5_9;
-static neuronParams_t hiddenLayer_0_5_10;
-static neuronParams_t hiddenLayer_0_5_11;
-static neuronParams_t hiddenLayer_0_5_12;
-static neuronParams_t hiddenLayer_0_5_13;
-static neuronParams_t hiddenLayer_0_5_14;
-static neuronParams_t hiddenLayer_0_6_0;
-static neuronParams_t hiddenLayer_0_6_1;
-static neuronParams_t hiddenLayer_0_6_2;
-static neuronParams_t hiddenLayer_0_6_3;
-static neuronParams_t hiddenLayer_0_6_4;
-static neuronParams_t hiddenLayer_0_6_5;
-static neuronParams_t hiddenLayer_0_6_6;
-static neuronParams_t hiddenLayer_0_6_7;
-static neuronParams_t hiddenLayer_0_6_8;
-static neuronParams_t hiddenLayer_0_6_9;
-static neuronParams_t hiddenLayer_0_6_10;
-static neuronParams_t hiddenLayer_0_6_11;
-static neuronParams_t hiddenLayer_0_6_12;
-static neuronParams_t hiddenLayer_0_6_13;
-static neuronParams_t hiddenLayer_0_6_14;
-static neuronParams_t hiddenLayer_0_7_0;
-static neuronParams_t hiddenLayer_0_7_1;
-static neuronParams_t hiddenLayer_0_7_2;
-static neuronParams_t hiddenLayer_0_7_3;
-static neuronParams_t hiddenLayer_0_7_4;
-static neuronParams_t hiddenLayer_0_7_5;
-static neuronParams_t hiddenLayer_0_7_6;
-static neuronParams_t hiddenLayer_0_7_7;
-static neuronParams_t hiddenLayer_0_7_8;
-static neuronParams_t hiddenLayer_0_7_9;
-static neuronParams_t hiddenLayer_0_7_10;
-static neuronParams_t hiddenLayer_0_7_11;
-static neuronParams_t hiddenLayer_0_7_12;
-static neuronParams_t hiddenLayer_0_7_13;
-static neuronParams_t hiddenLayer_0_7_14;
-static neuronParams_t hiddenLayer_0_8_0;
-static neuronParams_t hiddenLayer_0_8_1;
-static neuronParams_t hiddenLayer_0_8_2;
-static neuronParams_t hiddenLayer_0_8_3;
-static neuronParams_t hiddenLayer_0_8_4;
-static neuronParams_t hiddenLayer_0_8_5;
-static neuronParams_t hiddenLayer_0_8_6;
-static neuronParams_t hiddenLayer_0_8_7;
-static neuronParams_t hiddenLayer_0_8_8;
-static neuronParams_t hiddenLayer_0_8_9;
-static neuronParams_t hiddenLayer_0_8_10;
-static neuronParams_t hiddenLayer_0_8_11;
-static neuronParams_t hiddenLayer_0_8_12;
-static neuronParams_t hiddenLayer_0_8_13;
-static neuronParams_t hiddenLayer_0_8_14;
-static neuronParams_t hiddenLayer_0_9_0;
-static neuronParams_t hiddenLayer_0_9_1;
-static neuronParams_t hiddenLayer_0_9_2;
-static neuronParams_t hiddenLayer_0_9_3;
-static neuronParams_t hiddenLayer_0_9_4;
-static neuronParams_t hiddenLayer_0_9_5;
-static neuronParams_t hiddenLayer_0_9_6;
-static neuronParams_t hiddenLayer_0_9_7;
-static neuronParams_t hiddenLayer_0_9_8;
-static neuronParams_t hiddenLayer_0_9_9;
-static neuronParams_t hiddenLayer_0_9_10;
-static neuronParams_t hiddenLayer_0_9_11;
-static neuronParams_t hiddenLayer_0_9_12;
-static neuronParams_t hiddenLayer_0_9_13;
-static neuronParams_t hiddenLayer_0_9_14;
-/*
- * Hidden Layer 1
- */
-static neuronParams_t hiddenLayer_1_0_0;
-static neuronParams_t hiddenLayer_1_0_1;
-static neuronParams_t hiddenLayer_1_0_2;
-static neuronParams_t hiddenLayer_1_0_3;
-static neuronParams_t hiddenLayer_1_0_4;
-static neuronParams_t hiddenLayer_1_0_5;
-static neuronParams_t hiddenLayer_1_0_6;
-static neuronParams_t hiddenLayer_1_0_7;
-static neuronParams_t hiddenLayer_1_0_8;
-static neuronParams_t hiddenLayer_1_0_9;
-static neuronParams_t hiddenLayer_1_1_0;
-static neuronParams_t hiddenLayer_1_1_1;
-static neuronParams_t hiddenLayer_1_1_2;
-static neuronParams_t hiddenLayer_1_1_3;
-static neuronParams_t hiddenLayer_1_1_4;
-static neuronParams_t hiddenLayer_1_1_5;
-static neuronParams_t hiddenLayer_1_1_6;
-static neuronParams_t hiddenLayer_1_1_7;
-static neuronParams_t hiddenLayer_1_1_8;
-static neuronParams_t hiddenLayer_1_1_9;
-static neuronParams_t hiddenLayer_1_2_0;
-static neuronParams_t hiddenLayer_1_2_1;
-static neuronParams_t hiddenLayer_1_2_2;
-static neuronParams_t hiddenLayer_1_2_3;
-static neuronParams_t hiddenLayer_1_2_4;
-static neuronParams_t hiddenLayer_1_2_5;
-static neuronParams_t hiddenLayer_1_2_6;
-static neuronParams_t hiddenLayer_1_2_7;
-static neuronParams_t hiddenLayer_1_2_8;
-static neuronParams_t hiddenLayer_1_2_9;
-static neuronParams_t hiddenLayer_1_3_0;
-static neuronParams_t hiddenLayer_1_3_1;
-static neuronParams_t hiddenLayer_1_3_2;
-static neuronParams_t hiddenLayer_1_3_3;
-static neuronParams_t hiddenLayer_1_3_4;
-static neuronParams_t hiddenLayer_1_3_5;
-static neuronParams_t hiddenLayer_1_3_6;
-static neuronParams_t hiddenLayer_1_3_7;
-static neuronParams_t hiddenLayer_1_3_8;
-static neuronParams_t hiddenLayer_1_3_9;
-static neuronParams_t hiddenLayer_1_4_0;
-static neuronParams_t hiddenLayer_1_4_1;
-static neuronParams_t hiddenLayer_1_4_2;
-static neuronParams_t hiddenLayer_1_4_3;
-static neuronParams_t hiddenLayer_1_4_4;
-static neuronParams_t hiddenLayer_1_4_5;
-static neuronParams_t hiddenLayer_1_4_6;
-static neuronParams_t hiddenLayer_1_4_7;
-static neuronParams_t hiddenLayer_1_4_8;
-static neuronParams_t hiddenLayer_1_4_9;
-static neuronParams_t hiddenLayer_1_5_0;
-static neuronParams_t hiddenLayer_1_5_1;
-static neuronParams_t hiddenLayer_1_5_2;
-static neuronParams_t hiddenLayer_1_5_3;
-static neuronParams_t hiddenLayer_1_5_4;
-static neuronParams_t hiddenLayer_1_5_5;
-static neuronParams_t hiddenLayer_1_5_6;
-static neuronParams_t hiddenLayer_1_5_7;
-static neuronParams_t hiddenLayer_1_5_8;
-static neuronParams_t hiddenLayer_1_5_9;
-static neuronParams_t hiddenLayer_1_6_0;
-static neuronParams_t hiddenLayer_1_6_1;
-static neuronParams_t hiddenLayer_1_6_2;
-static neuronParams_t hiddenLayer_1_6_3;
-static neuronParams_t hiddenLayer_1_6_4;
-static neuronParams_t hiddenLayer_1_6_5;
-static neuronParams_t hiddenLayer_1_6_6;
-static neuronParams_t hiddenLayer_1_6_7;
-static neuronParams_t hiddenLayer_1_6_8;
-static neuronParams_t hiddenLayer_1_6_9;
-static neuronParams_t hiddenLayer_1_7_0;
-static neuronParams_t hiddenLayer_1_7_1;
-static neuronParams_t hiddenLayer_1_7_2;
-static neuronParams_t hiddenLayer_1_7_3;
-static neuronParams_t hiddenLayer_1_7_4;
-static neuronParams_t hiddenLayer_1_7_5;
-static neuronParams_t hiddenLayer_1_7_6;
-static neuronParams_t hiddenLayer_1_7_7;
-static neuronParams_t hiddenLayer_1_7_8;
-static neuronParams_t hiddenLayer_1_7_9;
-static neuronParams_t hiddenLayer_1_8_0;
-static neuronParams_t hiddenLayer_1_8_1;
-static neuronParams_t hiddenLayer_1_8_2;
-static neuronParams_t hiddenLayer_1_8_3;
-static neuronParams_t hiddenLayer_1_8_4;
-static neuronParams_t hiddenLayer_1_8_5;
-static neuronParams_t hiddenLayer_1_8_6;
-static neuronParams_t hiddenLayer_1_8_7;
-static neuronParams_t hiddenLayer_1_8_8;
-static neuronParams_t hiddenLayer_1_8_9;
-static neuronParams_t hiddenLayer_1_9_0;
-static neuronParams_t hiddenLayer_1_9_1;
-static neuronParams_t hiddenLayer_1_9_2;
-static neuronParams_t hiddenLayer_1_9_3;
-static neuronParams_t hiddenLayer_1_9_4;
-static neuronParams_t hiddenLayer_1_9_5;
-static neuronParams_t hiddenLayer_1_9_6;
-static neuronParams_t hiddenLayer_1_9_7;
-static neuronParams_t hiddenLayer_1_9_8;
-static neuronParams_t hiddenLayer_1_9_9;
-/*
- * Hidden Layer 2
- */
-static neuronParams_t hiddenLayer_2_0_0;
-static neuronParams_t hiddenLayer_2_0_1;
-static neuronParams_t hiddenLayer_2_0_2;
-static neuronParams_t hiddenLayer_2_0_3;
-static neuronParams_t hiddenLayer_2_0_4;
-static neuronParams_t hiddenLayer_2_0_5;
-static neuronParams_t hiddenLayer_2_0_6;
-static neuronParams_t hiddenLayer_2_0_7;
-static neuronParams_t hiddenLayer_2_0_8;
-static neuronParams_t hiddenLayer_2_0_9;
-static neuronParams_t hiddenLayer_2_1_0;
-static neuronParams_t hiddenLayer_2_1_1;
-static neuronParams_t hiddenLayer_2_1_2;
-static neuronParams_t hiddenLayer_2_1_3;
-static neuronParams_t hiddenLayer_2_1_4;
-static neuronParams_t hiddenLayer_2_1_5;
-static neuronParams_t hiddenLayer_2_1_6;
-static neuronParams_t hiddenLayer_2_1_7;
-static neuronParams_t hiddenLayer_2_1_8;
-static neuronParams_t hiddenLayer_2_1_9;
-static neuronParams_t hiddenLayer_2_2_0;
-static neuronParams_t hiddenLayer_2_2_1;
-static neuronParams_t hiddenLayer_2_2_2;
-static neuronParams_t hiddenLayer_2_2_3;
-static neuronParams_t hiddenLayer_2_2_4;
-static neuronParams_t hiddenLayer_2_2_5;
-static neuronParams_t hiddenLayer_2_2_6;
-static neuronParams_t hiddenLayer_2_2_7;
-static neuronParams_t hiddenLayer_2_2_8;
-static neuronParams_t hiddenLayer_2_2_9;
-static neuronParams_t hiddenLayer_2_3_0;
-static neuronParams_t hiddenLayer_2_3_1;
-static neuronParams_t hiddenLayer_2_3_2;
-static neuronParams_t hiddenLayer_2_3_3;
-static neuronParams_t hiddenLayer_2_3_4;
-static neuronParams_t hiddenLayer_2_3_5;
-static neuronParams_t hiddenLayer_2_3_6;
-static neuronParams_t hiddenLayer_2_3_7;
-static neuronParams_t hiddenLayer_2_3_8;
-static neuronParams_t hiddenLayer_2_3_9;
-static neuronParams_t hiddenLayer_2_4_0;
-static neuronParams_t hiddenLayer_2_4_1;
-static neuronParams_t hiddenLayer_2_4_2;
-static neuronParams_t hiddenLayer_2_4_3;
-static neuronParams_t hiddenLayer_2_4_4;
-static neuronParams_t hiddenLayer_2_4_5;
-static neuronParams_t hiddenLayer_2_4_6;
-static neuronParams_t hiddenLayer_2_4_7;
-static neuronParams_t hiddenLayer_2_4_8;
-static neuronParams_t hiddenLayer_2_4_9;
-static neuronParams_t hiddenLayer_2_5_0;
-static neuronParams_t hiddenLayer_2_5_1;
-static neuronParams_t hiddenLayer_2_5_2;
-static neuronParams_t hiddenLayer_2_5_3;
-static neuronParams_t hiddenLayer_2_5_4;
-static neuronParams_t hiddenLayer_2_5_5;
-static neuronParams_t hiddenLayer_2_5_6;
-static neuronParams_t hiddenLayer_2_5_7;
-static neuronParams_t hiddenLayer_2_5_8;
-static neuronParams_t hiddenLayer_2_5_9;
-static neuronParams_t hiddenLayer_2_6_0;
-static neuronParams_t hiddenLayer_2_6_1;
-static neuronParams_t hiddenLayer_2_6_2;
-static neuronParams_t hiddenLayer_2_6_3;
-static neuronParams_t hiddenLayer_2_6_4;
-static neuronParams_t hiddenLayer_2_6_5;
-static neuronParams_t hiddenLayer_2_6_6;
-static neuronParams_t hiddenLayer_2_6_7;
-static neuronParams_t hiddenLayer_2_6_8;
-static neuronParams_t hiddenLayer_2_6_9;
-static neuronParams_t hiddenLayer_2_7_0;
-static neuronParams_t hiddenLayer_2_7_1;
-static neuronParams_t hiddenLayer_2_7_2;
-static neuronParams_t hiddenLayer_2_7_3;
-static neuronParams_t hiddenLayer_2_7_4;
-static neuronParams_t hiddenLayer_2_7_5;
-static neuronParams_t hiddenLayer_2_7_6;
-static neuronParams_t hiddenLayer_2_7_7;
-static neuronParams_t hiddenLayer_2_7_8;
-static neuronParams_t hiddenLayer_2_7_9;
-static neuronParams_t hiddenLayer_2_8_0;
-static neuronParams_t hiddenLayer_2_8_1;
-static neuronParams_t hiddenLayer_2_8_2;
-static neuronParams_t hiddenLayer_2_8_3;
-static neuronParams_t hiddenLayer_2_8_4;
-static neuronParams_t hiddenLayer_2_8_5;
-static neuronParams_t hiddenLayer_2_8_6;
-static neuronParams_t hiddenLayer_2_8_7;
-static neuronParams_t hiddenLayer_2_8_8;
-static neuronParams_t hiddenLayer_2_8_9;
-static neuronParams_t hiddenLayer_2_9_0;
-static neuronParams_t hiddenLayer_2_9_1;
-static neuronParams_t hiddenLayer_2_9_2;
-static neuronParams_t hiddenLayer_2_9_3;
-static neuronParams_t hiddenLayer_2_9_4;
-static neuronParams_t hiddenLayer_2_9_5;
-static neuronParams_t hiddenLayer_2_9_6;
-static neuronParams_t hiddenLayer_2_9_7;
-static neuronParams_t hiddenLayer_2_9_8;
-static neuronParams_t hiddenLayer_2_9_9;
-/*
- * Hidden Layer 3
- */
-static neuronParams_t hiddenLayer_3_0_0;
-static neuronParams_t hiddenLayer_3_0_1;
-static neuronParams_t hiddenLayer_3_0_2;
-static neuronParams_t hiddenLayer_3_0_3;
-static neuronParams_t hiddenLayer_3_0_4;
-static neuronParams_t hiddenLayer_3_0_5;
-static neuronParams_t hiddenLayer_3_0_6;
-static neuronParams_t hiddenLayer_3_0_7;
-static neuronParams_t hiddenLayer_3_0_8;
-static neuronParams_t hiddenLayer_3_0_9;
-static neuronParams_t hiddenLayer_3_1_0;
-static neuronParams_t hiddenLayer_3_1_1;
-static neuronParams_t hiddenLayer_3_1_2;
-static neuronParams_t hiddenLayer_3_1_3;
-static neuronParams_t hiddenLayer_3_1_4;
-static neuronParams_t hiddenLayer_3_1_5;
-static neuronParams_t hiddenLayer_3_1_6;
-static neuronParams_t hiddenLayer_3_1_7;
-static neuronParams_t hiddenLayer_3_1_8;
-static neuronParams_t hiddenLayer_3_1_9;
-static neuronParams_t hiddenLayer_3_2_0;
-static neuronParams_t hiddenLayer_3_2_1;
-static neuronParams_t hiddenLayer_3_2_2;
-static neuronParams_t hiddenLayer_3_2_3;
-static neuronParams_t hiddenLayer_3_2_4;
-static neuronParams_t hiddenLayer_3_2_5;
-static neuronParams_t hiddenLayer_3_2_6;
-static neuronParams_t hiddenLayer_3_2_7;
-static neuronParams_t hiddenLayer_3_2_8;
-static neuronParams_t hiddenLayer_3_2_9;
-static neuronParams_t hiddenLayer_3_3_0;
-static neuronParams_t hiddenLayer_3_3_1;
-static neuronParams_t hiddenLayer_3_3_2;
-static neuronParams_t hiddenLayer_3_3_3;
-static neuronParams_t hiddenLayer_3_3_4;
-static neuronParams_t hiddenLayer_3_3_5;
-static neuronParams_t hiddenLayer_3_3_6;
-static neuronParams_t hiddenLayer_3_3_7;
-static neuronParams_t hiddenLayer_3_3_8;
-static neuronParams_t hiddenLayer_3_3_9;
-static neuronParams_t hiddenLayer_3_4_0;
-static neuronParams_t hiddenLayer_3_4_1;
-static neuronParams_t hiddenLayer_3_4_2;
-static neuronParams_t hiddenLayer_3_4_3;
-static neuronParams_t hiddenLayer_3_4_4;
-static neuronParams_t hiddenLayer_3_4_5;
-static neuronParams_t hiddenLayer_3_4_6;
-static neuronParams_t hiddenLayer_3_4_7;
-static neuronParams_t hiddenLayer_3_4_8;
-static neuronParams_t hiddenLayer_3_4_9;
-static neuronParams_t hiddenLayer_3_5_0;
-static neuronParams_t hiddenLayer_3_5_1;
-static neuronParams_t hiddenLayer_3_5_2;
-static neuronParams_t hiddenLayer_3_5_3;
-static neuronParams_t hiddenLayer_3_5_4;
-static neuronParams_t hiddenLayer_3_5_5;
-static neuronParams_t hiddenLayer_3_5_6;
-static neuronParams_t hiddenLayer_3_5_7;
-static neuronParams_t hiddenLayer_3_5_8;
-static neuronParams_t hiddenLayer_3_5_9;
-static neuronParams_t hiddenLayer_3_6_0;
-static neuronParams_t hiddenLayer_3_6_1;
-static neuronParams_t hiddenLayer_3_6_2;
-static neuronParams_t hiddenLayer_3_6_3;
-static neuronParams_t hiddenLayer_3_6_4;
-static neuronParams_t hiddenLayer_3_6_5;
-static neuronParams_t hiddenLayer_3_6_6;
-static neuronParams_t hiddenLayer_3_6_7;
-static neuronParams_t hiddenLayer_3_6_8;
-static neuronParams_t hiddenLayer_3_6_9;
-static neuronParams_t hiddenLayer_3_7_0;
-static neuronParams_t hiddenLayer_3_7_1;
-static neuronParams_t hiddenLayer_3_7_2;
-static neuronParams_t hiddenLayer_3_7_3;
-static neuronParams_t hiddenLayer_3_7_4;
-static neuronParams_t hiddenLayer_3_7_5;
-static neuronParams_t hiddenLayer_3_7_6;
-static neuronParams_t hiddenLayer_3_7_7;
-static neuronParams_t hiddenLayer_3_7_8;
-static neuronParams_t hiddenLayer_3_7_9;
-static neuronParams_t hiddenLayer_3_8_0;
-static neuronParams_t hiddenLayer_3_8_1;
-static neuronParams_t hiddenLayer_3_8_2;
-static neuronParams_t hiddenLayer_3_8_3;
-static neuronParams_t hiddenLayer_3_8_4;
-static neuronParams_t hiddenLayer_3_8_5;
-static neuronParams_t hiddenLayer_3_8_6;
-static neuronParams_t hiddenLayer_3_8_7;
-static neuronParams_t hiddenLayer_3_8_8;
-static neuronParams_t hiddenLayer_3_8_9;
-static neuronParams_t hiddenLayer_3_9_0;
-static neuronParams_t hiddenLayer_3_9_1;
-static neuronParams_t hiddenLayer_3_9_2;
-static neuronParams_t hiddenLayer_3_9_3;
-static neuronParams_t hiddenLayer_3_9_4;
-static neuronParams_t hiddenLayer_3_9_5;
-static neuronParams_t hiddenLayer_3_9_6;
-static neuronParams_t hiddenLayer_3_9_7;
-static neuronParams_t hiddenLayer_3_9_8;
-static neuronParams_t hiddenLayer_3_9_9;
-/*
- * Hidden Layer 4
- */
-static neuronParams_t hiddenLayer_4_0_0;
-static neuronParams_t hiddenLayer_4_0_1;
-static neuronParams_t hiddenLayer_4_0_2;
-static neuronParams_t hiddenLayer_4_0_3;
-static neuronParams_t hiddenLayer_4_0_4;
-static neuronParams_t hiddenLayer_4_0_5;
-static neuronParams_t hiddenLayer_4_0_6;
-static neuronParams_t hiddenLayer_4_0_7;
-static neuronParams_t hiddenLayer_4_0_8;
-static neuronParams_t hiddenLayer_4_0_9;
-static neuronParams_t hiddenLayer_4_1_0;
-static neuronParams_t hiddenLayer_4_1_1;
-static neuronParams_t hiddenLayer_4_1_2;
-static neuronParams_t hiddenLayer_4_1_3;
-static neuronParams_t hiddenLayer_4_1_4;
-static neuronParams_t hiddenLayer_4_1_5;
-static neuronParams_t hiddenLayer_4_1_6;
-static neuronParams_t hiddenLayer_4_1_7;
-static neuronParams_t hiddenLayer_4_1_8;
-static neuronParams_t hiddenLayer_4_1_9;
-static neuronParams_t hiddenLayer_4_2_0;
-static neuronParams_t hiddenLayer_4_2_1;
-static neuronParams_t hiddenLayer_4_2_2;
-static neuronParams_t hiddenLayer_4_2_3;
-static neuronParams_t hiddenLayer_4_2_4;
-static neuronParams_t hiddenLayer_4_2_5;
-static neuronParams_t hiddenLayer_4_2_6;
-static neuronParams_t hiddenLayer_4_2_7;
-static neuronParams_t hiddenLayer_4_2_8;
-static neuronParams_t hiddenLayer_4_2_9;
-static neuronParams_t hiddenLayer_4_3_0;
-static neuronParams_t hiddenLayer_4_3_1;
-static neuronParams_t hiddenLayer_4_3_2;
-static neuronParams_t hiddenLayer_4_3_3;
-static neuronParams_t hiddenLayer_4_3_4;
-static neuronParams_t hiddenLayer_4_3_5;
-static neuronParams_t hiddenLayer_4_3_6;
-static neuronParams_t hiddenLayer_4_3_7;
-static neuronParams_t hiddenLayer_4_3_8;
-static neuronParams_t hiddenLayer_4_3_9;
-static neuronParams_t hiddenLayer_4_4_0;
-static neuronParams_t hiddenLayer_4_4_1;
-static neuronParams_t hiddenLayer_4_4_2;
-static neuronParams_t hiddenLayer_4_4_3;
-static neuronParams_t hiddenLayer_4_4_4;
-static neuronParams_t hiddenLayer_4_4_5;
-static neuronParams_t hiddenLayer_4_4_6;
-static neuronParams_t hiddenLayer_4_4_7;
-static neuronParams_t hiddenLayer_4_4_8;
-static neuronParams_t hiddenLayer_4_4_9;
-static neuronParams_t hiddenLayer_4_5_0;
-static neuronParams_t hiddenLayer_4_5_1;
-static neuronParams_t hiddenLayer_4_5_2;
-static neuronParams_t hiddenLayer_4_5_3;
-static neuronParams_t hiddenLayer_4_5_4;
-static neuronParams_t hiddenLayer_4_5_5;
-static neuronParams_t hiddenLayer_4_5_6;
-static neuronParams_t hiddenLayer_4_5_7;
-static neuronParams_t hiddenLayer_4_5_8;
-static neuronParams_t hiddenLayer_4_5_9;
-static neuronParams_t hiddenLayer_4_6_0;
-static neuronParams_t hiddenLayer_4_6_1;
-static neuronParams_t hiddenLayer_4_6_2;
-static neuronParams_t hiddenLayer_4_6_3;
-static neuronParams_t hiddenLayer_4_6_4;
-static neuronParams_t hiddenLayer_4_6_5;
-static neuronParams_t hiddenLayer_4_6_6;
-static neuronParams_t hiddenLayer_4_6_7;
-static neuronParams_t hiddenLayer_4_6_8;
-static neuronParams_t hiddenLayer_4_6_9;
-static neuronParams_t hiddenLayer_4_7_0;
-static neuronParams_t hiddenLayer_4_7_1;
-static neuronParams_t hiddenLayer_4_7_2;
-static neuronParams_t hiddenLayer_4_7_3;
-static neuronParams_t hiddenLayer_4_7_4;
-static neuronParams_t hiddenLayer_4_7_5;
-static neuronParams_t hiddenLayer_4_7_6;
-static neuronParams_t hiddenLayer_4_7_7;
-static neuronParams_t hiddenLayer_4_7_8;
-static neuronParams_t hiddenLayer_4_7_9;
-static neuronParams_t hiddenLayer_4_8_0;
-static neuronParams_t hiddenLayer_4_8_1;
-static neuronParams_t hiddenLayer_4_8_2;
-static neuronParams_t hiddenLayer_4_8_3;
-static neuronParams_t hiddenLayer_4_8_4;
-static neuronParams_t hiddenLayer_4_8_5;
-static neuronParams_t hiddenLayer_4_8_6;
-static neuronParams_t hiddenLayer_4_8_7;
-static neuronParams_t hiddenLayer_4_8_8;
-static neuronParams_t hiddenLayer_4_8_9;
-static neuronParams_t hiddenLayer_4_9_0;
-static neuronParams_t hiddenLayer_4_9_1;
-static neuronParams_t hiddenLayer_4_9_2;
-static neuronParams_t hiddenLayer_4_9_3;
-static neuronParams_t hiddenLayer_4_9_4;
-static neuronParams_t hiddenLayer_4_9_5;
-static neuronParams_t hiddenLayer_4_9_6;
-static neuronParams_t hiddenLayer_4_9_7;
-static neuronParams_t hiddenLayer_4_9_8;
-static neuronParams_t hiddenLayer_4_9_9;
+static activation_t hiddenNeuronsActivations_0[CONFIG_NUM_HIDDEN_NEURONS];
+static bias_t hiddenNeuronBias_0[CONFIG_NUM_HIDDEN_NEURONS];
 
+static weight_t hiddenNeuronWeights_0_0[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_1[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_2[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_3[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_4[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_5[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_6[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_7[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_8[CONFIG_NUM_INPUT_NEURONS];
+static weight_t hiddenNeuronWeights_0_9[CONFIG_NUM_INPUT_NEURONS];
+static weight_t* hiddenNeuronWeights_0[CONFIG_NUM_HIDDEN_NEURONS] =
+{
+    hiddenNeuronWeights_0_0,
+    hiddenNeuronWeights_0_1,
+    hiddenNeuronWeights_0_2,
+    hiddenNeuronWeights_0_3,
+    hiddenNeuronWeights_0_4,
+    hiddenNeuronWeights_0_5,
+    hiddenNeuronWeights_0_6,
+    hiddenNeuronWeights_0_7,
+    hiddenNeuronWeights_0_8,
+    hiddenNeuronWeights_0_9
+};
 
-/*
- * Hidden Layer 0
- */
-static wNeuron_t hiddenLayer_0_0 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_0_0,
-        &hiddenLayer_0_0_1,
-        &hiddenLayer_0_0_2,
-        &hiddenLayer_0_0_3,
-        &hiddenLayer_0_0_4,
-        &hiddenLayer_0_0_5,
-        &hiddenLayer_0_0_6,
-        &hiddenLayer_0_0_7,
-        &hiddenLayer_0_0_8,
-        &hiddenLayer_0_0_9,
-        &hiddenLayer_0_0_10,
-        &hiddenLayer_0_0_11,
-        &hiddenLayer_0_0_12,
-        &hiddenLayer_0_0_13,
-        &hiddenLayer_0_0_14
-    }
-};
-static wNeuron_t hiddenLayer_0_1 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_1_0,
-        &hiddenLayer_0_1_1,
-        &hiddenLayer_0_1_2,
-        &hiddenLayer_0_1_3,
-        &hiddenLayer_0_1_4,
-        &hiddenLayer_0_1_5,
-        &hiddenLayer_0_1_6,
-        &hiddenLayer_0_1_7,
-        &hiddenLayer_0_1_8,
-        &hiddenLayer_0_1_9,
-        &hiddenLayer_0_1_10,
-        &hiddenLayer_0_1_11,
-        &hiddenLayer_0_1_12,
-        &hiddenLayer_0_1_13,
-        &hiddenLayer_0_1_14
-    }
-};
-static wNeuron_t hiddenLayer_0_2 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_2_0,
-        &hiddenLayer_0_2_1,
-        &hiddenLayer_0_2_2,
-        &hiddenLayer_0_2_3,
-        &hiddenLayer_0_2_4,
-        &hiddenLayer_0_2_5,
-        &hiddenLayer_0_2_6,
-        &hiddenLayer_0_2_7,
-        &hiddenLayer_0_2_8,
-        &hiddenLayer_0_2_9,
-        &hiddenLayer_0_2_10,
-        &hiddenLayer_0_2_11,
-        &hiddenLayer_0_2_12,
-        &hiddenLayer_0_2_13,
-        &hiddenLayer_0_2_14
-    }
-};
-static wNeuron_t hiddenLayer_0_3 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_3_0,
-        &hiddenLayer_0_3_1,
-        &hiddenLayer_0_3_2,
-        &hiddenLayer_0_3_3,
-        &hiddenLayer_0_3_4,
-        &hiddenLayer_0_3_5,
-        &hiddenLayer_0_3_6,
-        &hiddenLayer_0_3_7,
-        &hiddenLayer_0_3_8,
-        &hiddenLayer_0_3_9,
-        &hiddenLayer_0_3_10,
-        &hiddenLayer_0_3_11,
-        &hiddenLayer_0_3_12,
-        &hiddenLayer_0_3_13,
-        &hiddenLayer_0_3_14
-    }
-};
-static wNeuron_t hiddenLayer_0_4 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_4_0,
-        &hiddenLayer_0_4_1,
-        &hiddenLayer_0_4_2,
-        &hiddenLayer_0_4_3,
-        &hiddenLayer_0_4_4,
-        &hiddenLayer_0_4_5,
-        &hiddenLayer_0_4_6,
-        &hiddenLayer_0_4_7,
-        &hiddenLayer_0_4_8,
-        &hiddenLayer_0_4_9,
-        &hiddenLayer_0_4_10,
-        &hiddenLayer_0_4_11,
-        &hiddenLayer_0_4_12,
-        &hiddenLayer_0_4_13,
-        &hiddenLayer_0_4_14
-    }
-};
-static wNeuron_t hiddenLayer_0_5 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_5_0,
-        &hiddenLayer_0_5_1,
-        &hiddenLayer_0_5_2,
-        &hiddenLayer_0_5_3,
-        &hiddenLayer_0_5_4,
-        &hiddenLayer_0_5_5,
-        &hiddenLayer_0_5_6,
-        &hiddenLayer_0_5_7,
-        &hiddenLayer_0_5_8,
-        &hiddenLayer_0_5_9,
-        &hiddenLayer_0_5_10,
-        &hiddenLayer_0_5_11,
-        &hiddenLayer_0_5_12,
-        &hiddenLayer_0_5_13,
-        &hiddenLayer_0_5_14
-    }
-};
-static wNeuron_t hiddenLayer_0_6 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_6_0,
-        &hiddenLayer_0_6_1,
-        &hiddenLayer_0_6_2,
-        &hiddenLayer_0_6_3,
-        &hiddenLayer_0_6_4,
-        &hiddenLayer_0_6_5,
-        &hiddenLayer_0_6_6,
-        &hiddenLayer_0_6_7,
-        &hiddenLayer_0_6_8,
-        &hiddenLayer_0_6_9,
-        &hiddenLayer_0_6_10,
-        &hiddenLayer_0_6_11,
-        &hiddenLayer_0_6_12,
-        &hiddenLayer_0_6_13,
-        &hiddenLayer_0_6_14
-    }
-};
-static wNeuron_t hiddenLayer_0_7 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_7_0,
-        &hiddenLayer_0_7_1,
-        &hiddenLayer_0_7_2,
-        &hiddenLayer_0_7_3,
-        &hiddenLayer_0_7_4,
-        &hiddenLayer_0_7_5,
-        &hiddenLayer_0_7_6,
-        &hiddenLayer_0_7_7,
-        &hiddenLayer_0_7_8,
-        &hiddenLayer_0_7_9,
-        &hiddenLayer_0_7_10,
-        &hiddenLayer_0_7_11,
-        &hiddenLayer_0_7_12,
-        &hiddenLayer_0_7_13,
-        &hiddenLayer_0_7_14
-    }
-};
-static wNeuron_t hiddenLayer_0_8 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_8_0,
-        &hiddenLayer_0_8_1,
-        &hiddenLayer_0_8_2,
-        &hiddenLayer_0_8_3,
-        &hiddenLayer_0_8_4,
-        &hiddenLayer_0_8_5,
-        &hiddenLayer_0_8_6,
-        &hiddenLayer_0_8_7,
-        &hiddenLayer_0_8_8,
-        &hiddenLayer_0_8_9,
-        &hiddenLayer_0_8_10,
-        &hiddenLayer_0_8_11,
-        &hiddenLayer_0_8_12,
-        &hiddenLayer_0_8_13,
-        &hiddenLayer_0_8_14
-    }
-};
-static wNeuron_t hiddenLayer_0_9 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_0_9_0,
-        &hiddenLayer_0_9_1,
-        &hiddenLayer_0_9_2,
-        &hiddenLayer_0_9_3,
-        &hiddenLayer_0_9_4,
-        &hiddenLayer_0_9_5,
-        &hiddenLayer_0_9_6,
-        &hiddenLayer_0_9_7,
-        &hiddenLayer_0_9_8,
-        &hiddenLayer_0_9_9,
-        &hiddenLayer_0_9_10,
-        &hiddenLayer_0_9_11,
-        &hiddenLayer_0_9_12,
-        &hiddenLayer_0_9_13,
-        &hiddenLayer_0_9_14
-    }
-};
-static hiddenLayer_t staticHiddenLayer_0 = {
+static hiddenLayer_t staticHiddenLayer_0 =
+{
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
-    .neuron = {
-        &hiddenLayer_0_0,
-        &hiddenLayer_0_1,
-        &hiddenLayer_0_2,
-        &hiddenLayer_0_3,
-        &hiddenLayer_0_4,
-        &hiddenLayer_0_5,
-        &hiddenLayer_0_6,
-        &hiddenLayer_0_7,
-        &hiddenLayer_0_8,
-        &hiddenLayer_0_9
-    }
+    .activation = hiddenNeuronsActivations_0,
+    .bias = hiddenNeuronBias_0,
+    .weight = hiddenNeuronWeights_0,
 };
-
-
-
 
 
 /*
  * Hidden Layer 1
  */
-static wNeuron_t hiddenLayer_1_0 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_0_0,
-        &hiddenLayer_1_0_1,
-        &hiddenLayer_1_0_2,
-        &hiddenLayer_1_0_3,
-        &hiddenLayer_1_0_4,
-        &hiddenLayer_1_0_5,
-        &hiddenLayer_1_0_6,
-        &hiddenLayer_1_0_7,
-        &hiddenLayer_1_0_8,
-        &hiddenLayer_1_0_9
-    }
+static activation_t hiddenNeuronsActivations_1[CONFIG_NUM_HIDDEN_NEURONS];
+static bias_t hiddenNeuronBias_1[CONFIG_NUM_HIDDEN_NEURONS];
+
+static weight_t hiddenNeuronWeights_1_0[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_1[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_2[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_3[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_4[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_5[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_6[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_7[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_8[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_1_9[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t* hiddenNeuronWeights_1[CONFIG_NUM_HIDDEN_NEURONS] =
+{
+    hiddenNeuronWeights_1_0,
+    hiddenNeuronWeights_1_1,
+    hiddenNeuronWeights_1_2,
+    hiddenNeuronWeights_1_3,
+    hiddenNeuronWeights_1_4,
+    hiddenNeuronWeights_1_5,
+    hiddenNeuronWeights_1_6,
+    hiddenNeuronWeights_1_7,
+    hiddenNeuronWeights_1_8,
+    hiddenNeuronWeights_1_9
 };
-static wNeuron_t hiddenLayer_1_1 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_1_0,
-        &hiddenLayer_1_1_1,
-        &hiddenLayer_1_1_2,
-        &hiddenLayer_1_1_3,
-        &hiddenLayer_1_1_4,
-        &hiddenLayer_1_1_5,
-        &hiddenLayer_1_1_6,
-        &hiddenLayer_1_1_7,
-        &hiddenLayer_1_1_8,
-        &hiddenLayer_1_1_9
-    }
-};
-static wNeuron_t hiddenLayer_1_2 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_2_0,
-        &hiddenLayer_1_2_1,
-        &hiddenLayer_1_2_2,
-        &hiddenLayer_1_2_3,
-        &hiddenLayer_1_2_4,
-        &hiddenLayer_1_2_5,
-        &hiddenLayer_1_2_6,
-        &hiddenLayer_1_2_7,
-        &hiddenLayer_1_2_8,
-        &hiddenLayer_1_2_9
-    }
-};
-static wNeuron_t hiddenLayer_1_3 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_3_0,
-        &hiddenLayer_1_3_1,
-        &hiddenLayer_1_3_2,
-        &hiddenLayer_1_3_3,
-        &hiddenLayer_1_3_4,
-        &hiddenLayer_1_3_5,
-        &hiddenLayer_1_3_6,
-        &hiddenLayer_1_3_7,
-        &hiddenLayer_1_3_8,
-        &hiddenLayer_1_3_9
-    }
-};
-static wNeuron_t hiddenLayer_1_4 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_4_0,
-        &hiddenLayer_1_4_1,
-        &hiddenLayer_1_4_2,
-        &hiddenLayer_1_4_3,
-        &hiddenLayer_1_4_4,
-        &hiddenLayer_1_4_5,
-        &hiddenLayer_1_4_6,
-        &hiddenLayer_1_4_7,
-        &hiddenLayer_1_4_8,
-        &hiddenLayer_1_4_9
-    }
-};
-static wNeuron_t hiddenLayer_1_5 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_5_0,
-        &hiddenLayer_1_5_1,
-        &hiddenLayer_1_5_2,
-        &hiddenLayer_1_5_3,
-        &hiddenLayer_1_5_4,
-        &hiddenLayer_1_5_5,
-        &hiddenLayer_1_5_6,
-        &hiddenLayer_1_5_7,
-        &hiddenLayer_1_5_8,
-        &hiddenLayer_1_5_9
-    }
-};
-static wNeuron_t hiddenLayer_1_6 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_6_0,
-        &hiddenLayer_1_6_1,
-        &hiddenLayer_1_6_2,
-        &hiddenLayer_1_6_3,
-        &hiddenLayer_1_6_4,
-        &hiddenLayer_1_6_5,
-        &hiddenLayer_1_6_6,
-        &hiddenLayer_1_6_7,
-        &hiddenLayer_1_6_8,
-        &hiddenLayer_1_6_9
-    }
-};
-static wNeuron_t hiddenLayer_1_7 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_7_0,
-        &hiddenLayer_1_7_1,
-        &hiddenLayer_1_7_2,
-        &hiddenLayer_1_7_3,
-        &hiddenLayer_1_7_4,
-        &hiddenLayer_1_7_5,
-        &hiddenLayer_1_7_6,
-        &hiddenLayer_1_7_7,
-        &hiddenLayer_1_7_8,
-        &hiddenLayer_1_7_9
-    }
-};
-static wNeuron_t hiddenLayer_1_8 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_8_0,
-        &hiddenLayer_1_8_1,
-        &hiddenLayer_1_8_2,
-        &hiddenLayer_1_8_3,
-        &hiddenLayer_1_8_4,
-        &hiddenLayer_1_8_5,
-        &hiddenLayer_1_8_6,
-        &hiddenLayer_1_8_7,
-        &hiddenLayer_1_8_8,
-        &hiddenLayer_1_8_9
-    }
-};
-static wNeuron_t hiddenLayer_1_9 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_1_9_0,
-        &hiddenLayer_1_9_1,
-        &hiddenLayer_1_9_2,
-        &hiddenLayer_1_9_3,
-        &hiddenLayer_1_9_4,
-        &hiddenLayer_1_9_5,
-        &hiddenLayer_1_9_6,
-        &hiddenLayer_1_9_7,
-        &hiddenLayer_1_9_8,
-        &hiddenLayer_1_9_9
-    }
-};
-static hiddenLayer_t staticHiddenLayer_1 = {
+
+static hiddenLayer_t staticHiddenLayer_1 =
+{
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
-    .neuron = {
-        &hiddenLayer_1_0,
-        &hiddenLayer_1_1,
-        &hiddenLayer_1_2,
-        &hiddenLayer_1_3,
-        &hiddenLayer_1_4,
-        &hiddenLayer_1_5,
-        &hiddenLayer_1_6,
-        &hiddenLayer_1_7,
-        &hiddenLayer_1_8,
-        &hiddenLayer_1_9
-    }
+    .activation = hiddenNeuronsActivations_1,
+    .bias = hiddenNeuronBias_1,
+    .weight = hiddenNeuronWeights_1,
 };
-
-
-
 
 
 /*
  * Hidden Layer 2
  */
-static wNeuron_t hiddenLayer_2_0 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_0_0,
-        &hiddenLayer_2_0_1,
-        &hiddenLayer_2_0_2,
-        &hiddenLayer_2_0_3,
-        &hiddenLayer_2_0_4,
-        &hiddenLayer_2_0_5,
-        &hiddenLayer_2_0_6,
-        &hiddenLayer_2_0_7,
-        &hiddenLayer_2_0_8,
-        &hiddenLayer_2_0_9
-    }
+static activation_t hiddenNeuronsActivations_2[CONFIG_NUM_HIDDEN_NEURONS];
+static bias_t hiddenNeuronBias_2[CONFIG_NUM_HIDDEN_NEURONS];
+
+static weight_t hiddenNeuronWeights_2_0[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_1[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_2[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_3[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_4[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_5[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_6[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_7[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_8[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_2_9[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t* hiddenNeuronWeights_2[CONFIG_NUM_HIDDEN_NEURONS] =
+{
+    hiddenNeuronWeights_2_0,
+    hiddenNeuronWeights_2_1,
+    hiddenNeuronWeights_2_2,
+    hiddenNeuronWeights_2_3,
+    hiddenNeuronWeights_2_4,
+    hiddenNeuronWeights_2_5,
+    hiddenNeuronWeights_2_6,
+    hiddenNeuronWeights_2_7,
+    hiddenNeuronWeights_2_8,
+    hiddenNeuronWeights_2_9
 };
-static wNeuron_t hiddenLayer_2_1 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_1_0,
-        &hiddenLayer_2_1_1,
-        &hiddenLayer_2_1_2,
-        &hiddenLayer_2_1_3,
-        &hiddenLayer_2_1_4,
-        &hiddenLayer_2_1_5,
-        &hiddenLayer_2_1_6,
-        &hiddenLayer_2_1_7,
-        &hiddenLayer_2_1_8,
-        &hiddenLayer_2_1_9
-    }
-};
-static wNeuron_t hiddenLayer_2_2 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_2_0,
-        &hiddenLayer_2_2_1,
-        &hiddenLayer_2_2_2,
-        &hiddenLayer_2_2_3,
-        &hiddenLayer_2_2_4,
-        &hiddenLayer_2_2_5,
-        &hiddenLayer_2_2_6,
-        &hiddenLayer_2_2_7,
-        &hiddenLayer_2_2_8,
-        &hiddenLayer_2_2_9
-    }
-};
-static wNeuron_t hiddenLayer_2_3 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_3_0,
-        &hiddenLayer_2_3_1,
-        &hiddenLayer_2_3_2,
-        &hiddenLayer_2_3_3,
-        &hiddenLayer_2_3_4,
-        &hiddenLayer_2_3_5,
-        &hiddenLayer_2_3_6,
-        &hiddenLayer_2_3_7,
-        &hiddenLayer_2_3_8,
-        &hiddenLayer_2_3_9
-    }
-};
-static wNeuron_t hiddenLayer_2_4 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_4_0,
-        &hiddenLayer_2_4_1,
-        &hiddenLayer_2_4_2,
-        &hiddenLayer_2_4_3,
-        &hiddenLayer_2_4_4,
-        &hiddenLayer_2_4_5,
-        &hiddenLayer_2_4_6,
-        &hiddenLayer_2_4_7,
-        &hiddenLayer_2_4_8,
-        &hiddenLayer_2_4_9
-    }
-};
-static wNeuron_t hiddenLayer_2_5 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_5_0,
-        &hiddenLayer_2_5_1,
-        &hiddenLayer_2_5_2,
-        &hiddenLayer_2_5_3,
-        &hiddenLayer_2_5_4,
-        &hiddenLayer_2_5_5,
-        &hiddenLayer_2_5_6,
-        &hiddenLayer_2_5_7,
-        &hiddenLayer_2_5_8,
-        &hiddenLayer_2_5_9
-    }
-};
-static wNeuron_t hiddenLayer_2_6 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_6_0,
-        &hiddenLayer_2_6_1,
-        &hiddenLayer_2_6_2,
-        &hiddenLayer_2_6_3,
-        &hiddenLayer_2_6_4,
-        &hiddenLayer_2_6_5,
-        &hiddenLayer_2_6_6,
-        &hiddenLayer_2_6_7,
-        &hiddenLayer_2_6_8,
-        &hiddenLayer_2_6_9
-    }
-};
-static wNeuron_t hiddenLayer_2_7 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_7_0,
-        &hiddenLayer_2_7_1,
-        &hiddenLayer_2_7_2,
-        &hiddenLayer_2_7_3,
-        &hiddenLayer_2_7_4,
-        &hiddenLayer_2_7_5,
-        &hiddenLayer_2_7_6,
-        &hiddenLayer_2_7_7,
-        &hiddenLayer_2_7_8,
-        &hiddenLayer_2_7_9
-    }
-};
-static wNeuron_t hiddenLayer_2_8 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_8_0,
-        &hiddenLayer_2_8_1,
-        &hiddenLayer_2_8_2,
-        &hiddenLayer_2_8_3,
-        &hiddenLayer_2_8_4,
-        &hiddenLayer_2_8_5,
-        &hiddenLayer_2_8_6,
-        &hiddenLayer_2_8_7,
-        &hiddenLayer_2_8_8,
-        &hiddenLayer_2_8_9
-    }
-};
-static wNeuron_t hiddenLayer_2_9 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_2_9_0,
-        &hiddenLayer_2_9_1,
-        &hiddenLayer_2_9_2,
-        &hiddenLayer_2_9_3,
-        &hiddenLayer_2_9_4,
-        &hiddenLayer_2_9_5,
-        &hiddenLayer_2_9_6,
-        &hiddenLayer_2_9_7,
-        &hiddenLayer_2_9_8,
-        &hiddenLayer_2_9_9
-    }
-};
-static hiddenLayer_t staticHiddenLayer_2 = {
+
+static hiddenLayer_t staticHiddenLayer_2 =
+{
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
-    .neuron = {
-        &hiddenLayer_2_0,
-        &hiddenLayer_2_1,
-        &hiddenLayer_2_2,
-        &hiddenLayer_2_3,
-        &hiddenLayer_2_4,
-        &hiddenLayer_2_5,
-        &hiddenLayer_2_6,
-        &hiddenLayer_2_7,
-        &hiddenLayer_2_8,
-        &hiddenLayer_2_9
-    }
+    .activation = hiddenNeuronsActivations_2,
+    .bias = hiddenNeuronBias_2,
+    .weight = hiddenNeuronWeights_2,
 };
-
-
-
 
 
 /*
  * Hidden Layer 3
  */
-static wNeuron_t hiddenLayer_3_0 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_0_0,
-        &hiddenLayer_3_0_1,
-        &hiddenLayer_3_0_2,
-        &hiddenLayer_3_0_3,
-        &hiddenLayer_3_0_4,
-        &hiddenLayer_3_0_5,
-        &hiddenLayer_3_0_6,
-        &hiddenLayer_3_0_7,
-        &hiddenLayer_3_0_8,
-        &hiddenLayer_3_0_9
-    }
+static activation_t hiddenNeuronsActivations_3[CONFIG_NUM_HIDDEN_NEURONS];
+static bias_t hiddenNeuronBias_3[CONFIG_NUM_HIDDEN_NEURONS];
+
+static weight_t hiddenNeuronWeights_3_0[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_1[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_2[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_3[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_4[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_5[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_6[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_7[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_8[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_3_9[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t* hiddenNeuronWeights_3[CONFIG_NUM_HIDDEN_NEURONS] =
+{
+    hiddenNeuronWeights_3_0,
+    hiddenNeuronWeights_3_1,
+    hiddenNeuronWeights_3_2,
+    hiddenNeuronWeights_3_3,
+    hiddenNeuronWeights_3_4,
+    hiddenNeuronWeights_3_5,
+    hiddenNeuronWeights_3_6,
+    hiddenNeuronWeights_3_7,
+    hiddenNeuronWeights_3_8,
+    hiddenNeuronWeights_3_9
 };
-static wNeuron_t hiddenLayer_3_1 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_1_0,
-        &hiddenLayer_3_1_1,
-        &hiddenLayer_3_1_2,
-        &hiddenLayer_3_1_3,
-        &hiddenLayer_3_1_4,
-        &hiddenLayer_3_1_5,
-        &hiddenLayer_3_1_6,
-        &hiddenLayer_3_1_7,
-        &hiddenLayer_3_1_8,
-        &hiddenLayer_3_1_9
-    }
-};
-static wNeuron_t hiddenLayer_3_2 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_2_0,
-        &hiddenLayer_3_2_1,
-        &hiddenLayer_3_2_2,
-        &hiddenLayer_3_2_3,
-        &hiddenLayer_3_2_4,
-        &hiddenLayer_3_2_5,
-        &hiddenLayer_3_2_6,
-        &hiddenLayer_3_2_7,
-        &hiddenLayer_3_2_8,
-        &hiddenLayer_3_2_9
-    }
-};
-static wNeuron_t hiddenLayer_3_3 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_3_0,
-        &hiddenLayer_3_3_1,
-        &hiddenLayer_3_3_2,
-        &hiddenLayer_3_3_3,
-        &hiddenLayer_3_3_4,
-        &hiddenLayer_3_3_5,
-        &hiddenLayer_3_3_6,
-        &hiddenLayer_3_3_7,
-        &hiddenLayer_3_3_8,
-        &hiddenLayer_3_3_9
-    }
-};
-static wNeuron_t hiddenLayer_3_4 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_4_0,
-        &hiddenLayer_3_4_1,
-        &hiddenLayer_3_4_2,
-        &hiddenLayer_3_4_3,
-        &hiddenLayer_3_4_4,
-        &hiddenLayer_3_4_5,
-        &hiddenLayer_3_4_6,
-        &hiddenLayer_3_4_7,
-        &hiddenLayer_3_4_8,
-        &hiddenLayer_3_4_9
-    }
-};
-static wNeuron_t hiddenLayer_3_5 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_5_0,
-        &hiddenLayer_3_5_1,
-        &hiddenLayer_3_5_2,
-        &hiddenLayer_3_5_3,
-        &hiddenLayer_3_5_4,
-        &hiddenLayer_3_5_5,
-        &hiddenLayer_3_5_6,
-        &hiddenLayer_3_5_7,
-        &hiddenLayer_3_5_8,
-        &hiddenLayer_3_5_9
-    }
-};
-static wNeuron_t hiddenLayer_3_6 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_6_0,
-        &hiddenLayer_3_6_1,
-        &hiddenLayer_3_6_2,
-        &hiddenLayer_3_6_3,
-        &hiddenLayer_3_6_4,
-        &hiddenLayer_3_6_5,
-        &hiddenLayer_3_6_6,
-        &hiddenLayer_3_6_7,
-        &hiddenLayer_3_6_8,
-        &hiddenLayer_3_6_9
-    }
-};
-static wNeuron_t hiddenLayer_3_7 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_7_0,
-        &hiddenLayer_3_7_1,
-        &hiddenLayer_3_7_2,
-        &hiddenLayer_3_7_3,
-        &hiddenLayer_3_7_4,
-        &hiddenLayer_3_7_5,
-        &hiddenLayer_3_7_6,
-        &hiddenLayer_3_7_7,
-        &hiddenLayer_3_7_8,
-        &hiddenLayer_3_7_9
-    }
-};
-static wNeuron_t hiddenLayer_3_8 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_8_0,
-        &hiddenLayer_3_8_1,
-        &hiddenLayer_3_8_2,
-        &hiddenLayer_3_8_3,
-        &hiddenLayer_3_8_4,
-        &hiddenLayer_3_8_5,
-        &hiddenLayer_3_8_6,
-        &hiddenLayer_3_8_7,
-        &hiddenLayer_3_8_8,
-        &hiddenLayer_3_8_9
-    }
-};
-static wNeuron_t hiddenLayer_3_9 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_3_9_0,
-        &hiddenLayer_3_9_1,
-        &hiddenLayer_3_9_2,
-        &hiddenLayer_3_9_3,
-        &hiddenLayer_3_9_4,
-        &hiddenLayer_3_9_5,
-        &hiddenLayer_3_9_6,
-        &hiddenLayer_3_9_7,
-        &hiddenLayer_3_9_8,
-        &hiddenLayer_3_9_9
-    }
-};
-static hiddenLayer_t staticHiddenLayer_3 = {
+
+static hiddenLayer_t staticHiddenLayer_3 =
+{
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
-    .neuron = {
-        &hiddenLayer_3_0,
-        &hiddenLayer_3_1,
-        &hiddenLayer_3_2,
-        &hiddenLayer_3_3,
-        &hiddenLayer_3_4,
-        &hiddenLayer_3_5,
-        &hiddenLayer_3_6,
-        &hiddenLayer_3_7,
-        &hiddenLayer_3_8,
-        &hiddenLayer_3_9
-    }
+    .activation = hiddenNeuronsActivations_3,
+    .bias = hiddenNeuronBias_3,
+    .weight = hiddenNeuronWeights_3,
 };
-
-
-
 
 
 /*
  * Hidden Layer 4
  */
-static wNeuron_t hiddenLayer_4_0 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_0_0,
-        &hiddenLayer_4_0_1,
-        &hiddenLayer_4_0_2,
-        &hiddenLayer_4_0_3,
-        &hiddenLayer_4_0_4,
-        &hiddenLayer_4_0_5,
-        &hiddenLayer_4_0_6,
-        &hiddenLayer_4_0_7,
-        &hiddenLayer_4_0_8,
-        &hiddenLayer_4_0_9
-    }
+static activation_t hiddenNeuronsActivations_4[CONFIG_NUM_HIDDEN_NEURONS];
+static bias_t hiddenNeuronBias_4[CONFIG_NUM_HIDDEN_NEURONS];
+
+static weight_t hiddenNeuronWeights_4_0[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_1[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_2[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_3[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_4[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_5[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_6[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_7[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_8[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t hiddenNeuronWeights_4_9[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t* hiddenNeuronWeights_4[CONFIG_NUM_HIDDEN_NEURONS] =
+{
+    hiddenNeuronWeights_4_0,
+    hiddenNeuronWeights_4_1,
+    hiddenNeuronWeights_4_2,
+    hiddenNeuronWeights_4_3,
+    hiddenNeuronWeights_4_4,
+    hiddenNeuronWeights_4_5,
+    hiddenNeuronWeights_4_6,
+    hiddenNeuronWeights_4_7,
+    hiddenNeuronWeights_4_8,
+    hiddenNeuronWeights_4_9
 };
-static wNeuron_t hiddenLayer_4_1 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_1_0,
-        &hiddenLayer_4_1_1,
-        &hiddenLayer_4_1_2,
-        &hiddenLayer_4_1_3,
-        &hiddenLayer_4_1_4,
-        &hiddenLayer_4_1_5,
-        &hiddenLayer_4_1_6,
-        &hiddenLayer_4_1_7,
-        &hiddenLayer_4_1_8,
-        &hiddenLayer_4_1_9
-    }
-};
-static wNeuron_t hiddenLayer_4_2 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_2_0,
-        &hiddenLayer_4_2_1,
-        &hiddenLayer_4_2_2,
-        &hiddenLayer_4_2_3,
-        &hiddenLayer_4_2_4,
-        &hiddenLayer_4_2_5,
-        &hiddenLayer_4_2_6,
-        &hiddenLayer_4_2_7,
-        &hiddenLayer_4_2_8,
-        &hiddenLayer_4_2_9
-    }
-};
-static wNeuron_t hiddenLayer_4_3 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_3_0,
-        &hiddenLayer_4_3_1,
-        &hiddenLayer_4_3_2,
-        &hiddenLayer_4_3_3,
-        &hiddenLayer_4_3_4,
-        &hiddenLayer_4_3_5,
-        &hiddenLayer_4_3_6,
-        &hiddenLayer_4_3_7,
-        &hiddenLayer_4_3_8,
-        &hiddenLayer_4_3_9
-    }
-};
-static wNeuron_t hiddenLayer_4_4 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_4_0,
-        &hiddenLayer_4_4_1,
-        &hiddenLayer_4_4_2,
-        &hiddenLayer_4_4_3,
-        &hiddenLayer_4_4_4,
-        &hiddenLayer_4_4_5,
-        &hiddenLayer_4_4_6,
-        &hiddenLayer_4_4_7,
-        &hiddenLayer_4_4_8,
-        &hiddenLayer_4_4_9
-    }
-};
-static wNeuron_t hiddenLayer_4_5 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_5_0,
-        &hiddenLayer_4_5_1,
-        &hiddenLayer_4_5_2,
-        &hiddenLayer_4_5_3,
-        &hiddenLayer_4_5_4,
-        &hiddenLayer_4_5_5,
-        &hiddenLayer_4_5_6,
-        &hiddenLayer_4_5_7,
-        &hiddenLayer_4_5_8,
-        &hiddenLayer_4_5_9
-    }
-};
-static wNeuron_t hiddenLayer_4_6 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_6_0,
-        &hiddenLayer_4_6_1,
-        &hiddenLayer_4_6_2,
-        &hiddenLayer_4_6_3,
-        &hiddenLayer_4_6_4,
-        &hiddenLayer_4_6_5,
-        &hiddenLayer_4_6_6,
-        &hiddenLayer_4_6_7,
-        &hiddenLayer_4_6_8,
-        &hiddenLayer_4_6_9
-    }
-};
-static wNeuron_t hiddenLayer_4_7 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_7_0,
-        &hiddenLayer_4_7_1,
-        &hiddenLayer_4_7_2,
-        &hiddenLayer_4_7_3,
-        &hiddenLayer_4_7_4,
-        &hiddenLayer_4_7_5,
-        &hiddenLayer_4_7_6,
-        &hiddenLayer_4_7_7,
-        &hiddenLayer_4_7_8,
-        &hiddenLayer_4_7_9
-    }
-};
-static wNeuron_t hiddenLayer_4_8 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_8_0,
-        &hiddenLayer_4_8_1,
-        &hiddenLayer_4_8_2,
-        &hiddenLayer_4_8_3,
-        &hiddenLayer_4_8_4,
-        &hiddenLayer_4_8_5,
-        &hiddenLayer_4_8_6,
-        &hiddenLayer_4_8_7,
-        &hiddenLayer_4_8_8,
-        &hiddenLayer_4_8_9
-    }
-};
-static wNeuron_t hiddenLayer_4_9 = {
-    .activation = 0,
-    .params = {
-        &hiddenLayer_4_9_0,
-        &hiddenLayer_4_9_1,
-        &hiddenLayer_4_9_2,
-        &hiddenLayer_4_9_3,
-        &hiddenLayer_4_9_4,
-        &hiddenLayer_4_9_5,
-        &hiddenLayer_4_9_6,
-        &hiddenLayer_4_9_7,
-        &hiddenLayer_4_9_8,
-        &hiddenLayer_4_9_9
-    }
-};
-static hiddenLayer_t staticHiddenLayer_4 = {
+
+static hiddenLayer_t staticHiddenLayer_4 =
+{
     .numNeurons = CONFIG_NUM_HIDDEN_NEURONS,
-    .neuron = {
-        &hiddenLayer_4_0,
-        &hiddenLayer_4_1,
-        &hiddenLayer_4_2,
-        &hiddenLayer_4_3,
-        &hiddenLayer_4_4,
-        &hiddenLayer_4_5,
-        &hiddenLayer_4_6,
-        &hiddenLayer_4_7,
-        &hiddenLayer_4_8,
-        &hiddenLayer_4_9
-    }
+    .activation = hiddenNeuronsActivations_4,
+    .bias = hiddenNeuronBias_4,
+    .weight = hiddenNeuronWeights_4,
 };
+
+
+static hiddenLayer_t* staticHiddenLayers[CONFIG_NUM_HIDDEN_LAYERS] =
+{
+    &staticHiddenLayer_0,
+    &staticHiddenLayer_1,
+    &staticHiddenLayer_2,
+    &staticHiddenLayer_3,
+    &staticHiddenLayer_4
+};
+
 
 
 
 /*
  * Output Layer
  */
-static neuronParams_t outputLayer_0_0;
-static neuronParams_t outputLayer_0_1;
-static neuronParams_t outputLayer_0_2;
-static neuronParams_t outputLayer_0_3;
-static neuronParams_t outputLayer_0_4;
-static neuronParams_t outputLayer_0_5;
-static neuronParams_t outputLayer_0_6;
-static neuronParams_t outputLayer_0_7;
-static neuronParams_t outputLayer_0_8;
-static neuronParams_t outputLayer_0_9;
-static neuronParams_t outputLayer_1_0;
-static neuronParams_t outputLayer_1_1;
-static neuronParams_t outputLayer_1_2;
-static neuronParams_t outputLayer_1_3;
-static neuronParams_t outputLayer_1_4;
-static neuronParams_t outputLayer_1_5;
-static neuronParams_t outputLayer_1_6;
-static neuronParams_t outputLayer_1_7;
-static neuronParams_t outputLayer_1_8;
-static neuronParams_t outputLayer_1_9;
-static neuronParams_t outputLayer_2_0;
-static neuronParams_t outputLayer_2_1;
-static neuronParams_t outputLayer_2_2;
-static neuronParams_t outputLayer_2_3;
-static neuronParams_t outputLayer_2_4;
-static neuronParams_t outputLayer_2_5;
-static neuronParams_t outputLayer_2_6;
-static neuronParams_t outputLayer_2_7;
-static neuronParams_t outputLayer_2_8;
-static neuronParams_t outputLayer_2_9;
-static wNeuron_t outputLayer_0 = {
-    .activation = 0,
-    .params = {
-        &outputLayer_0_0,
-        &outputLayer_0_1,
-        &outputLayer_0_2,
-        &outputLayer_0_3,
-        &outputLayer_0_4,
-        &outputLayer_0_5,
-        &outputLayer_0_6,
-        &outputLayer_0_7,
-        &outputLayer_0_8,
-        &outputLayer_0_9
-    }
+static activation_t outputNeuronsActivations[CONFIG_NUM_OUTPUT_NEURONS];
+static bias_t outputNeuronBias[CONFIG_NUM_OUTPUT_NEURONS];
+
+static weight_t outputNeuronWeights_0[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t outputNeuronWeights_1[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t outputNeuronWeights_2[CONFIG_NUM_HIDDEN_NEURONS];
+static weight_t* outputNeuronWeights[CONFIG_NUM_OUTPUT_NEURONS] =
+{
+    outputNeuronWeights_0,
+    outputNeuronWeights_1,
+    outputNeuronWeights_2
 };
-static wNeuron_t outputLayer_1 = {
-    .activation = 0,
-    .params = {
-        &outputLayer_1_0,
-        &outputLayer_1_1,
-        &outputLayer_1_2,
-        &outputLayer_1_3,
-        &outputLayer_1_4,
-        &outputLayer_1_5,
-        &outputLayer_1_6,
-        &outputLayer_1_7,
-        &outputLayer_1_8,
-        &outputLayer_1_9
-    }
-};
-static wNeuron_t outputLayer_2 = {
-    .activation = 0,
-    .params = {
-        &outputLayer_2_0,
-        &outputLayer_2_1,
-        &outputLayer_2_2,
-        &outputLayer_2_3,
-        &outputLayer_2_4,
-        &outputLayer_2_5,
-        &outputLayer_2_6,
-        &outputLayer_2_7,
-        &outputLayer_2_8,
-        &outputLayer_2_9
-    }
-};
-static outputLayer_t staticOutputLayer = {
+
+static outputLayer_t staticOutputLayer =
+{
     .numNeurons = CONFIG_NUM_OUTPUT_NEURONS,
-    .neuron = {
-        &outputLayer_0,
-        &outputLayer_1,
-        &outputLayer_2
-    }
+    .activation = outputNeuronsActivations,
+    .bias = outputNeuronBias,
+    .weight = outputNeuronWeights
 };
+
 
 
 
 static network_t staticNetwork = {
     .inputLayer = &staticInputLayer,
-    .hiddenLayer = {
-        &staticHiddenLayer_0,
-        &staticHiddenLayer_1,
-        &staticHiddenLayer_2,
-        &staticHiddenLayer_3,
-        &staticHiddenLayer_4
-    },
+    .hiddenLayer = staticHiddenLayers,
     .outputLayer = &staticOutputLayer
 };
