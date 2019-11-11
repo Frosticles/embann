@@ -5,6 +5,7 @@
 
 extern network_t* pNetworkGlobal;
 
+static int _trainOutput(numOutputs_t correctOutput, activation_t learningRate);
 
 
 int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose)
@@ -76,11 +77,11 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
         {
             if (i == randomOutput)
             {
-                currentCost[randomOutput] += (1 - pNetworkGlobal->outputLayer->neuron[i]->activation);
+                currentCost[randomOutput] += (1 - pNetworkGlobal->outputLayer->activation[i]);
             }
             else
             {
-                currentCost[randomOutput] += pNetworkGlobal->outputLayer->neuron[i]->activation;
+                currentCost[randomOutput] += pNetworkGlobal->outputLayer->activation[i];
             }
         }
         currentCost[randomOutput] /= pNetworkGlobal->outputLayer->numNeurons;
@@ -105,84 +106,57 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
     return EOK;
 }
 
+
+
+
+
 int embann_train(numOutputs_t correctOutput, activation_t learningRate)
 {
-    activation_t dOutputErrorToOutputSum[embann_getNetwork()->outputLayer->numNeurons];
-    weight_t dTotalErrorToHiddenNeuron = 0.0F;
-    /* TODO, add support for multiple hidden layers */
-    numLayers_t lastHiddenLayer = embann_getNetwork()->properties.numHiddenLayers;
-    weight_t outputNeuronWeightChange[embann_getNetwork()->outputLayer->numNeurons][embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->numNeurons];
-    weight_t tanhDerivative = 0;
+    _trainOutput(correctOutput, learningRate);
+    return EOK;
+}
 
-    for (uint16_t i = 0; i < embann_getNetwork()->outputLayer->numNeurons; i++)
+
+
+
+
+static int _trainOutput(numOutputs_t correctOutput, activation_t learningRate)
+{
+    const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
+    const numLayers_t lastHiddenLayer = pNetworkGlobal->properties.numHiddenLayers - 1U;
+    numOutputs_t correctOutputArray[numOutputs];
+
+    if (correctOutput > numOutputs)
     {
-        if ((i) == correctOutput)
-        {
-            EMBANN_ERROR_CHECK(embann_tanhDerivative(embann_getNetwork()->outputLayer->neuron[i]->activation, 
-                                                        &tanhDerivative));
-
-            dOutputErrorToOutputSum[i] = (1 - embann_getNetwork()->outputLayer->neuron[i]->activation) * 
-                                            tanhDerivative;
-        }
-        else
-        {
-            EMBANN_ERROR_CHECK(embann_tanhDerivative(embann_getNetwork()->outputLayer->neuron[i]->activation, 
-                                                        &tanhDerivative));
-
-            dOutputErrorToOutputSum[i] = -embann_getNetwork()->outputLayer->neuron[i]->activation * 
-                                            tanhDerivative;
-        }
-        
-        EMBANN_LOGV(TAG, "dOutputErrorToOutputSum[%d]: %" ACTIVATION_PRINT, i, dOutputErrorToOutputSum[i]);
-        
-        for (uint16_t j = 0; j < embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->numNeurons; j++)
-        {
-            outputNeuronWeightChange[i][j] = dOutputErrorToOutputSum[i] *
-                                                embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->neuron[j]->activation *
-                                                learningRate;
-
-            EMBANN_LOGV(TAG, "outputNeuronWeightChange[%d][%d]: %" WEIGHT_PRINT, i, j, outputNeuronWeightChange[i][j]);
-        }
+        return ENOENT;
     }
 
-    for (uint16_t i = 0; i < embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->numNeurons; i++)
-    {
-        dTotalErrorToHiddenNeuron = 0.0F;
-        for (uint16_t j = 0; j < embann_getNetwork()->outputLayer->numNeurons; j++)
-        {
-            dTotalErrorToHiddenNeuron += dOutputErrorToOutputSum[j] * 
-                                            embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight;
+    // This should usually be more efficient iterating over the array with an if statement
+    memset(correctOutputArray, 0, numOutputs);
+    correctOutputArray[correctOutput] = MAX_ACTIVATION;
 
-            EMBANN_LOGV(TAG, "Old Output Weight[%d][%d]: %" WEIGHT_PRINT, i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
-            
-            embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight += outputNeuronWeightChange[j][i];
 
-            EMBANN_LOGV(TAG, "New Output Weight[%d][%d]: %" WEIGHT_PRINT, i, j, embann_getNetwork()->outputLayer->neuron[j]->params[i]->weight);
-        }
-        for (uint16_t k = 0; k < embann_getNetwork()->inputLayer->numNeurons; k++)
-        {
-            EMBANN_LOGV(TAG, "Old Hidden Weight[%d][%d]: %" WEIGHT_PRINT, i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
-            
-            EMBANN_ERROR_CHECK(embann_tanhDerivative(embann_getNetwork()->hiddenLayer[0]->neuron[i]->activation, 
-                                                        &tanhDerivative));
-            
-            embann_getNetwork()->hiddenLayer[lastHiddenLayer - 1U]->neuron[i]->params[k]->weight += dTotalErrorToHiddenNeuron * 
-                                                                                    tanhDerivative *
-                                                                                    embann_getNetwork()->inputLayer->neuron[k]->activation * 
-                                                                                    learningRate;
-
-            EMBANN_LOGV(TAG, "New Hidden Weight[%d][%d]: %" WEIGHT_PRINT, i, k, embann_getNetwork()->hiddenLayer[0]->neuron[i]->params[k]->weight);
-        }
+    for (numOutputs_t i = 0; i < numOutputs; i++)
+    {        
+        pNetworkGlobal->outputLayer->activation[i] -= 
+                    learningRate * 
+                    pNetworkGlobal->hiddenLayer[lastHiddenLayer]->activation[i] *
+                    (pNetworkGlobal->outputLayer->activation[i] - correctOutputArray[i]);
     }
     return EOK;
 }
+
+
+
+
+
 
 int embann_tanhDerivative(activation_t inputValue, weight_t* outputValue)
 {
 #ifdef ACTIVATION_IS_FLOAT
     *outputValue = 1.0F - powf(tanh(inputValue * PI), 2.0F);
 #elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-    // TODO, scaled linear approximation
+    *outputValue = 1;
 #endif   
     return EOK;
 }
