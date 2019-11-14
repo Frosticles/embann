@@ -46,7 +46,11 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
 {
     numOutputs_t randomOutput;
     numTrainingDataEntries_t randomTrainingSet;
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    activation_t currentCost[CONFIG_NUM_OUTPUT_NEURONS];
+#else
     activation_t currentCost[pNetworkGlobal->outputLayer->numNeurons];
+#endif
     bool converged = false;
 
     if (verbose == true)
@@ -124,7 +128,11 @@ static int _trainOutput(numOutputs_t correctOutput, activation_t learningRate)
 {
     const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
     const numLayers_t lastHiddenLayer = pNetworkGlobal->properties.numHiddenLayers - 1U;
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    numOutputs_t correctOutputArray[CONFIG_NUM_OUTPUT_NEURONS];
+#else
     numOutputs_t correctOutputArray[numOutputs];
+#endif
 
     if (correctOutput > numOutputs)
     {

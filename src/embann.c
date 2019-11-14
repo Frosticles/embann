@@ -51,7 +51,11 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_forwardPropagate());
     EMBANN_ERROR_CHECK(embann_printNetwork());
 
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    activation_t randomData[CONFIG_NUM_INPUT_NEURONS];
+#else
     activation_t randomData[pNetworkGlobal->inputLayer->numNeurons];
+#endif
     activation_t retval;
     float fretval;
     for (uint8_t i = 0; i < NUM_ARRAY_ELEMENTS(randomData); i++)
@@ -124,7 +128,11 @@ int embann_forwardPropagate(void)
 
 static int embann_sumAndSquashInput(inputLayer_t* input, hiddenLayer_t* output, numInputs_t numInputs, numHiddenNeurons_t numOutputs)
 {
-    accumulator_t accum[pNetworkGlobal->inputLayer->numNeurons];
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    accumulator_t accum[CONFIG_NUM_HIDDEN_NEURONS];
+#else
+    accumulator_t accum[numOutputs];
+#endif
     
     for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
@@ -160,8 +168,13 @@ static int embann_sumAndSquashInput(inputLayer_t* input, hiddenLayer_t* output, 
 
 static int embann_sumAndSquashHidden(hiddenLayer_t* input, hiddenLayer_t* output, numHiddenNeurons_t numInputs, numHiddenNeurons_t numOutputs)
 {
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    accumulator_t accum[CONFIG_NUM_HIDDEN_NEURONS];
+#else
+    accumulator_t accum[numOutputs];
+#endif
+    
     // TODO, add biasing
-    accumulator_t accum[pNetworkGlobal->inputLayer->numNeurons];
 
     for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
@@ -196,8 +209,13 @@ static int embann_sumAndSquashHidden(hiddenLayer_t* input, hiddenLayer_t* output
 
 static int embann_sumAndSquashOutput(hiddenLayer_t* input, outputLayer_t* output, numHiddenNeurons_t numInputs, numOutputs_t numOutputs)
 {
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    accumulator_t accum[CONFIG_NUM_OUTPUT_NEURONS];
+#else
+    accumulator_t accum[numOutputs];
+#endif
+    
     // TODO, add biasing
-    accumulator_t accum[pNetworkGlobal->inputLayer->numNeurons];
 
     for (numOutputs_t i = 0; i < numOutputs; i++)
     {
@@ -274,18 +292,16 @@ trainingDataCollection_t* embann_getDataCollection(void)
 */
 
 int embann_benchmark(void)
-{    
-    uint16_t numElements = (random() % 2) + 300;
-    
-    int32_t MAX_ALIGNMENT testInt[numElements];
-    float MAX_ALIGNMENT testFloat[numElements];
-    double MAX_ALIGNMENT testDouble[numElements];
-    int32_t MAX_ALIGNMENT testIntWeight[numElements];
-    float MAX_ALIGNMENT testFloatWeight[numElements];
-    double MAX_ALIGNMENT testDoubleWeight[numElements];
-    int32_t MAX_ALIGNMENT testIntBias[numElements];
-    float MAX_ALIGNMENT testFloatBias[numElements];
-    double MAX_ALIGNMENT testDoubleBias[numElements];
+{        
+    int32_t MAX_ALIGNMENT testInt[300];
+    float MAX_ALIGNMENT testFloat[300];
+    double MAX_ALIGNMENT testDouble[300];
+    int32_t MAX_ALIGNMENT testIntWeight[300];
+    float MAX_ALIGNMENT testFloatWeight[300];
+    double MAX_ALIGNMENT testDoubleWeight[300];
+    int32_t MAX_ALIGNMENT testIntBias[300];
+    float MAX_ALIGNMENT testFloatBias[300];
+    double MAX_ALIGNMENT testDoubleBias[300];
     struct timeval timeBefore;
     struct timeval timeAfter;
     struct timeval timeDiff;
