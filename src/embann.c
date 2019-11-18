@@ -74,7 +74,7 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_trainDriverInTime(0.01, 1, true));
     EMBANN_ERROR_CHECK(embann_trainDriverInError(0.01, 0.1, true));
 #elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-    EMBANN_ERROR_CHECK(embann_trainDriverInError(1, 1, false));
+    //EMBANN_ERROR_CHECK(embann_trainDriverInError(1, 1, false));
     EMBANN_ERROR_CHECK(embann_trainDriverInTime(1, 1, false));
 #endif
 
