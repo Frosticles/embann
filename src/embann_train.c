@@ -5,7 +5,13 @@
 
 extern network_t* pNetworkGlobal;
 
-static int _trainOutput(numOutputs_t correctOutput, activation_t learningRate);
+static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numOutputs, 
+                        const numLayers_t lastHiddenLayer, activation_t learningRate, 
+                        numOutputs_t correctOutput);
+static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
+                        const numLayers_t lastHiddenLayer, activation_t learningRate);
+
+
 
 
 int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose)
@@ -116,7 +122,21 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
 
 int embann_train(numOutputs_t correctOutput, activation_t learningRate)
 {
-    _trainOutput(correctOutput, learningRate);
+    const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
+    const numLayers_t lastHiddenLayer = pNetworkGlobal->properties.numHiddenLayers - 1U;
+    // TODO, Python preprocessor to define required size for error arrays.
+    accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_HIDDEN_NEURONS];
+    accumulator_t totalErrorInNextLayer[CONFIG_NUM_HIDDEN_NEURONS];
+
+    if (correctOutput > numOutputs)
+    {
+        return ENOENT;
+    }
+
+    EMBANN_ERROR_CHECK(_trainOutput(totalErrorInCurrentLayer, numOutputs, lastHiddenLayer, learningRate, correctOutput));
+    memcpy(totalErrorInNextLayer, totalErrorInCurrentLayer, sizeof(totalErrorInNextLayer));
+    memset(totalErrorInCurrentLayer, 0, sizeof(totalErrorInCurrentLayer));
+    EMBANN_ERROR_CHECK(_trainHidden(totalErrorInCurrentLayer, totalErrorInNextLayer, lastHiddenLayer, learningRate));
     return EOK;
 }
 
@@ -124,33 +144,86 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
 
 
 
-static int _trainOutput(numOutputs_t correctOutput, activation_t learningRate)
+static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numOutputs, 
+                        const numLayers_t lastHiddenLayer, activation_t learningRate, 
+                        numOutputs_t correctOutput)
 {
-    const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
-    const numLayers_t lastHiddenLayer = pNetworkGlobal->properties.numHiddenLayers - 1U;
+    // TODO, add backpropagation for other activation functions (this is just ReLU)
+    // TODO, add biasing
+    const numHiddenNeurons_t numHiddenNeurons = pNetworkGlobal->hiddenLayer[lastHiddenLayer]->numNeurons;
+
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
     numOutputs_t correctOutputArray[CONFIG_NUM_OUTPUT_NEURONS];
 #else
     numOutputs_t correctOutputArray[numOutputs];
 #endif
 
-    if (correctOutput > numOutputs)
-    {
-        return ENOENT;
-    }
-
-    // This should usually be more efficient iterating over the array with an if statement
+    /* This should usually be more efficient iterating over the array with an if statement */
     memset(correctOutputArray, 0, numOutputs);
     correctOutputArray[correctOutput] = MAX_ACTIVATION;
 
 
     for (numOutputs_t i = 0; i < numOutputs; i++)
     {        
-        pNetworkGlobal->outputLayer->activation[i] -= 
-                    learningRate * 
-                    pNetworkGlobal->hiddenLayer[lastHiddenLayer]->activation[i] *
-                    (pNetworkGlobal->outputLayer->activation[i] - correctOutputArray[i]);
+        totalErrorInCurrentLayer[i] = (pNetworkGlobal->outputLayer->activation[i] - correctOutputArray[i]);
     }
+
+    for (numOutputs_t i = 0; i < numOutputs; i++)
+    {        
+        for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
+        {
+            pNetworkGlobal->outputLayer->weight[i][j] -= 
+                        learningRate * 
+                        pNetworkGlobal->hiddenLayer[lastHiddenLayer]->activation[i] *
+                        totalErrorInCurrentLayer[i];
+        }
+    }
+    return EOK;
+}
+
+
+
+
+
+
+static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
+                        const numLayers_t lastHiddenLayer, activation_t learningRate)
+{
+    // TODO, add backpropagation for other activation functions (this is just ReLU)
+    // TODO, add biasing
+    numHiddenNeurons_t numNeuronsInCurrentLayer = pNetworkGlobal->hiddenLayer[lastHiddenLayer]->numNeurons;
+    numHiddenNeurons_t numNeuronsInNextLayer = pNetworkGlobal->outputLayer->numNeurons;
+
+    for (numLayers_t i = lastHiddenLayer; i > 0; i--)
+    {
+        for (numHiddenNeurons_t j = 0; j < numNeuronsInCurrentLayer; j++)
+        {
+            for (numOutputs_t k = 0; k < numNeuronsInNextLayer; k++)
+            {        
+                totalErrorInCurrentLayer[j] += pNetworkGlobal->hiddenLayer[i]->weight[j][k] * 
+                                                    totalErrorInNextLayer[k];
+            }
+        }
+
+        for (numHiddenNeurons_t j = 0; j < numNeuronsInCurrentLayer; j++)
+        {   
+            for (numOutputs_t k = 0; k < numNeuronsInNextLayer; k++)
+            {  
+                pNetworkGlobal->hiddenLayer[i]->weight[j][k] -=
+                            learningRate *
+                            pNetworkGlobal->hiddenLayer[i - 1U]->activation[j] *
+                            totalErrorInCurrentLayer[j];
+            }
+        }
+
+        // TODO, Python preprocessor to define required size for error arrays.
+        memcpy(totalErrorInNextLayer, totalErrorInCurrentLayer, numNeuronsInNextLayer * sizeof(accumulator_t));
+        memset(totalErrorInCurrentLayer, 0, numNeuronsInCurrentLayer * sizeof(accumulator_t));
+
+        numNeuronsInCurrentLayer = pNetworkGlobal->hiddenLayer[i - 1U]->numNeurons;
+        numNeuronsInNextLayer = pNetworkGlobal->hiddenLayer[i]->numNeurons;
+    }
+
     return EOK;
 }
 
