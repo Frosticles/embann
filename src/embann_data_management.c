@@ -49,6 +49,12 @@ int embann_getTrainingDataMean(float* mean)
     {
         *mean = pTrainingData->data[0];
     }
+    else if (pTrainingData->length == 0)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
     else
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
@@ -82,6 +88,12 @@ int embann_getTrainingDataStdDev(float* stdDev)
     if (pTrainingData != NULL)
     {
         *stdDev = pTrainingData->data[0];
+    }
+    else if (pTrainingData->length == 0)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
     }
     else
     {
@@ -119,6 +131,12 @@ int embann_getTrainingDataMax(activation_t* max)
     {
         *max = pTrainingData->data[0];
     }
+    else if (pTrainingData->length == 0)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
     else
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
@@ -148,6 +166,12 @@ int embann_getTrainingDataMin(activation_t* min)
     if (pTrainingData != NULL)
     {
         *min = pTrainingData->data[0];
+    }
+    else if (pTrainingData->length == 0)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
     }
     else
     {
