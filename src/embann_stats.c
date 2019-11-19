@@ -181,7 +181,7 @@ int embann_errorReporting(numOutputs_t correctResponse)
         }
         else
         {
-            printf("%-7" ACTIVATION_PRINT " | ", -pNetworkGlobal->outputLayer->activation[i]);
+            printf("%-7" ACTIVATION_PRINT " | ", (0 - pNetworkGlobal->outputLayer->activation[i]));
         }
     }
 
@@ -191,7 +191,7 @@ int embann_errorReporting(numOutputs_t correctResponse)
     }
     else
     {
-        printf("%-7" ACTIVATION_PRINT "\n", -pNetworkGlobal->outputLayer->activation[pNetworkGlobal->outputLayer->numNeurons - 1U]);
+        printf("%-7" ACTIVATION_PRINT "\n", (0 - pNetworkGlobal->outputLayer->activation[pNetworkGlobal->outputLayer->numNeurons - 1U]));
     }
     return EOK;
 }
