@@ -9,11 +9,11 @@
 extern network_t* pNetworkGlobal;
 
 
-static void _printInputLayer(inputLayer_t* pInputLayer, numInputs_t numInputNeurons);
-static void _printHiddenLayer(hiddenLayer_t* pHiddenLayer, numHiddenNeurons_t numHiddenNeurons);
+static void _printInputLayer(inputLayer_t* pInputLayer);
+static void _printHiddenLayer(hiddenLayer_t* pHiddenLayer);
 static void _printHiddenNeuronParams(hiddenLayer_t* pHiddenLayer, numHiddenNeurons_t j, numHiddenNeurons_t k);
 static void _printConnectedHiddenLayer(numLayers_t layerNum);
-static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutputNeurons);
+static void _printOutputLayer(outputLayer_t* pOutputLayer);
 
 static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, numInputs_t numInputNeurons);
 static int embann_initInputLayer(numInputs_t numInputNeurons);
@@ -89,7 +89,7 @@ static int embann_initInputLayer(numInputs_t numInputNeurons)
     pInputLayer->numNeurons = numInputNeurons;
 #endif
 
-    _printInputLayer(pInputLayer, numInputNeurons);
+    _printInputLayer(pInputLayer);
 
     for (numInputs_t i = 0; i < numInputNeurons; i++)
     {
@@ -154,7 +154,7 @@ static int embann_initInputToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, nu
     EMBANN_MALLOC_CHECK(pHiddenLayer);
     pHiddenLayer->numNeurons = numHiddenNeurons;
 #endif
-    _printHiddenLayer(pHiddenLayer, numHiddenNeurons);
+    _printHiddenLayer(pHiddenLayer);
 
 
     for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
@@ -219,7 +219,7 @@ static int embann_initHiddenToHiddenLayer(numHiddenNeurons_t numHiddenNeurons, n
                                                 (sizeof(wNeuron_t*) * numHiddenNeurons));
         EMBANN_MALLOC_CHECK(pHiddenLayer);
 #endif
-        _printHiddenLayer(pHiddenLayer, numHiddenNeurons);
+        _printHiddenLayer(pHiddenLayer);
         pHiddenLayer->numNeurons = numHiddenNeurons;
 
         for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
@@ -284,7 +284,7 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
 
     pOutputLayer->numNeurons = numOutputNeurons;
 
-    _printOutputLayer(pOutputLayer, numOutputNeurons);
+    _printOutputLayer(pOutputLayer);
 
     for (numOutputs_t i = 0; i < numOutputNeurons; i++)
     {
@@ -326,7 +326,7 @@ static int embann_initOutputLayer(numOutputs_t numOutputNeurons, numHiddenNeuron
 
 
 
-static void _printInputLayer(inputLayer_t* pInputLayer, numInputs_t numInputNeurons)
+static void _printInputLayer(inputLayer_t* pInputLayer)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
@@ -340,7 +340,7 @@ static void _printInputLayer(inputLayer_t* pInputLayer, numInputs_t numInputNeur
 
 
 
-static void _printHiddenLayer(hiddenLayer_t* pHiddenLayer, numHiddenNeurons_t numHiddenNeurons)
+static void _printHiddenLayer(hiddenLayer_t* pHiddenLayer)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
@@ -382,7 +382,7 @@ static void _printConnectedHiddenLayer(numLayers_t layerNum)
 
 
 
-static void _printOutputLayer(outputLayer_t* pOutputLayer, numOutputs_t numOutputNeurons)
+static void _printOutputLayer(outputLayer_t* pOutputLayer)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"

@@ -193,7 +193,7 @@ static int embann_sumAndSquashHidden(hiddenLayer_t* input, hiddenLayer_t* output
 
     for (numHiddenNeurons_t i = 0; i < numOutputs; i++)
     {
-    #ifdef ACTIVATION_IS_FLOAT
+#ifdef ACTIVATION_IS_FLOAT
         output->activation[i] = tanhf(accum[i] * PI);
 #else
         accum[i] = (accum[i] > MAX_ACTIVATION) ? MAX_ACTIVATION : accum[i];
@@ -234,7 +234,7 @@ static int embann_sumAndSquashOutput(hiddenLayer_t* input, outputLayer_t* output
 
     for (numOutputs_t i = 0; i < numOutputs; i++)
     {
-    #ifdef ACTIVATION_IS_FLOAT
+#ifdef ACTIVATION_IS_FLOAT
         output->activation[i] = tanhf(accum[i] * PI);
 #else
         accum[i] = (accum[i] > MAX_ACTIVATION) ? MAX_ACTIVATION : accum[i];
