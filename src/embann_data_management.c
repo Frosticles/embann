@@ -49,13 +49,14 @@ int embann_getTrainingDataMean(float* mean)
     {
         *mean = pTrainingData->data[0];
     }
-    else if (pTrainingData->length == 0)
+    else
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
-    else
+
+    if (pTrainingData->length == 0)
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
@@ -89,13 +90,14 @@ int embann_getTrainingDataStdDev(float* stdDev)
     {
         *stdDev = pTrainingData->data[0];
     }
-    else if (pTrainingData->length == 0)
+    else
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
-    else
+
+    if (pTrainingData->length == 0)
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
@@ -131,19 +133,19 @@ int embann_getTrainingDataMax(activation_t* max)
     {
         *max = pTrainingData->data[0];
     }
-    else if (pTrainingData->length == 0)
-    {
-        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
-        // cppcheck-suppress misra-c2012-15.5
-        return ENOENT;
-    }
     else
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
-    
+
+    if (pTrainingData->length == 0)
+    {
+        // Deviation from MISRA C2012 15.5 for reasonably simple error return values
+        // cppcheck-suppress misra-c2012-15.5
+        return ENOENT;
+    }
     
     while (pTrainingData != NULL)
     {
@@ -167,13 +169,14 @@ int embann_getTrainingDataMin(activation_t* min)
     {
         *min = pTrainingData->data[0];
     }
-    else if (pTrainingData->length == 0)
+    else
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
-    else
+
+    if (pTrainingData->length == 0)
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
