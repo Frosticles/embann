@@ -10,6 +10,8 @@ static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutput
                         numOutputs_t correctOutput);
 static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
                         const numLayers_t lastHiddenLayer, activation_t learningRate);
+static int _trainInput(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
+                        activation_t learningRate);
 
 
 
@@ -125,8 +127,8 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
     const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
     const numLayers_t lastHiddenLayer = pNetworkGlobal->properties.numHiddenLayers - 1U;
     // TODO, Python preprocessor to define required size for error arrays.
-    accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_HIDDEN_NEURONS];
-    accumulator_t totalErrorInNextLayer[CONFIG_NUM_HIDDEN_NEURONS];
+    accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
+    accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
 
     if (correctOutput > numOutputs)
     {
@@ -137,6 +139,7 @@ int embann_train(numOutputs_t correctOutput, activation_t learningRate)
     memcpy(totalErrorInNextLayer, totalErrorInCurrentLayer, sizeof(totalErrorInNextLayer));
     memset(totalErrorInCurrentLayer, 0, sizeof(totalErrorInCurrentLayer));
     EMBANN_ERROR_CHECK(_trainHidden(totalErrorInCurrentLayer, totalErrorInNextLayer, lastHiddenLayer, learningRate));
+    EMBANN_ERROR_CHECK(_trainInput(totalErrorInCurrentLayer, totalErrorInNextLayer, learningRate));
     return EOK;
 }
 
@@ -198,7 +201,7 @@ static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* 
     {
         for (numHiddenNeurons_t j = 0; j < numNeuronsInCurrentLayer; j++)
         {
-            for (numOutputs_t k = 0; k < numNeuronsInNextLayer; k++)
+            for (numHiddenNeurons_t k = 0; k < numNeuronsInNextLayer; k++)
             {        
                 totalErrorInCurrentLayer[j] += pNetworkGlobal->hiddenLayer[i]->weight[j][k] * 
                                                     totalErrorInNextLayer[k];
@@ -207,7 +210,7 @@ static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* 
 
         for (numHiddenNeurons_t j = 0; j < numNeuronsInCurrentLayer; j++)
         {   
-            for (numOutputs_t k = 0; k < numNeuronsInNextLayer; k++)
+            for (numHiddenNeurons_t k = 0; k < numNeuronsInNextLayer; k++)
             {  
                 pNetworkGlobal->hiddenLayer[i]->weight[j][k] -=
                             learningRate *
@@ -222,6 +225,42 @@ static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* 
 
         numNeuronsInCurrentLayer = pNetworkGlobal->hiddenLayer[i - 1U]->numNeurons;
         numNeuronsInNextLayer = pNetworkGlobal->hiddenLayer[i]->numNeurons;
+    }
+
+    return EOK;
+}
+
+
+
+
+
+
+static int _trainInput(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
+                        activation_t learningRate)
+{
+    // TODO, add backpropagation for other activation functions (this is just ReLU)
+    // TODO, add biasing
+    numHiddenNeurons_t numNeuronsInCurrentLayer = pNetworkGlobal->hiddenLayer[0]->numNeurons;
+    numHiddenNeurons_t numNeuronsInNextLayer = pNetworkGlobal->inputLayer->numNeurons;
+
+    for (numInputs_t i = 0; i < numNeuronsInCurrentLayer; i++)
+    {
+        for (numHiddenNeurons_t j = 0; j < numNeuronsInNextLayer; j++)
+        {        
+            totalErrorInCurrentLayer[j] += pNetworkGlobal->hiddenLayer[0]->weight[i][j] * 
+                                                totalErrorInNextLayer[i];
+        }
+    }
+
+    for (numInputs_t i = 0; i < numNeuronsInCurrentLayer; i++)
+    {   
+        for (numHiddenNeurons_t j = 0; j < numNeuronsInNextLayer; j++)
+        {  
+            pNetworkGlobal->hiddenLayer[0]->weight[i][j] -=
+                        learningRate *
+                        pNetworkGlobal->inputLayer->activation[j] *
+                        totalErrorInCurrentLayer[j];
+        }
     }
 
     return EOK;
