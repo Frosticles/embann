@@ -32,7 +32,8 @@ OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 LIBS = -lm
 
 OPT_CFLAGS = -O2 -ftree-vectorize -ffast-math -march=native # -flto
-CFLAGS = $(OPT_CFLAGS) -Wall -Wno-format -Wvla -fopenmp -fverbose-asm -fopt-info-all-vec=opt.log --save-temps #-masm=intel -fdump-final-insns -std=gnu99
+DEBUG_OPT_CFLAGS = -Og -ftree-vectorize -ffast-math -march=native -g -pg # -flto
+CFLAGS = -Wall -Wno-format -Wvla -fopenmp -fverbose-asm -fopt-info-all-vec=opt.log --save-temps #-masm=intel -fdump-final-insns -std=gnu99
 GEN_PROFILE_CFLAGS = -fprofile-generate -fprofile-update=single
 USE_PROFILE_CFLAGS = -fprofile-use
 GEN_COVERAGE_CFLAGS = -fprofile-arcs -ftest-coverage
@@ -41,6 +42,7 @@ GRAPH_PDF_NAME = embann-graph.pdf
 
 .PHONY: clean check debug generate-profile use-profile menuconfig all graph clean-keep-profile check-all profile generate-coverate test
 
+all: CFLAGS += $(OPT_CFLAGS)
 all: $(EXE)
 
 
@@ -55,8 +57,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 
 
-debug: CFLAGS += -g -pg
-debug: all
+debug: CFLAGS += $(DEBUG_OPT_CFLAGS)
+debug: $(EXE)
 
 profile: 
 	./make-profiled.sh
