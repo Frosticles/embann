@@ -40,9 +40,8 @@ int embann_init(numInputs_t numInputNeurons,
 int embann_calculateNetworkResponse(void);
 int embann_forwardPropagate(void);
 int embann_printNetwork(void);
-int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds, bool verbose);
-int embann_trainDriverInError(activation_t learningRate, activation_t desiredCost, bool verbose);
-int embann_train(numOutputs_t correctOutput, activation_t learningRate);
+int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds);
+int embann_trainDriverInError(activation_t learningRate, activation_t desiredCost);
 int embann_tanhDerivative(activation_t inputValue, weight_t* outputValue);
 int embann_errorReporting(numOutputs_t correctResponse);
 int embann_printInputNeuronDetails(numInputs_t neuronNum);

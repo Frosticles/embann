@@ -74,8 +74,8 @@ int main(int argc, char const *argv[])
     EMBANN_ERROR_CHECK(embann_trainDriverInTime(0.01, 1, true));
     EMBANN_ERROR_CHECK(embann_trainDriverInError(0.01, 0.1, true));
 #elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
-    //EMBANN_ERROR_CHECK(embann_trainDriverInError(1, 1, false));
-    EMBANN_ERROR_CHECK(embann_trainDriverInTime(1, 1, false));
+    EMBANN_ERROR_CHECK(embann_trainDriverInError(1, 1));
+    EMBANN_ERROR_CHECK(embann_trainDriverInTime(1, 1));
 #endif
 
     EMBANN_ERROR_CHECK(embann_printNetwork());
@@ -155,7 +155,7 @@ static int embann_sumAndSquashInput(inputLayer_t* input, hiddenLayer_t* output, 
         output->activation[i] = tanhf(accum[i] * PI);
 #else
         accum[i] = (accum[i] > MAX_ACTIVATION) ? MAX_ACTIVATION : accum[i];
-        output->activation[i] = (accum[i] < 0) ? 0 : accum[i];
+        output->activation[i] = (accum[i] <= 0) ? 1 : accum[i];
 #endif
         EMBANN_LOGD(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, output->activation[i]);
     }
@@ -197,7 +197,7 @@ static int embann_sumAndSquashHidden(hiddenLayer_t* input, hiddenLayer_t* output
         output->activation[i] = tanhf(accum[i] * PI);
 #else
         accum[i] = (accum[i] > MAX_ACTIVATION) ? MAX_ACTIVATION : accum[i];
-        output->activation[i] = (accum[i] < 0) ? 0 : accum[i];
+        output->activation[i] = (accum[i] <= 0) ? 1 : accum[i];
 #endif
         EMBANN_LOGD(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, output->activation[i]);
     }
@@ -238,7 +238,7 @@ static int embann_sumAndSquashOutput(hiddenLayer_t* input, outputLayer_t* output
         output->activation[i] = tanhf(accum[i] * PI);
 #else
         accum[i] = (accum[i] > MAX_ACTIVATION) ? MAX_ACTIVATION : accum[i];
-        output->activation[i] = (accum[i] < 0) ? 0 : accum[i];
+        output->activation[i] = (accum[i] <= 0) ? 1 : accum[i];
 #endif
         EMBANN_LOGD(TAG, "[%d] SumAndSquash Output %" ACTIVATION_PRINT, i, output->activation[i]);
     }
