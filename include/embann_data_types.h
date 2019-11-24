@@ -59,7 +59,7 @@ typedef int64_t activation_t;
 typedef uint8_t activation_t;
 #define ACTIVATION_IS_UNSIGNED
 #define MAX_ACTIVATION UINT8_MAX
-#define MIN_ACTIVATION UINT8_MIN
+#define MIN_ACTIVATION 0
 #endif
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_UINT16
 typedef uint16_t activation_t;
@@ -120,7 +120,7 @@ typedef int64_t bias_t;
 typedef uint8_t bias_t;
 #define BIAS_IS_UNSIGNED
 #define MAX_BIAS UINT8_MAX
-#define MIN_BIAS UINT8_MIN
+#define MIN_BIAS 0
 #endif
 #ifdef CONFIG_BIAS_DATA_TYPE_UINT16
 typedef uint16_t bias_t;
@@ -181,7 +181,7 @@ typedef int64_t weight_t;
 typedef uint8_t weight_t;
 #define WEIGHT_IS_UNSIGNED
 #define MAX_WEIGHT UINT8_MAX
-#define MIN_WEIGHT UINT8_MIN
+#define MIN_WEIGHT 0
 #endif
 #ifdef CONFIG_WEIGHT_DATA_TYPE_UINT16
 typedef uint16_t weight_t;
@@ -219,63 +219,63 @@ typedef double weight_t;
 
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT8
 typedef int8_t accumulator_t;
-#define WEIGHT_IS_SIGNED
+#define ACCUMULATOR_IS_SIGNED
 #define MAX_ACCUMULATOR INT8_MAX
 #define MIN_ACCUMULATOR INT8_MIN
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT16
 typedef int16_t accumulator_t;
-#define WEIGHT_IS_SIGNED
+#define ACCUMULATOR_IS_SIGNED
 #define MAX_ACCUMULATOR INT16_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR INT16_MIN
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT32
 typedef int32_t accumulator_t;
-#define WEIGHT_IS_SIGNED
+#define ACCUMULATOR_IS_SIGNED
 #define MAX_ACCUMULATOR INT32_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR INT32_MIN
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_INT64
 typedef int64_t accumulator_t;
-#define WEIGHT_IS_SIGNED
+#define ACCUMULATOR_IS_SIGNED
 #define MAX_ACCUMULATOR INT64_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR INT64_MIN
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT8
 typedef uint8_t accumulator_t;
-#define WEIGHT_IS_UNSIGNED
+#define ACCUMULATOR_IS_UNSIGNED
 #define MAX_ACCUMULATOR UINT8_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR 0
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT16
 typedef uint16_t accumulator_t;
-#define WEIGHT_IS_UNSIGNED
+#define ACCUMULATOR_IS_UNSIGNED
 #define MAX_ACCUMULATOR UINT16_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR 0
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT32
 typedef uint32_t accumulator_t;
-#define WEIGHT_IS_UNSIGNED
+#define ACCUMULATOR_IS_UNSIGNED
 #define MAX_ACCUMULATOR UINT32_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR 0
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_UINT64
 typedef uint64_t accumulator_t;
-#define WEIGHT_IS_UNSIGNED
+#define ACCUMULATOR_IS_UNSIGNED
 #define MAX_ACCUMULATOR UINT64_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR 0
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_FLOAT
 typedef float accumulator_t;
-#define WEIGHT_IS_FLOAT
+#define ACCUMULATOR_IS_FLOAT
 #define MAX_ACCUMULATOR FLT_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR FLT_MIN
 #endif
 #ifdef CONFIG_ACCUMULATOR_DATA_TYPE_DOUBLE
 typedef double accumulator_t;
-#define WEIGHT_IS_FLOAT
+#define ACCUMULATOR_IS_FLOAT
 #define MAX_ACCUMULATOR DBL_MAX
-#define MIN_ACCUMULATOR INT8_MIN
+#define MIN_ACCUMULATOR DBL_MIN
 #endif
 
 

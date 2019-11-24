@@ -23,7 +23,7 @@
     #define RAND_WEIGHT() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(WEIGHT_IS_SIGNED) || defined(WEIGHT_IS_UNSIGNED)
     #define WEIGHT_PRINT STRINGIFY(d)
-    #define RAND_WEIGHT() ((random() % MAX_WEIGHT) - MIN_WEIGHT) // TODO this but for each type
+    #define RAND_WEIGHT() ((random() % MAX_WEIGHT) - MIN_WEIGHT)
 #endif
 
 #ifdef ACTIVATION_IS_FLOAT
@@ -32,7 +32,7 @@
     #define RAND_ACTIVATION() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(ACTIVATION_IS_SIGNED) || defined(ACTIVATION_IS_UNSIGNED)
     #define ACTIVATION_PRINT STRINGIFY(d)
-    #define RAND_ACTIVATION() (random() % INT8_MAX) // TODO this but for each type
+    #define RAND_ACTIVATION() ((random() % MAX_ACTIVATION) - MIN_ACTIVATION)
 #endif
 
 #ifdef BIAS_IS_FLOAT
@@ -41,8 +41,19 @@
     #define RAND_BIAS() (((float)random() / (RAND_MAX / 2)) - 1)
 #elif defined(BIAS_IS_SIGNED) || defined(BIAS_IS_UNSIGNED)
     #define BIAS_PRINT STRINGIFY(d)
-    #define RAND_BIAS() (random() % INT8_MAX) // TODO this but for each type
+    #define RAND_BIAS() ((random() % MAX_BIAS) - MIN_BIAS)
 #endif
+
+#ifdef ACCUMULATOR_IS_FLOAT
+    #define ACCUMULATOR_PRINT STRINGIFY(.3f)
+    /* Random float between -1 and 1 */
+    #define RAND_ACCUMULATOR() (((float)random() / (RAND_MAX / 2)) - 1)
+#elif defined(ACCUMULATOR_IS_SIGNED) || defined(ACCUMULATOR_IS_UNSIGNED)
+    #define ACCUMULATOR_PRINT STRINGIFY(d)
+    #define RAND_ACCUMULATOR() ((random() % MAX_ACCUMULATOR) - MIN_ACCUMULATOR)
+#endif
+
+
 
 
 #ifdef CONFIG_ERROR_CHECK_SET_ERRNO
