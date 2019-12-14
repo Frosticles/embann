@@ -22,8 +22,7 @@ int embann_inputMinMaxScale(activation_t data[], activation_t min, activation_t 
 {
     for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
-        // TODO configurable types
-        pNetworkGlobal->inputLayer->activation[i] = ((float)data[i] - min) / (max - min);
+        pNetworkGlobal->inputLayer->activation[i] = (data[i] - min) / (max - min);
         EMBANN_LOGD(TAG, "Input [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->activation[i]);
     }
     return EOK;
@@ -33,8 +32,7 @@ int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
 {
     for (uint32_t i = 0; i < pNetworkGlobal->inputLayer->numNeurons; i++)
     {
-        // TODO configurable types
-        pNetworkGlobal->inputLayer->activation[i] = ((float)data[i] - mean) / stdDev;
+        pNetworkGlobal->inputLayer->activation[i] = (data[i] - mean) / stdDev;
         EMBANN_LOGD(TAG, "Input [%d] = %" ACTIVATION_PRINT, i, pNetworkGlobal->inputLayer->activation[i]);
     }
     return EOK;

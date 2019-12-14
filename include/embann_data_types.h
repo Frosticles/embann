@@ -29,8 +29,6 @@
         s32Accum += ((s16Act * s16Wei) + u32Bias
 */
 
-// TODO, add fast types to get rid of all the movzbl instructions
-
 #ifdef CONFIG_ACTIVATION_DATA_TYPE_INT8
 typedef int8_t activation_t;
 #define ACTIVATION_IS_SIGNED
@@ -353,21 +351,10 @@ typedef uint64_t numTrainingDataEntries_t;
 
 typedef enum 
 {
-    LINEAR, // TODO, Straight line from minimum to maximum
-    TANH,
+    SOFTSIGN,
     RELU,
     LEAKY_RELU
 } activationFunction_t;
-
-typedef struct
-{
-    // TODO
-    //neuronParams_t* forgetGate;
-    //neuronParams_t* inputGate;
-    //neuronParams_t* outputGate;
-    //neuronParams_t* cell;
-    //activation_t activation;
-} lstmCell_t;
 
 typedef struct trainingData
 {

@@ -23,11 +23,9 @@ int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds)
     numOutputs_t randomOutput;
     numTrainingDataEntries_t randomTrainingSet;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
-    // TODO, Python preprocessor to define required size for error arrays.
     accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
     accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
 #else
-    // TODO, for loop to find largest layer and size these correctly
     accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
     accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
 #endif
@@ -39,8 +37,6 @@ int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds)
         randomOutput = random() % pNetworkGlobal->outputLayer->numNeurons;
         randomTrainingSet = random() % embann_getDataCollection()->numEntries;
 
-        // TODO, make this input method configurable
-        // TODO, don't always just get the first training data
         embann_inputRaw(embann_getDataCollection()->head->data);
         EMBANN_ERROR_CHECK(embann_forwardPropagate());
         EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate, totalErrorInCurrentLayer, totalErrorInNextLayer));
@@ -55,11 +51,9 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
     const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
     bool converged = false;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
-    // TODO, Python preprocessor to define required size for error arrays.
     accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
     accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
 #else
-    // TODO, for loop to find largest layer and size these correctly
     accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
     accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
 #endif
@@ -74,8 +68,6 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
         randomTrainingSet = random() % embann_getDataCollection()->numEntries;
         converged = true;
 
-        // TODO, make this input method configurable
-        // TODO, don't always just get the first training data
         embann_inputRaw(embann_getDataCollection()->head->data);
         EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
@@ -164,7 +156,6 @@ static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutput
                         const numLayers_t lastHiddenLayer, activation_t learningRate, 
                         numOutputs_t correctOutput)
 {
-    // TODO, add backpropagation for other activation functions (this is just ReLU)
     // TODO, add biasing
     const numHiddenNeurons_t numHiddenNeurons = pNetworkGlobal->hiddenLayer[lastHiddenLayer]->numNeurons;
 
@@ -197,7 +188,6 @@ static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutput
 static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
                         const numLayers_t lastHiddenLayer, activation_t learningRate)
 {
-    // TODO, add backpropagation for other activation functions (this is just ReLU)
     // TODO, add biasing
     numHiddenNeurons_t numNeuronsInCurrentLayer = pNetworkGlobal->hiddenLayer[lastHiddenLayer]->numNeurons;
     numHiddenNeurons_t numNeuronsInNextLayer = pNetworkGlobal->outputLayer->numNeurons;
@@ -242,7 +232,6 @@ static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* 
 
         EMBANN_LOGD(TAG, "New Hidden Layer %d Weight [0][0] = %" WEIGHT_PRINT, i, pNetworkGlobal->hiddenLayer[i]->weight[0][0]);
 
-        // TODO, Python preprocessor to define required size for error arrays.
         memcpy(totalErrorInNextLayer, totalErrorInCurrentLayer, CONFIG_NUM_INPUT_NEURONS * sizeof(accumulator_t));
         memset(totalErrorInCurrentLayer, 0, CONFIG_NUM_INPUT_NEURONS * sizeof(accumulator_t));
 
@@ -261,7 +250,6 @@ static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* 
 static int _trainInput(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
                         activation_t learningRate)
 {
-    // TODO, add backpropagation for other activation functions (this is just ReLU)
     // TODO, add biasing
     numHiddenNeurons_t numNeuronsInCurrentLayer = pNetworkGlobal->hiddenLayer[0]->numNeurons;
     numHiddenNeurons_t numNeuronsInNextLayer = pNetworkGlobal->inputLayer->numNeurons;

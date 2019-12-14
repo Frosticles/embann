@@ -286,10 +286,6 @@ trainingDataCollection_t* embann_getDataCollection(void)
 
 
 
-/*
-    TODO try column-wise & row-wise memory access for better cache hit,
-    loop interchange
-*/
 
 int embann_benchmark(void)
 {        
