@@ -170,7 +170,7 @@ static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutput
             EMBANN_LOGV(TAG, "Old Output Weight [%d][%d] = %" WEIGHT_PRINT, i, j, pNetworkGlobal->outputLayer->weight[i][j]);
 
             pNetworkGlobal->outputLayer->weight[i][j] -= 
-                        pNetworkGlobal->hiddenLayer[lastHiddenLayer]->activation[i] *
+                        pNetworkGlobal->hiddenLayer[lastHiddenLayer]->activation[j] *
                         totalErrorInCurrentLayer[i];
 
             EMBANN_LOGV(TAG, "New Output Weight [%d][%d] = %" WEIGHT_PRINT, i, j, pNetworkGlobal->outputLayer->weight[i][j]);
@@ -223,9 +223,8 @@ static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* 
                 EMBANN_LOGV(TAG, "Old Hidden Layer %d Weight [%d][%d] = %" WEIGHT_PRINT, i, j, k, pNetworkGlobal->hiddenLayer[i]->weight[j][k]);
 
                 pNetworkGlobal->hiddenLayer[i]->weight[j][k] -=
-                            (pNetworkGlobal->hiddenLayer[i - 1U]->activation[j] *
-                            totalErrorInCurrentLayer[j]) /
-                            (8);
+                            pNetworkGlobal->hiddenLayer[i - 1U]->activation[k] *
+                            totalErrorInCurrentLayer[j];
 
                 EMBANN_LOGV(TAG, "New Hidden Layer %d Weight [%d][%d] = %" WEIGHT_PRINT, i, j, k, pNetworkGlobal->hiddenLayer[i]->weight[j][k]);
             }
@@ -283,9 +282,8 @@ static int _trainInput(accumulator_t* totalErrorInCurrentLayer, accumulator_t* t
             EMBANN_LOGV(TAG, "Old Hidden Layer 0 Weight [%d][%d] = %" WEIGHT_PRINT, i, j, pNetworkGlobal->hiddenLayer[0]->weight[i][j]);
             
             pNetworkGlobal->hiddenLayer[0]->weight[i][j] -=
-                        (pNetworkGlobal->inputLayer->activation[j] *
-                        totalErrorInCurrentLayer[j]) /
-                        (8);
+                        pNetworkGlobal->inputLayer->activation[j] *
+                        totalErrorInCurrentLayer[j];
 
             EMBANN_LOGV(TAG, "New Hidden Layer 0 Weight [%d][%d] = %" WEIGHT_PRINT, i, j, pNetworkGlobal->hiddenLayer[0]->weight[i][j]);
         }
