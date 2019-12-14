@@ -55,10 +55,13 @@ int embann_getTrainingDataMean(float* mean);
 int embann_getTrainingDataStdDev(float* stdDev);
 int embann_getTrainingDataMax(activation_t* max);
 int embann_getTrainingDataMin(activation_t* min);
-int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
-int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
+#ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
+int embann_addTrainingData(activation_t data[], uint32_t numElements, numOutputs_t correctResponse);
+#endif
+int embann_copyTrainingData(activation_t data[], uint32_t numElements, numOutputs_t correctResponse);
 int embann_shuffleTrainingData(void);
 int* embann_getErrno(void);
+int embann_getRandomDataSet(trainingData_t** dataSet);
 
 
 #ifndef ARDUINO

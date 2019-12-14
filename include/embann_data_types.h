@@ -334,6 +334,20 @@ typedef uint32_t numLayers_t;
 typedef uint64_t numLayers_t;
 #endif
 
+#ifdef CONFIG_NUM_TRAINING_DATA_SETS_TYPE_UINT8
+typedef uint8_t numTrainingDataSets_t;
+#endif
+#ifdef CONFIG_NUM_TRAINING_DATA_SETS_TYPE_UINT16
+typedef uint16_t numTrainingDataSets_t;
+#endif
+#ifdef CONFIG_NUM_TRAINING_DATA_SETS_TYPE_UINT32
+typedef uint32_t numTrainingDataSets_t;
+#endif
+#ifdef CONFIG_NUM_TRAINING_DATA_SETS_TYPE_UINT64
+typedef uint64_t numTrainingDataSets_t;
+#endif
+
+
 #ifdef CONFIG_NUM_TRAINING_DATA_ENTRIES_TYPE_UINT8
 typedef uint8_t numTrainingDataEntries_t;
 #endif
@@ -360,16 +374,21 @@ typedef struct trainingData
 {
     numOutputs_t correctResponse;
     numInputs_t length;
-    struct trainingData* prev;
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    activation_t data[CONFIG_NUM_TRAINING_DATA_ENTRIES];
+#else
     struct trainingData* next;
     activation_t* data;
+#endif
 } trainingData_t;
 
 typedef struct 
 {
     trainingData_t* head;
+#ifndef CONFIG_MEMORY_ALLOCATION_STATIC
     trainingData_t* tail;
-    numTrainingDataEntries_t numEntries;
+#endif
+    numTrainingDataSets_t numSets;
 } trainingDataCollection_t;
 
 typedef struct

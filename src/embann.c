@@ -65,8 +65,10 @@ int main(int argc, char const *argv[])
         randomData[i] = random();
     }
 
-    EMBANN_ERROR_CHECK(embann_addTrainingData(randomData, sizeof(randomData), 0));
-    EMBANN_ERROR_CHECK(embann_copyTrainingData(randomData, sizeof(randomData), 0));
+#ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
+    EMBANN_ERROR_CHECK(embann_addTrainingData(randomData, NUM_ARRAY_ELEMENTS(randomData), 0));
+#endif
+    EMBANN_ERROR_CHECK(embann_copyTrainingData(randomData, NUM_ARRAY_ELEMENTS(randomData), 0));
     EMBANN_ERROR_CHECK(embann_getTrainingDataMax(&retval));
     EMBANN_ERROR_CHECK(embann_getTrainingDataMin(&retval));
     EMBANN_ERROR_CHECK(embann_getTrainingDataMean(&fretval));

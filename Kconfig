@@ -316,13 +316,32 @@ mainmenu "Embann Configuration"
         endchoice
 
 
-        choice NUM_TRAINING_DATA_ENTRIES_TYPE
-            bool "Num Training Data Entries Data Type"
-            default NUM_TRAINING_DATA_ENTRIES_TYPE_UINT32
+        choice NUM_TRAINING_DATA_SETS_TYPE
+            bool "Num Training Data Sets Data Type"
+            default NUM_TRAINING_DATA_SETS_TYPE_UINT32
             help
                 Dictates how many instances of training data can
                 be added to the network based on the number of 
                 bits in the data type.
+
+            config NUM_TRAINING_DATA_SETS_TYPE_UINT8
+                bool "Unsigned 8-bit Integer"
+            config NUM_TRAINING_DATA_SETS_TYPE_UINT16
+                bool "Unsigned 16-bit Integer"
+            config NUM_TRAINING_DATA_SETS_TYPE_UINT32
+                bool "Unsigned 32-bit Integer"
+            config NUM_TRAINING_DATA_SETS_TYPE_UINT64
+                bool "Unsigned 64-bit Integer"
+        endchoice
+
+
+        choice NUM_TRAINING_DATA_ENTRIES_TYPE
+            bool "Num Training Data Entries Data Type"
+            default NUM_TRAINING_DATA_ENTRIES_TYPE_UINT32
+            help
+                Dictates how many entries can be in each set of 
+                training data based on the number of bits in the 
+                data type.
 
             config NUM_TRAINING_DATA_ENTRIES_TYPE_UINT8
                 bool "Unsigned 8-bit Integer"
@@ -373,4 +392,10 @@ mainmenu "Embann Configuration"
         config NUM_OUTPUT_NEURONS
             int "Number of Output Neurons"
             default 3
+        config NUM_TRAINING_DATA_SETS
+            int "Number of Training Data Sets"
+            default 3
+        config NUM_TRAINING_DATA_ENTRIES
+            int "Number of Training Data Entries in Each Set"
+            default 10
     endmenu

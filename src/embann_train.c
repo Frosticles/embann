@@ -4,6 +4,8 @@
 #define TAG "Embann Train"
 
 extern network_t* pNetworkGlobal;
+extern trainingData_t* pTrainingData;
+extern trainingDataCollection_t trainingDataCollection;
 
 
 static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numNeuronsInCurrentLayer, 
@@ -21,8 +23,7 @@ static int embann_train(numOutputs_t correctOutput, activation_t learningRate,
 
 int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds)
 {
-    numOutputs_t randomOutput;
-    numTrainingDataEntries_t randomTrainingSet;
+    trainingData_t* randomDataSet = NULL;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
     accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
     accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
@@ -35,22 +36,20 @@ int embann_trainDriverInTime(activation_t learningRate, uint32_t numSeconds)
 
     while ((millis() - startTime) < (numSeconds * 1000UL))
     {
-        randomOutput = random() % pNetworkGlobal->outputLayer->numNeurons;
-        randomTrainingSet = random() % embann_getDataCollection()->numEntries;
+        embann_getRandomDataSet(&randomDataSet);
 
-        embann_inputRaw(embann_getDataCollection()->head->data);
+        embann_inputRaw(randomDataSet->data);
         EMBANN_ERROR_CHECK(embann_forwardPropagate());
-        EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate, totalErrorInCurrentLayer, totalErrorInNextLayer));
+        EMBANN_ERROR_CHECK(embann_train(randomDataSet->correctResponse, learningRate, totalErrorInCurrentLayer, totalErrorInNextLayer));
     }
     return EOK;
 }
 
 int embann_trainDriverInError(activation_t learningRate, activation_t desiredCost)
 {
-    numOutputs_t randomOutput;
-    numTrainingDataEntries_t randomTrainingSet;
     const numOutputs_t numOutputs = pNetworkGlobal->outputLayer->numNeurons;
     bool converged = false;
+    trainingData_t* randomDataSet = NULL;
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
     accumulator_t totalErrorInCurrentLayer[CONFIG_NUM_INPUT_NEURONS];
     accumulator_t totalErrorInNextLayer[CONFIG_NUM_INPUT_NEURONS];
@@ -65,16 +64,16 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
 
     while (!converged)
     {
-        randomOutput = random() % numOutputs;
-        randomTrainingSet = random() % embann_getDataCollection()->numEntries;
         converged = true;
 
-        embann_inputRaw(embann_getDataCollection()->head->data);
+        embann_getRandomDataSet(&randomDataSet);
+
+        embann_inputRaw(randomDataSet->data);
         EMBANN_ERROR_CHECK(embann_forwardPropagate());
 
         memset(totalErrorInCurrentLayer, 0, sizeof(totalErrorInCurrentLayer));
         memset(totalErrorInNextLayer, 0, sizeof(totalErrorInNextLayer));
-        totalErrorInCurrentLayer[randomOutput] = MAX_ACTIVATION;
+        totalErrorInCurrentLayer[randomDataSet->correctResponse] = MAX_ACTIVATION;
 
         for (numOutputs_t i = 0; i < numOutputs; i++)
         {        
@@ -121,7 +120,7 @@ int embann_trainDriverInError(activation_t learningRate, activation_t desiredCos
             }
         }
 
-        EMBANN_ERROR_CHECK(embann_train(randomOutput, learningRate, totalErrorInCurrentLayer, totalErrorInNextLayer));
+        EMBANN_ERROR_CHECK(embann_train(randomDataSet->correctResponse, learningRate, totalErrorInCurrentLayer, totalErrorInNextLayer));
     }
     return EOK;
 }

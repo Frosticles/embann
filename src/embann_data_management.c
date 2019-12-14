@@ -4,8 +4,9 @@
 #define TAG "Embann Data Management"
 
 extern network_t* pNetworkGlobal;
+extern trainingDataCollection_t trainingDataCollection;
 
-
+static trainingData_t trainingData[CONFIG_NUM_TRAINING_DATA_SETS];
 
 
 int embann_inputRaw(activation_t data[])
@@ -41,7 +42,7 @@ int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
 int embann_getTrainingDataMean(float* mean)
 {
     uint32_t sum = 0;
-    trainingData_t* pTrainingData = embann_getDataCollection()->head;
+    trainingData_t* pTrainingData = trainingDataCollection.head;
 
     if (pTrainingData != NULL)
     {
@@ -61,16 +62,28 @@ int embann_getTrainingDataMean(float* mean)
         return ENOENT;
     }
     
+
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    const numTrainingDataSets_t numSets = trainingDataCollection.numSets;
+    for (numTrainingDataSets_t i = 0; i < numSets; i++)
+#else
     while (pTrainingData != NULL)
+#endif
     {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        const numTrainingDataEntries_t numEntries = pTrainingData->length;
+        
+        for (numTrainingDataEntries_t j = 0; j < numEntries; j++)
         {
             sum += pTrainingData->data[j];
         }
         *mean += sum / pTrainingData->length;
         sum = 0;
 
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+        pTrainingData += sizeof(trainingData_t);
+#else
         pTrainingData = pTrainingData->next;
+#endif
     }
 
     *mean /= embann_getDataCollection()->numEntries;
@@ -82,7 +95,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
 {
     float sumofSquares = 0.0F;
     float mean;
-    trainingData_t* pTrainingData = embann_getDataCollection()->head;
+    trainingData_t* pTrainingData = trainingDataCollection.head;
 
     if (pTrainingData != NULL)
     {
@@ -109,14 +122,27 @@ int embann_getTrainingDataStdDev(float* stdDev)
         return ENOENT;
     }
     
+
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    const numTrainingDataSets_t numSets = trainingDataCollection.numSets;
+    for (numTrainingDataSets_t i = 0; i < numSets; i++)
+#else
     while (pTrainingData != NULL)
+#endif
     {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        const numTrainingDataEntries_t numEntries = pTrainingData->length;
+        
+        for (numTrainingDataEntries_t j = 0; j < numEntries; j++)
         {
             sumofSquares += powf((float)pTrainingData->data[j] - mean, 2.0F);
         }
-        sumofSquares /= pTrainingData->length;
+        sumofSquares /= numEntries;
+
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+        pTrainingData += sizeof(trainingData_t);
+#else
         pTrainingData = pTrainingData->next;
+#endif
     }
 
     *stdDev = sqrtf(sumofSquares);
@@ -126,7 +152,7 @@ int embann_getTrainingDataStdDev(float* stdDev)
 
 int embann_getTrainingDataMax(activation_t* max)
 {
-    trainingData_t* pTrainingData = embann_getDataCollection()->head;
+    trainingData_t* pTrainingData = trainingDataCollection.head;
     if (pTrainingData != NULL)
     {
         *max = pTrainingData->data[0];
@@ -145,16 +171,28 @@ int embann_getTrainingDataMax(activation_t* max)
         return ENOENT;
     }
     
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    const numTrainingDataSets_t numSets = trainingDataCollection.numSets;
+    for (numTrainingDataSets_t i = 0; i < numSets; i++)
+#else
     while (pTrainingData != NULL)
+#endif
     {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        const numTrainingDataEntries_t numEntries = pTrainingData->length;
+        
+        for (numTrainingDataEntries_t j = 0; j < numEntries; j++)
         {
             if (pTrainingData->data[j] > *max)
             {
                 *max = pTrainingData->data[j];
             }
         }
+
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+        pTrainingData += sizeof(trainingData_t);
+#else
         pTrainingData = pTrainingData->next;
+#endif
     }
 
     return EOK;
@@ -162,7 +200,7 @@ int embann_getTrainingDataMax(activation_t* max)
 
 int embann_getTrainingDataMin(activation_t* min)
 {
-    trainingData_t* pTrainingData = embann_getDataCollection()->head;
+    trainingData_t* pTrainingData = trainingDataCollection.head;
     if (pTrainingData != NULL)
     {
         *min = pTrainingData->data[0];
@@ -181,94 +219,127 @@ int embann_getTrainingDataMin(activation_t* min)
         return ENOENT;
     }
 
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    const numTrainingDataSets_t numSets = trainingDataCollection.numSets;
+    for (numTrainingDataSets_t i = 0; i < numSets; i++)
+#else
     while (pTrainingData != NULL)
+#endif
     {
-        for (uint32_t j = 0; j < pTrainingData->length; j++)
+        const numTrainingDataEntries_t numEntries = pTrainingData->length;
+        
+        for (numTrainingDataEntries_t j = 0; j < numEntries; j++)
         {
             if (pTrainingData->data[j] < *min)
             {
                 *min = pTrainingData->data[j];
             }
         }
+
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+        pTrainingData += sizeof(trainingData_t);
+#else
         pTrainingData = pTrainingData->next;
+#endif
     }
 
     return EOK;
 }
 
 
-int embann_addTrainingData(activation_t* data, uint32_t length, numOutputs_t correctResponse)
+#ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
+int embann_addTrainingData(activation_t* data, uint32_t numElements, numOutputs_t correctResponse)
 {
-    trainingData_t* trainingDataNode;
+    trainingData_t* trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
+    EMBANN_MALLOC_CHECK(trainingDataNode);
 
-    if (length == 0U)
+    if (numElements == 0U)
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
 
-    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
-    EMBANN_MALLOC_CHECK(trainingDataNode);
-
-    trainingDataNode->prev = embann_getDataCollection()->tail;
     trainingDataNode->next = NULL;
-    trainingDataNode->length = length;
-    trainingDataNode->correctResponse = correctResponse;
     trainingDataNode->data = data;
+    trainingDataNode->length = numElements;
+    trainingDataNode->correctResponse = correctResponse;
 
-    if (embann_getDataCollection()->head == NULL)
+    if (trainingDataCollection.head == NULL)
     {
-        embann_getDataCollection()->head = trainingDataNode;
-        embann_getDataCollection()->tail = trainingDataNode;
+        trainingDataCollection.head = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
     }
     else
     {
-        embann_getDataCollection()->tail->next = trainingDataNode;
-        embann_getDataCollection()->tail = trainingDataNode;
+        trainingDataCollection.tail->next = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
     }
-
-    ++embann_getDataCollection()->numEntries;
+    ++trainingDataCollection.numSets;
     return EOK;
 }
+#endif
 
-int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse)
+int embann_copyTrainingData(activation_t data[], uint32_t numElements, numOutputs_t correctResponse)
 {
-    trainingData_t* trainingDataNode;
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+    trainingData_t* trainingDataNode = &trainingData[trainingDataCollection.numSets];
+#else
+    trainingData_t* trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
+    EMBANN_MALLOC_CHECK(trainingDataNode);
+#endif
 
-    if (length == 0U)
+    if (numElements == 0U)
     {
         // Deviation from MISRA C2012 15.5 for reasonably simple error return values
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
 
-    trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
-    EMBANN_MALLOC_CHECK(trainingDataNode);
-
-    trainingDataNode->prev = embann_getDataCollection()->tail;
+#ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
+    trainingDataNode->data = (activation_t*) malloc(numElements * sizeof(activation_t));
     trainingDataNode->next = NULL;
-    trainingDataNode->length = length;
+#endif
+    trainingDataNode->length = numElements;
     trainingDataNode->correctResponse = correctResponse;
-    trainingDataNode->data = (activation_t*) malloc(length);
-    memcpy(trainingDataNode->data, data, length);
+    memcpy(trainingDataNode->data, data, numElements * sizeof(activation_t));
 
-    if (embann_getDataCollection()->head == NULL)
+    if (trainingDataCollection.head == NULL)
     {
-        embann_getDataCollection()->head = trainingDataNode;
-        embann_getDataCollection()->tail = trainingDataNode;
+        trainingDataCollection.head = trainingDataNode;
+#ifdef CONFIG_MEMORY_ALLOCATION_DYNAMIC
+        trainingDataCollection.tail = trainingDataNode;
     }
     else
     {
-        embann_getDataCollection()->tail->next = trainingDataNode;
-        embann_getDataCollection()->tail = trainingDataNode;
+        trainingDataCollection.tail->next = trainingDataNode;
+        trainingDataCollection.tail = trainingDataNode;
+#endif
     }
-
-    embann_getDataCollection()->numEntries++;
+    trainingDataCollection.numSets++;
     return EOK;
 }
 
 int embann_shuffleTrainingData(void)
 {
     return EOK;
+}
+
+
+
+
+
+int embann_getRandomDataSet(trainingData_t** dataSet)
+{
+    if (trainingDataCollection.numSets == 0)
+    {
+        return ENOENT;
+    }
+    else
+    {
+#ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+        *dataSet = &trainingData[random() % trainingDataCollection.numSets];
+        return EOK;
+#endif
+    }
 }
