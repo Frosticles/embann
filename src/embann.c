@@ -121,6 +121,8 @@ int embann_forwardPropagate(void)
         pNetworkGlobal->hiddenLayer[pNetworkGlobal->properties.numHiddenLayers - 1U]->numNeurons,
         pNetworkGlobal->outputLayer->numNeurons));
 
+    embann_calculateNetworkResponse();
+
     EMBANN_LOGD(TAG, "Done Hidden Layer %d -> Output Layer", pNetworkGlobal->properties.numHiddenLayers);
 
     return EOK;
