@@ -5,7 +5,8 @@
 
 extern network_t* pNetworkGlobal;
 
-static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numOutputs, 
+
+static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numNeuronsInCurrentLayer, 
                         const numLayers_t lastHiddenLayer, activation_t learningRate, 
                         numOutputs_t correctOutput);
 static int _trainHidden(accumulator_t* totalErrorInCurrentLayer, accumulator_t* totalErrorInNextLayer, 
@@ -152,19 +153,19 @@ static int embann_train(numOutputs_t correctOutput, activation_t learningRate,
 
 
 
-static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numOutputs, 
+static int _trainOutput(accumulator_t* totalErrorInCurrentLayer, const numOutputs_t numNeuronsInCurrentLayer, 
                         const numLayers_t lastHiddenLayer, activation_t learningRate, 
                         numOutputs_t correctOutput)
 {
     // TODO, add biasing
-    const numHiddenNeurons_t numHiddenNeurons = pNetworkGlobal->hiddenLayer[lastHiddenLayer]->numNeurons;
+    const numHiddenNeurons_t numNeuronsInNextLayer = pNetworkGlobal->hiddenLayer[lastHiddenLayer]->numNeurons;
 
     EMBANN_LOGD(TAG, "Output Layer Error [0] = %" ACCUMULATOR_PRINT, totalErrorInCurrentLayer[0]);
     EMBANN_LOGD(TAG, "Old Output Weight [0][0] = %" WEIGHT_PRINT, pNetworkGlobal->outputLayer->weight[0][0]);
 
-    for (numOutputs_t i = 0; i < numOutputs; i++)
+    for (numOutputs_t i = 0; i < numNeuronsInCurrentLayer; i++)
     {        
-        for (numHiddenNeurons_t j = 0; j < numHiddenNeurons; j++)
+        for (numHiddenNeurons_t j = 0; j < numNeuronsInNextLayer; j++)
         {
             EMBANN_LOGV(TAG, "Old Output Weight [%d][%d] = %" WEIGHT_PRINT, i, j, pNetworkGlobal->outputLayer->weight[i][j]);
 
