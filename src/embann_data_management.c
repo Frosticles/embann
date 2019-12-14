@@ -41,12 +41,13 @@ int embann_inputStandardizeScale(activation_t data[], float mean, float stdDev)
 
 int embann_getTrainingDataMean(float* mean)
 {
+    float tempMean;
     uint32_t sum = 0;
     trainingData_t* pTrainingData = trainingDataCollection.head;
 
     if (pTrainingData != NULL)
     {
-        *mean = pTrainingData->data[0];
+        tempMean = pTrainingData->data[0];
     }
     else
     {
@@ -61,7 +62,6 @@ int embann_getTrainingDataMean(float* mean)
         // cppcheck-suppress misra-c2012-15.5
         return ENOENT;
     }
-    
 
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
     const numTrainingDataSets_t numSets = trainingDataCollection.numSets;
@@ -76,7 +76,7 @@ int embann_getTrainingDataMean(float* mean)
         {
             sum += pTrainingData->data[j];
         }
-        *mean += sum / pTrainingData->length;
+        tempMean += (float)sum / numEntries;
         sum = 0;
 
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
@@ -86,7 +86,9 @@ int embann_getTrainingDataMean(float* mean)
 #endif
     }
 
-    *mean /= embann_getDataCollection()->numEntries;
+    tempMean /= trainingDataCollection.numSets;
+
+    *mean = tempMean;
 
     return EOK;
 }
@@ -153,9 +155,11 @@ int embann_getTrainingDataStdDev(float* stdDev)
 int embann_getTrainingDataMax(activation_t* max)
 {
     trainingData_t* pTrainingData = trainingDataCollection.head;
+    activation_t tempMax;
+
     if (pTrainingData != NULL)
     {
-        *max = pTrainingData->data[0];
+        tempMax = pTrainingData->data[0];
     }
     else
     {
@@ -182,9 +186,9 @@ int embann_getTrainingDataMax(activation_t* max)
         
         for (numTrainingDataEntries_t j = 0; j < numEntries; j++)
         {
-            if (pTrainingData->data[j] > *max)
+            if (pTrainingData->data[j] > tempMax)
             {
-                *max = pTrainingData->data[j];
+                tempMax = pTrainingData->data[j];
             }
         }
 
@@ -194,6 +198,8 @@ int embann_getTrainingDataMax(activation_t* max)
         pTrainingData = pTrainingData->next;
 #endif
     }
+
+    *max = tempMax;
 
     return EOK;
 }
