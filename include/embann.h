@@ -59,7 +59,6 @@ int embann_addTrainingData(activation_t data[], uint32_t length, numOutputs_t co
 int embann_copyTrainingData(activation_t data[], uint32_t length, numOutputs_t correctResponse);
 int embann_shuffleTrainingData(void);
 int* embann_getErrno(void);
-trainingDataCollection_t* embann_getDataCollection(void);
 
 
 #ifndef ARDUINO

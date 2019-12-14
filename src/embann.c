@@ -16,10 +16,12 @@ static int embann_errno = EOK;
 /* Pointer to the current network */
 network_t* pNetworkGlobal;
 /* Structure of pointers to training data */
-static trainingDataCollection_t trainingDataCollection = {
-    .tail = NULL,
+trainingDataCollection_t trainingDataCollection = {
     .head = NULL,
-    .numEntries = 0U
+#ifndef CONFIG_MEMORY_ALLOCATION_STATIC
+    .tail = NULL,
+#endif
+    .numSets = 0U
 };
 
 
@@ -275,13 +277,6 @@ int* embann_getErrno(void)
     return &embann_errno;
 }
 
-
-
-
-trainingDataCollection_t* embann_getDataCollection(void)
-{
-    return &trainingDataCollection;
-}
 
 
 
