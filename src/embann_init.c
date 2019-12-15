@@ -48,6 +48,10 @@ int embann_init(numInputs_t numInputNeurons,
     }
 
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+#if (CONFIG_NUM_INPUT_NEURONS == 0) || (CONFIG_NUM_HIDDEN_NEURONS == 0) || (CONFIG_NUM_OUTPUT_NEURONS == 0) || (CONFIG_NUM_HIDDEN_LAYERS == 0)
+#error "Layer dimensions cannot be equal to 0"
+#endif
+
     pNetworkGlobal = &staticNetwork;
 #else
     network_t* pNetwork = (network_t*) malloc(sizeof(network_t) + 

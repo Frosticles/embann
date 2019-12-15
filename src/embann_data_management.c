@@ -289,6 +289,9 @@ int embann_addTrainingData(activation_t* data, uint32_t numElements, numOutputs_
 int embann_copyTrainingData(activation_t data[], uint32_t numElements, numOutputs_t correctResponse)
 {
 #ifdef CONFIG_MEMORY_ALLOCATION_STATIC
+#if (CONFIG_NUM_TRAINING_DATA_SETS == 0) || (CONFIG_NUM_TRAINING_DATA_ENTRIES == 0)
+#error "Training data dimensions cannot be equal to 0"
+#endif
     trainingData_t* trainingDataNode = &trainingData[trainingDataCollection.numSets];
 #else
     trainingData_t* trainingDataNode = (trainingData_t*) malloc(sizeof(trainingData_t));
