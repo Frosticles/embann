@@ -5,6 +5,5 @@
 *.dump
 *.pdf
 *.log
-.vscode
 embann
 .config.old

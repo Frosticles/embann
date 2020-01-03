@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "limits": "c",
+        "chrono": "c",
+        "random": "c",
+        "*.tcc": "cpp",
+        "queue": "cpp",
+        "stack": "cpp",
+        "complex": "c",
+        "string_view": "c"
+    },
+    "files.exclude": {
+        "/cppcheck": true
+    },
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}
