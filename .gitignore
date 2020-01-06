@@ -6,4 +6,5 @@
 *.pdf
 *.log
 embann
+embann.exe
 .config.old

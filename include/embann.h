@@ -11,7 +11,7 @@
 
 #ifdef ARDUINO
 #include "Arduino.h"
-#else// ARDUINO
+#else // ARDUINO
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
@@ -25,11 +25,12 @@
 #include <errno.h>
 #include <string.h>
 #define PI 3.14159
-#endif// ARDUINO
+#endif // ARDUINO
 
 #include "embann_config.h"
 #include "embann_data_types.h"
 #include "embann_macros.h"
+#include "embann_quirks.h"
 
 
 
@@ -77,7 +78,7 @@ static inline uint32_t millis(void)
 {
     struct timeval time;
     gettimeofday(&time, NULL);
-    return (uint32_t) roundf(time.tv_usec / 1000);
+    return (uint32_t) round(time.tv_usec / 1000);
 }
 #endif // _LARGE_TIME_API
 #endif // ARDUINO

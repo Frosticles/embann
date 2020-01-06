@@ -48,7 +48,7 @@ all: $(EXE)
 
 
 $(EXE): $(OBJ)
-	$(CC) $^ $(INC_DIRS) $(LIBS) $(CFLAGS) -rdynamic -o $(EXE)
+	$(CC) $^ $(INC_DIRS) $(LIBS) $(CFLAGS) -o $(EXE)
 	$(info ### executable is located at ${EXE})
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
